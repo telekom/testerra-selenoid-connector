@@ -6,8 +6,6 @@ project.ext {
 
 dependencies {
     implementation 'eu.tsystems.mms.tic.testerra:driver-ui-desktop:' + testerraVersion
-    implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.12'
-    implementation group: 'org.toile-libre.libe', name: 'curl', version: '0.0.38'
 }
 
 repositories {

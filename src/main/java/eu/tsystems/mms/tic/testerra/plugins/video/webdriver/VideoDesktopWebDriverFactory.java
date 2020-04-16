@@ -11,7 +11,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 /**
- * Extends DesktopWebDriverFactory by using video fields
+ * Extends DesktopWebDriverFactory by using selenoid video capabilities.
  * <p>
  * Date: 15.04.2020
  * Time: 11:49

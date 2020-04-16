@@ -14,8 +14,8 @@ import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverRequest;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.desktop.WebDriverMode;
 import org.openqa.selenium.WebDriver;
 
+import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -52,11 +52,11 @@ public class SelenoidVideoGrabber extends MethodWorker implements WebDriverSessi
 
                 if (selenoidHelper.isSelenoidUsed(videoRequest.webDriverRequest)) {
 
-                    final Path tempVideoFile = selenoidHelper.getRemoveVideoFile(videoRequest);
+                    final String tempVideoFilePath = selenoidHelper.getRemoveVideoFile(videoRequest);
 
-                    if (tempVideoFile != null) {
+                    if (tempVideoFilePath != null) {
                         try {
-                            final Video video = Report.provideVideo(tempVideoFile.toFile(), Report.Mode.MOVE);
+                            final Video video = Report.provideVideo(new File(tempVideoFilePath), Report.Mode.MOVE);
                             videoList.add(video);
                         } catch (IOException e) {
                             log().error("Error providing video to report.", e);

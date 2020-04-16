@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Provide the capabilities needed for TAP1 integration.
+ * Provide the capabilities needed for Selenoid video integration
  * <p>
  * Date: 15.04.2020
  * Time: 11:07
