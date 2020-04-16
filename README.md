@@ -1,4 +1,4 @@
-# Testerre Selenoid Connector
+# Testerra Selenoid Connector
 
 This module for Testerra provides access to videos and vnc streams created by Selenoid Docker container.
 It will register automatically by using Testera `ModuleHook`.
@@ -41,3 +41,16 @@ The `SelenoidExclusiveSessionVideoWorker` will look for exclusive WebDriver sess
 |tt.screencaster.active|true|All videos will be collected in failure case of test method and for exclusive sessions.|
 |tt.selenoid.vnc.enabled|true|VNC Stream will be activated and logged to the console.|
 |tt.selenoid.vnc.address|<none>|VNC Host address - Will be used to generate a unique url for accessing the VNC session.|
+
+## Toubleshooting
+
+### VNC url not displayed in my logfile
+Please ensure that you setup up the `tt.selenoid.vnc.address` correctly, by using an url like this `http://novnc-host:no-vnc-port/vnc.html`.
+
+### Videos not show up in report
+Please ensure that you setup `tt.screencaster.active` properly and the test method you're expected videos for failed.
+Testerra will only append videos to the report for failing methods.
+
+### I got the same video on multiple test methods
+Congratulations. You're using exclusive WebDriver sessions. This is a feature from Testerra. One WebDriver session will be used accross multiple test methods until you close it.
+Because the generated video is valid for multiple test methods, we linked it for you to all of them. 
