@@ -1,4 +1,4 @@
-package eu.tsystems.mms.tic.testerra.plugins.video.utils;
+package eu.tsystems.mms.tic.testerra.plugins.selenoid.utils;
 
 import eu.tsystems.mms.tic.testframework.constants.TesterraProperties;
 

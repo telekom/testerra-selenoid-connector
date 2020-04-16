@@ -1,4 +1,4 @@
-package eu.tsystems.mms.tic.testerra.plugins.video;
+package eu.tsystems.mms.tic.testerra.plugins.selenoid;
 
 import eu.tsystems.mms.tic.testframework.testing.TesterraTest;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverManager;

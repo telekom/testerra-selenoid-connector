@@ -16,12 +16,12 @@
  * Contributors:
  *     Eric Kubenka <Eric.Kubenka@t-systems.com>
  */
-package eu.tsystems.mms.tic.testerra.plugins.video;
+package eu.tsystems.mms.tic.testerra.plugins.selenoid;
 
-import eu.tsystems.mms.tic.testerra.plugins.video.collector.SelenoidEvidenceVideoCollector;
-import eu.tsystems.mms.tic.testerra.plugins.video.utils.SelenoidProperties;
-import eu.tsystems.mms.tic.testerra.plugins.video.webdriver.VideoDesktopWebDriverFactory;
-import eu.tsystems.mms.tic.testerra.plugins.video.worker.SelenoidExclusiveSessionVideoWorker;
+import eu.tsystems.mms.tic.testerra.plugins.selenoid.collector.SelenoidEvidenceVideoCollector;
+import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.SelenoidProperties;
+import eu.tsystems.mms.tic.testerra.plugins.selenoid.webdriver.VideoDesktopWebDriverFactory;
+import eu.tsystems.mms.tic.testerra.plugins.selenoid.worker.SelenoidExclusiveSessionVideoWorker;
 import eu.tsystems.mms.tic.testframework.common.PropertyManager;
 import eu.tsystems.mms.tic.testframework.constants.Browsers;
 import eu.tsystems.mms.tic.testframework.hooks.ModuleHook;

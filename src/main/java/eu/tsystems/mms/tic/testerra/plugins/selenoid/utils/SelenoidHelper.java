@@ -16,9 +16,9 @@
  * Contributors:
  *     Eric Kubenka <Eric.Kubenka@t-systems.com>
  */
-package eu.tsystems.mms.tic.testerra.plugins.video.utils;
+package eu.tsystems.mms.tic.testerra.plugins.selenoid.utils;
 
-import eu.tsystems.mms.tic.testerra.plugins.video.request.VideoRequest;
+import eu.tsystems.mms.tic.testerra.plugins.selenoid.request.VideoRequest;
 import eu.tsystems.mms.tic.testframework.common.PropertyManager;
 import eu.tsystems.mms.tic.testframework.logging.Loggable;
 import eu.tsystems.mms.tic.testframework.model.NodeInfo;

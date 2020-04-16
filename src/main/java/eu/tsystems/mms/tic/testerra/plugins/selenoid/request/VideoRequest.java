@@ -16,7 +16,7 @@
  * Contributors:
  *     Eric Kubenka <Eric.Kubenka@t-systems.com>
  */
-package eu.tsystems.mms.tic.testerra.plugins.video.request;
+package eu.tsystems.mms.tic.testerra.plugins.selenoid.request;
 
 import eu.tsystems.mms.tic.testframework.logging.Loggable;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.DesktopWebDriverRequest;

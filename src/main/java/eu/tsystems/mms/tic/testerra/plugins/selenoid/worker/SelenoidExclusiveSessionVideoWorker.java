@@ -16,13 +16,13 @@
  * Contributors:
  *     Eric Kubenka <Eric.Kubenka@t-systems.com>
  */
-package eu.tsystems.mms.tic.testerra.plugins.video.worker;
+package eu.tsystems.mms.tic.testerra.plugins.selenoid.worker;
 
-import eu.tsystems.mms.tic.testerra.plugins.video.request.VideoRequest;
-import eu.tsystems.mms.tic.testerra.plugins.video.request.VideoRequestStorage;
-import eu.tsystems.mms.tic.testerra.plugins.video.utils.SelenoidHelper;
-import eu.tsystems.mms.tic.testerra.plugins.video.utils.SelenoidProperties;
-import eu.tsystems.mms.tic.testerra.plugins.video.utils.VideoLoader;
+import eu.tsystems.mms.tic.testerra.plugins.selenoid.request.VideoRequest;
+import eu.tsystems.mms.tic.testerra.plugins.selenoid.request.VideoRequestStorage;
+import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.SelenoidHelper;
+import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.SelenoidProperties;
+import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.VideoLoader;
 import eu.tsystems.mms.tic.testframework.common.PropertyManager;
 import eu.tsystems.mms.tic.testframework.execution.testng.worker.GenerateReportsWorker;
 import eu.tsystems.mms.tic.testframework.logging.Loggable;
