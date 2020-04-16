@@ -1,0 +1,14 @@
+#gradle files
+gradlew
+gradlew.bat
+.gradle/
+gradle/
+
+#intellij
+.idea/
+*.iml
+
+#generated things
+build
+target
+testerra-report
