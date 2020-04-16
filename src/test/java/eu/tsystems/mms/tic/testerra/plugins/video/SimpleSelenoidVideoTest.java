@@ -22,11 +22,11 @@ public class SimpleSelenoidVideoTest extends TesterraTest {
     }
 
     @Test
-    public void testT02_FailedTestCaseWillNotCreateVideo() {
+    public void testT02_FailedTestCaseWillCreateVideo() {
 
         final WebDriver driver = WebDriverManager.getWebDriver();
         driver.get("https://google.de");
-        Assert.fail();
+        Assert.fail("must fail");
     }
 
 }

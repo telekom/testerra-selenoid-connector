@@ -1,17 +1,34 @@
 apply plugin: 'java'
+apply plugin: 'maven-publish'
+
+group 'eu.tsystems.mms.tic.testerra'
+version '1-SNAPSHOT'
 
 project.ext {
     testerraVersion = '1-SNAPSHOT'
-}
-
-dependencies {
-    implementation 'eu.tsystems.mms.tic.testerra:driver-ui-desktop:' + testerraVersion
 }
 
 repositories {
     mavenCentral()
 }
 
+dependencies {
+    implementation 'eu.tsystems.mms.tic.testerra:driver-ui-desktop:' + testerraVersion
+}
+
 test {
     useTestNG()
 }
+
+publishing {
+    repositories {
+        maven {
+            url System.getProperty("deployUrl", "none")
+            credentials {
+                username System.getProperty("deployUsername", "none")
+                password System.getProperty("deployPassword", "none")
+            }
+        }
+    }
+}
+

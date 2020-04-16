@@ -14,7 +14,7 @@ import org.testng.annotations.Test;
  *
  * @author Eric Kubenka
  */
-public class ExclusiveSessonSelenoidVideoTest extends TesterraTest {
+public class ExclusiveSessionSelenoidVideoTest extends TesterraTest {
 
     private static String WEBDRIVER_SESSION = "";
 

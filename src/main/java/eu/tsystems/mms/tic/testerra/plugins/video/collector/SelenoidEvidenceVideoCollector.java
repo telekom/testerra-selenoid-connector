@@ -1,38 +1,54 @@
-package eu.tsystems.mms.tic.testerra.plugins.video;
+/*
+ * (C) Copyright T-Systems Multimedia Solutions GmbH 2020
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Contributors:
+ *     Eric Kubenka <Eric.Kubenka@t-systems.com>
+ */
+package eu.tsystems.mms.tic.testerra.plugins.video.collector;
 
-import eu.tsystems.mms.tic.testframework.common.PropertyManager;
-import eu.tsystems.mms.tic.testframework.constants.TesterraProperties;
+import eu.tsystems.mms.tic.testerra.plugins.video.request.VideoRequest;
+import eu.tsystems.mms.tic.testerra.plugins.video.request.VideoRequestStorage;
+import eu.tsystems.mms.tic.testerra.plugins.video.utils.SelenoidHelper;
+import eu.tsystems.mms.tic.testerra.plugins.video.utils.VideoLoader;
 import eu.tsystems.mms.tic.testframework.execution.testng.worker.MethodWorker;
+import eu.tsystems.mms.tic.testframework.execution.worker.finish.AbstractEvidencesWorker;
 import eu.tsystems.mms.tic.testframework.execution.worker.finish.WebDriverSessionHandler;
 import eu.tsystems.mms.tic.testframework.interop.VideoCollector;
 import eu.tsystems.mms.tic.testframework.logging.Loggable;
 import eu.tsystems.mms.tic.testframework.report.model.context.Video;
-import eu.tsystems.mms.tic.testframework.report.model.context.report.Report;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.DesktopWebDriverRequest;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverManager;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverRequest;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.desktop.WebDriverMode;
 import org.openqa.selenium.WebDriver;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
+ * Will collect Videos when Testerra asks for it via {@link AbstractEvidencesWorker#run()}
  * Date: 15.04.2020
  * Time: 11:16
  *
  * @author Eric Kubenka
  */
-public class SelenoidVideoGrabber extends MethodWorker implements WebDriverSessionHandler, VideoCollector, Loggable {
-
-    private static final boolean VIDEO_ACTIVE = PropertyManager.getBooleanProperty(TesterraProperties.SCREENCASTER_ACTIVE, false);
+public class SelenoidEvidenceVideoCollector extends MethodWorker implements WebDriverSessionHandler, VideoCollector, Loggable {
 
     private final SelenoidHelper selenoidHelper = SelenoidHelper.get();
     private final VideoRequestStorage videoRequestStorage = VideoRequestStorage.get();
-
     private static final ThreadLocal<List<VideoRequest>> closedWebDriverSessions = new ThreadLocal<>();
 
     /**
@@ -44,32 +60,16 @@ public class SelenoidVideoGrabber extends MethodWorker implements WebDriverSessi
 
         final List<Video> videoList = new ArrayList<>();
 
+        // Iterate over all closed WebDriver sessions during last teardown and get their videos.
         if (closedWebDriverSessions.get() != null) {
-            log().info("Grabbing Selenoid videos.");
-
-            // Iterate over all closed WebDriver sessions during last teardown and get their videos.
             for (final VideoRequest videoRequest : closedWebDriverSessions.get()) {
-
-                if (selenoidHelper.isSelenoidUsed(videoRequest.webDriverRequest)) {
-
-                    final String tempVideoFilePath = selenoidHelper.getRemoveVideoFile(videoRequest);
-
-                    if (tempVideoFilePath != null) {
-                        try {
-                            final Video video = Report.provideVideo(new File(tempVideoFilePath), Report.Mode.MOVE);
-                            videoList.add(video);
-                        } catch (IOException e) {
-                            log().error("Error providing video to report.", e);
-                        }
-                    }
-
-
-                    selenoidHelper.deleteRemoteVideoFile(videoRequest);
+                final Video video = new VideoLoader().download(videoRequest);
+                if (video != null) {
+                    videoList.add(video);
                 }
             }
         }
 
-        closedWebDriverSessions.remove();
         return videoList;
     }
 
@@ -79,14 +79,22 @@ public class SelenoidVideoGrabber extends MethodWorker implements WebDriverSessi
      */
     @Override
     public void run() {
-        // Already remove all our video requests here, becuase we do not them anymor ein the global list.
-        videoRequestStorage.remove(closedWebDriverSessions.get());
+
+        if (closedWebDriverSessions.get() != null) {
+
+            // delete every video on remote if not already done.
+            for (VideoRequest videoRequest : closedWebDriverSessions.get()) {
+                selenoidHelper.deleteRemoteVideoFile(videoRequest);
+            }
+            videoRequestStorage.remove(closedWebDriverSessions.get());
+        }
+
         closedWebDriverSessions.remove();
     }
 
     /**
-     * This method will be called for each WebDriver that was closed during a teardown.
-     * Probably there is a good chance, that we can append the video file to the method details.
+     * This method will be called for each WebDriver that is still active after a Test method
+     * Will store the associated {@link VideoRequest} for downloading videos later.
      *
      * @param webDriver @{@link WebDriver}
      */
@@ -102,7 +110,7 @@ public class SelenoidVideoGrabber extends MethodWorker implements WebDriverSessi
         if (relatedWebDriverRequest instanceof DesktopWebDriverRequest) {
             final DesktopWebDriverRequest r = (DesktopWebDriverRequest) relatedWebDriverRequest;
             if (r.webDriverMode == WebDriverMode.remote && selenoidHelper.isSelenoidUsed(r)) {
-                for (final VideoRequest videoRequest : videoRequestStorage.getList()) {
+                for (final VideoRequest videoRequest : videoRequestStorage.list()) {
                     if (videoRequest.webDriverRequest == r) {
                         closedWebDriverSessions.get().add(videoRequest);
                     }
@@ -110,5 +118,6 @@ public class SelenoidVideoGrabber extends MethodWorker implements WebDriverSessi
             }
         }
     }
+
 }
 
