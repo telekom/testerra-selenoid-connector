@@ -40,7 +40,7 @@ The `SelenoidExclusiveSessionVideoWorker` will look for exclusive WebDriver sess
 |---|---|---|
 |tt.screencaster.active|true|All videos will be collected in failure case of test method and for exclusive sessions.|
 |tt.selenoid.vnc.enabled|true|VNC Stream will be activated and logged to the console.|
-|tt.selenoid.vnc.address|<none>|VNC Host address - Will be used to generate a unique url for accessing the VNC session.|
+|tt.selenoid.vnc.address|none|VNC Host address - Will be used to generate a unique url for accessing the VNC session.|
 
 ## Toubleshooting
 
