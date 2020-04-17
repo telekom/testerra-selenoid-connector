@@ -16,7 +16,7 @@
  * Contributors:
  *     Eric Kubenka <Eric.Kubenka@t-systems.com>
  */
-package eu.tsystems.mms.tic.testerra.plugins.selenoid;
+package eu.tsystems.mms.tic.testerra.plugins.selenoid.hooks;
 
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.collector.SelenoidEvidenceVideoCollector;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.SelenoidProperties;
