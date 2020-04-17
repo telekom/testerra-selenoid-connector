@@ -1,4 +1,5 @@
 apply plugin: 'java'
+apply plugin: 'maven'
 apply plugin: 'maven-publish'
 
 group 'eu.tsystems.mms.tic.testerra'
@@ -20,15 +21,25 @@ test {
     useTestNG()
 }
 
-publishing {
-    repositories {
-        maven {
-            url System.getProperty("deployUrl", "none")
-            credentials {
-                username System.getProperty("deployUsername", "none")
-                password System.getProperty("deployPassword", "none")
+allprojects {
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                from components.java
+            }
+        }
+
+        repositories {
+            maven {
+                url System.getProperty("deployUrl", "none")
+                credentials {
+                    username System.getProperty("deployUsername", "none")
+                    password System.getProperty("deployPassword", "none")
+                }
             }
         }
     }
 }
+
 
