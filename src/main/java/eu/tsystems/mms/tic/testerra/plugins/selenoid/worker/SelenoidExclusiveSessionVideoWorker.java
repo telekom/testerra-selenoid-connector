@@ -81,7 +81,7 @@ public class SelenoidExclusiveSessionVideoWorker extends GenerateReportsWorker i
         // session context of video.
         final SessionContext sessionContext = videoRequest.webDriverRequest.sessionContext;
 
-        for (SuiteContext suiteContext : ExecutionContextController.EXECUTION_CONTEXT.suiteContexts) {
+        for (SuiteContext suiteContext : ExecutionContextController.getCurrentExecutionContext().suiteContexts) {
             for (TestContextModel testContextModel : suiteContext.testContextModels) {
                 for (ClassContext classContext : testContextModel.classContexts) {
                     for (MethodContext methodContext : classContext.methodContexts) {
