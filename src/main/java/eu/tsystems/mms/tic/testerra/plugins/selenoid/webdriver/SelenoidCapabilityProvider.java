@@ -66,7 +66,7 @@ public class SelenoidCapabilityProvider {
     public Capabilities provide(DesktopWebDriverRequest request) {
 
         final String reportName = ReportUtils.getReportName();
-        final String runConfigName = ExecutionContextController.EXECUTION_CONTEXT.runConfig.RUNCFG;
+        final String runConfigName = ExecutionContextController.getCurrentExecutionContext().runConfig.RUNCFG;
 
         final DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
         desiredCapabilities.setCapability("enableVNC", VNC_ACTIVE);
