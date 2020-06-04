@@ -27,8 +27,6 @@ import eu.tsystems.mms.tic.testframework.utils.FileDownloader;
 import eu.tsystems.mms.tic.testframework.utils.RESTUtils;
 import eu.tsystems.mms.tic.testframework.utils.Timer;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.DesktopWebDriverRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.MediaType;
 
@@ -41,8 +39,6 @@ import javax.ws.rs.core.MediaType;
  * @author Eric Kubenka
  */
 public class SelenoidHelper implements Loggable {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SelenoidHelper.class);
 
     private static final String VNC_ADDRESS = PropertyManager.getProperty(SelenoidProperties.VNC_ADDRESS, SelenoidProperties.Default.VNC_ADDRESS);
 
@@ -177,7 +173,7 @@ public class SelenoidHelper implements Loggable {
     public String getClipboard(DesktopWebDriverRequest webDriverRequest) {
         NodeInfo nodeInfo = webDriverRequest.storedExecutingNode;
         String sessionId = getSelenoidSessionId(webDriverRequest);
-        LOGGER.info("Get session clipboard value");
+        log().info("Get session clipboard value");
         return RESTUtils.requestGET(String.format("http://%s:%s/clipboard/%s", nodeInfo.getHost(), nodeInfo.getPort(), sessionId));
     }
 
@@ -190,7 +186,7 @@ public class SelenoidHelper implements Loggable {
     public void setClipboard(DesktopWebDriverRequest webDriverRequest, String value) {
         NodeInfo nodeInfo = webDriverRequest.storedExecutingNode;
         String sessionId = getSelenoidSessionId(webDriverRequest);
-        LOGGER.info("Set session clipboard value: " + value);
+        log().info("Set session clipboard value: " + value);
         final String url = String.format("http://%s:%s/clipboard/%s", nodeInfo.getHost(), nodeInfo.getPort(), sessionId);
         RESTUtils.requestPOST(url, value, MediaType.WILDCARD_TYPE, RESTUtils.DEFAULT_TIMEOUT, String.class);
     }
