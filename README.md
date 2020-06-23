@@ -66,7 +66,7 @@ gradle publishToMavenLocal
 ```
 or pass then properties via. CLI
 ```sh
-gradle publish -DdeployUrl=https://example.com -DdeployUsername=user -DdeployPassword=password
+gradle publish -DdeployUrl=<repo-url> -DdeployUsername=<repo-user> -DdeployPassword=<repo-password>
 ```
 
 Set a custom version
