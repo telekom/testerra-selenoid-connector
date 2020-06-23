@@ -53,4 +53,31 @@ Testerra will only append videos to the report for failing methods.
 
 ### I got the same video on multiple test methods
 Congratulations. You're using exclusive WebDriver sessions. This is a feature from Testerra. One WebDriver session will be used accross multiple test methods until you close it.
-Because the generated video is valid for multiple test methods, we linked it for you to all of them. 
+Because the generated video is valid for multiple test methods, we linked it for you to all of them.
+
+---
+
+## Publication
+
+### ... to a Maven repo
+
+```sh
+gradle publishToMavenLocal
+```
+or pass then properties via. CLI
+```sh
+gradle publish -DdeployUrl=https://example.com -DdeployUsername=user -DdeployPassword=password
+```
+
+Set a custom version
+```shell script
+gradle publish -DmoduleVersion=<version>
+```
+
+### ... to Bintray
+
+Upload and publish this module to Bintray:
+
+````sh
+gradle bintrayUpload -DmoduleVersion=<version> -DBINTRAY_USER=<bintray-user> -DBINTRAY_API_KEY=<bintray-api-key>
+```` 
