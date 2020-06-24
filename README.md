@@ -79,5 +79,5 @@ gradle publish -DmoduleVersion=<version>
 Upload and publish this module to Bintray:
 
 ````sh
-gradle bintrayUpload -DmoduleVersion=<version> -DBINTRAY_USER=<bintray-user> -DBINTRAY_API_KEY=<bintray-api-key>
+gradle publishToBintray -DmoduleVersion=<version> -DBINTRAY_USER=<bintray-user> -DBINTRAY_API_KEY=<bintray-api-key>
 ```` 

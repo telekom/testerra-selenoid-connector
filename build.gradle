@@ -7,11 +7,15 @@ apply plugin: 'maven-publish'
 
 apply from: rootProject.file('release-bintray.gradle')
 
-group 'eu.tsystems.mms.tic.testerra'
-version moduleVersion
-
-project.ext {
+ext {
     testerraVersion = '1.+'
+    moduleVersion = '1-SNAPSHOT'
+    if (System.properties.containsKey('moduleVersion')) {
+        moduleVersion = System.getProperty('moduleVersion')
+    }
+
+    group 'eu.tsystems.mms.tic.testerra'
+    version moduleVersion
 }
 
 repositories {
