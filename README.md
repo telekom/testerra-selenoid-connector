@@ -40,7 +40,7 @@ The `SelenoidExclusiveSessionVideoWorker` will look for exclusive WebDriver sess
 |---|---|---|
 |tt.screencaster.active|true|All videos will be collected in failure case of test method and for exclusive sessions.|
 |tt.selenoid.vnc.enabled|true|VNC Stream will be activated and logged to the console.|
-|tt.selenoid.vnc.address|none|VNC Host address - Will be used to generate a unique url for accessing the VNC session.|
+|tt.selenoid.vnc.address|none|VNC Host address - Will be used to generate a unique url for accessing the VNC session. <br> For a hosted [noVNC server](https://github.com/novnc/noVNC) this should be `http://<host>:<port>/vnc.html`.|
 
 ## Toubleshooting
 
@@ -53,4 +53,31 @@ Testerra will only append videos to the report for failing methods.
 
 ### I got the same video on multiple test methods
 Congratulations. You're using exclusive WebDriver sessions. This is a feature from Testerra. One WebDriver session will be used accross multiple test methods until you close it.
-Because the generated video is valid for multiple test methods, we linked it for you to all of them. 
+Because the generated video is valid for multiple test methods, we linked it for you to all of them.
+
+---
+
+## Publication
+
+### ... to a Maven repo
+
+```sh
+gradle publishToMavenLocal
+```
+or pass then properties via. CLI
+```sh
+gradle publish -DdeployUrl=<repo-url> -DdeployUsername=<repo-user> -DdeployPassword=<repo-password>
+```
+
+Set a custom version
+```shell script
+gradle publish -DmoduleVersion=<version>
+```
+
+### ... to Bintray
+
+Upload and publish this module to Bintray:
+
+````sh
+gradle bintrayUpload -DmoduleVersion=<version> -DBINTRAY_USER=<bintray-user> -DBINTRAY_API_KEY=<bintray-api-key>
+```` 
