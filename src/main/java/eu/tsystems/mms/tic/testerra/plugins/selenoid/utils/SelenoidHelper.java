@@ -138,6 +138,7 @@ public class SelenoidHelper implements Loggable {
             @Override
             public void run() throws Throwable {
                 setSkipThrowingException(true);
+                setAddThrowableToMethodContext(false);
                 final String download = downloader.download(null, remoteFile, videoName);
                 setReturningObject(download);
             }
