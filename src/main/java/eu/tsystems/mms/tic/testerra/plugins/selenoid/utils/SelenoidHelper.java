@@ -167,7 +167,6 @@ public class SelenoidHelper implements Loggable {
      * Gets the clipboard value
      *
      * @param webDriverRequest {@link DesktopWebDriverRequest}
-     *
      * @return clipboard value
      */
     public String getClipboard(DesktopWebDriverRequest webDriverRequest) {
