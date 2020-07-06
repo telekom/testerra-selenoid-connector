@@ -138,6 +138,7 @@ public class SelenoidHelper implements Loggable {
             @Override
             public void run() throws Throwable {
                 setSkipThrowingException(true);
+                setAddThrowableToMethodContext(false);
                 final String download = downloader.download(null, remoteFile, videoName);
                 setReturningObject(download);
             }
@@ -167,7 +168,6 @@ public class SelenoidHelper implements Loggable {
      * Gets the clipboard value
      *
      * @param webDriverRequest {@link DesktopWebDriverRequest}
-     *
      * @return clipboard value
      */
     public String getClipboard(DesktopWebDriverRequest webDriverRequest) {
