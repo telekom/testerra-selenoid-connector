@@ -24,6 +24,7 @@ repositories {
 
 dependencies {
     implementation 'eu.tsystems.mms.tic.testerra:driver-ui-desktop:' + testerraVersion
+    implementation 'eu.tsystems.mms.tic.testerra:report:' + testerraVersion
 }
 
 test {
