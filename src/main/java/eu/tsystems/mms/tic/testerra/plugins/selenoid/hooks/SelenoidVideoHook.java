@@ -18,6 +18,7 @@
  */
 package eu.tsystems.mms.tic.testerra.plugins.selenoid.hooks;
 
+import com.google.common.eventbus.EventBus;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.collector.SelenoidEvidenceVideoCollector;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.SelenoidProperties;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.webdriver.VideoDesktopWebDriverFactory;
@@ -71,10 +72,11 @@ public class SelenoidVideoHook implements ModuleHook, Loggable {
             TestEvidenceCollector.registerVideoCollector(new SelenoidEvidenceVideoCollector());
 
             // Register a AfterMethodWorker that will run AFTER video fetching - will ensure that video requests are discarded.
-            TesterraListener.registerAfterMethodWorker(SelenoidEvidenceVideoCollector.class);
+            EventBus eventBus = TesterraListener.getEventBus();
+            eventBus.register(new SelenoidEvidenceVideoCollector());
 
             // Register a Report Worker to fetch all videos from exclusive sessions and all videos that are not fetched but should be fetched.
-            TesterraListener.registerGenerateReportsWorker(SelenoidExclusiveSessionVideoWorker.class);
+            eventBus.register(new SelenoidExclusiveSessionVideoWorker());
         }
     }
 
