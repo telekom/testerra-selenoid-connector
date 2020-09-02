@@ -25,7 +25,7 @@ import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.SelenoidHelper;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.SelenoidProperties;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.VideoLoader;
 import eu.tsystems.mms.tic.testframework.common.PropertyManager;
-import eu.tsystems.mms.tic.testframework.events.ExecutionEndEvent;
+import eu.tsystems.mms.tic.testframework.events.ExecutionFinishEvent;
 import eu.tsystems.mms.tic.testframework.logging.Loggable;
 import eu.tsystems.mms.tic.testframework.report.model.context.ClassContext;
 import eu.tsystems.mms.tic.testframework.report.model.context.MethodContext;
@@ -43,7 +43,7 @@ import eu.tsystems.mms.tic.testframework.report.utils.ExecutionContextController
  *
  * @author Eric Kubenka
  */
-public class SelenoidExclusiveSessionVideoWorker implements Loggable, ExecutionEndEvent.Listener {
+public class SelenoidExclusiveSessionVideoWorker implements Loggable, ExecutionFinishEvent.Listener {
 
     private static final boolean VIDEO_ACTIVE = PropertyManager.getBooleanProperty(SelenoidProperties.VIDEO_ENABLED, SelenoidProperties.Default.VIDEO_ENABLED);
 
@@ -55,7 +55,7 @@ public class SelenoidExclusiveSessionVideoWorker implements Loggable, ExecutionE
      */
     @Override
     @Subscribe
-    public void onExecutionEnd(ExecutionEndEvent event) {
+    public void onExecutionFinish(ExecutionFinishEvent event) {
 
         if (VIDEO_ACTIVE) {
             for (final VideoRequest videoRequest : videoRequestStorage.global()) {
