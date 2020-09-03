@@ -18,11 +18,12 @@
  */
 package eu.tsystems.mms.tic.testerra.plugins.selenoid.collector;
 
+import com.google.common.eventbus.Subscribe;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.request.VideoRequest;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.request.VideoRequestStorage;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.SelenoidHelper;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.VideoLoader;
-import eu.tsystems.mms.tic.testframework.execution.testng.worker.MethodWorker;
+import eu.tsystems.mms.tic.testframework.events.MethodEndEvent;
 import eu.tsystems.mms.tic.testframework.execution.worker.finish.AbstractEvidencesWorker;
 import eu.tsystems.mms.tic.testframework.execution.worker.finish.WebDriverSessionHandler;
 import eu.tsystems.mms.tic.testframework.interop.VideoCollector;
@@ -39,13 +40,18 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Will collect Videos when Testerra asks for it via {@link AbstractEvidencesWorker#run()}
+ * Will collect Videos when Testerra asks for it via {@link AbstractEvidencesWorker#collect()}
  * Date: 15.04.2020
  * Time: 11:16
  *
  * @author Eric Kubenka
  */
-public class SelenoidEvidenceVideoCollector extends MethodWorker implements WebDriverSessionHandler, VideoCollector, Loggable {
+public class SelenoidEvidenceVideoCollector implements
+        WebDriverSessionHandler,
+        VideoCollector,
+        Loggable,
+        MethodEndEvent.Listener
+{
 
     private final SelenoidHelper selenoidHelper = SelenoidHelper.get();
     private final VideoRequestStorage videoRequestStorage = VideoRequestStorage.get();
@@ -78,8 +84,8 @@ public class SelenoidEvidenceVideoCollector extends MethodWorker implements WebD
      * Runs after {@link #getVideos()}
      */
     @Override
-    public void run() {
-
+    @Subscribe
+    public void onMethodEnd(MethodEndEvent event) {
         if (closedWebDriverSessions.get() != null) {
 
             // delete every video on remote if not already done.
@@ -118,6 +124,5 @@ public class SelenoidEvidenceVideoCollector extends MethodWorker implements WebD
             }
         }
     }
-
 }
 
