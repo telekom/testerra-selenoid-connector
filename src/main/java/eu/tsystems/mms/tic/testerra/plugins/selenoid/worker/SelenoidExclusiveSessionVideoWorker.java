@@ -18,13 +18,14 @@
  */
 package eu.tsystems.mms.tic.testerra.plugins.selenoid.worker;
 
+import com.google.common.eventbus.Subscribe;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.request.VideoRequest;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.request.VideoRequestStorage;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.SelenoidHelper;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.SelenoidProperties;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.VideoLoader;
 import eu.tsystems.mms.tic.testframework.common.PropertyManager;
-import eu.tsystems.mms.tic.testframework.execution.testng.worker.GenerateReportsWorker;
+import eu.tsystems.mms.tic.testframework.events.ExecutionFinishEvent;
 import eu.tsystems.mms.tic.testframework.logging.Loggable;
 import eu.tsystems.mms.tic.testframework.report.model.context.ClassContext;
 import eu.tsystems.mms.tic.testframework.report.model.context.MethodContext;
@@ -35,14 +36,14 @@ import eu.tsystems.mms.tic.testframework.report.model.context.Video;
 import eu.tsystems.mms.tic.testframework.report.utils.ExecutionContextController;
 
 /**
- * Will run with {@link GenerateReportsWorker} of Testerra to download videos that where not fetched yet, e.g Exclusive Session.
+ * Will download videos that where not fetched yet, e.g Exclusive Session.
  * Will link these videos back to the original method contexts.
  * Date: 15.04.2020
  * Time: 11:16
  *
  * @author Eric Kubenka
  */
-public class SelenoidExclusiveSessionVideoWorker extends GenerateReportsWorker implements Loggable {
+public class SelenoidExclusiveSessionVideoWorker implements Loggable, ExecutionFinishEvent.Listener {
 
     private static final boolean VIDEO_ACTIVE = PropertyManager.getBooleanProperty(SelenoidProperties.VIDEO_ENABLED, SelenoidProperties.Default.VIDEO_ENABLED);
 
@@ -53,7 +54,8 @@ public class SelenoidExclusiveSessionVideoWorker extends GenerateReportsWorker i
      * Last point to link videos to method contexts.
      */
     @Override
-    public void run() {
+    @Subscribe
+    public void onExecutionFinish(ExecutionFinishEvent event) {
 
         if (VIDEO_ACTIVE) {
             for (final VideoRequest videoRequest : videoRequestStorage.global()) {
