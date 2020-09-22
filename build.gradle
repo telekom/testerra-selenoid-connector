@@ -14,6 +14,13 @@ ext {
         moduleVersion = System.getProperty('moduleVersion')
     }
 
+    libraries = [
+            testerra: [
+                    'eu.tsystems.mms.tic.testerra:driver-ui-desktop:' + testerraVersion,
+                    'eu.tsystems.mms.tic.testerra:report:' + testerraVersion
+            ]
+    ]
+
     group 'eu.tsystems.mms.tic.testerra'
     version moduleVersion
 }
@@ -23,8 +30,8 @@ repositories {
 }
 
 dependencies {
-    implementation 'eu.tsystems.mms.tic.testerra:driver-ui-desktop:' + testerraVersion
-    implementation 'eu.tsystems.mms.tic.testerra:report:' + testerraVersion
+    compileOnly libraries.testerra
+    testImplementation libraries.testerra
 }
 
 test {
