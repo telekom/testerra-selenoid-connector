@@ -8,7 +8,9 @@ apply plugin: 'maven-publish'
 apply from: rootProject.file('release-bintray.gradle')
 
 ext {
-    testerraVersion = '[1.0-RC,2-SNAPSHOT)'
+    // Minimum requirement of Testerra version
+    testerraVersion = 1.0-RC-10
+//    testerraVersion = '[1.0-RC,2-SNAPSHOT)'
     moduleVersion = '1-SNAPSHOT'
     if (System.properties.containsKey('moduleVersion')) {
         moduleVersion = System.getProperty('moduleVersion')
