@@ -8,20 +8,14 @@ apply plugin: 'maven-publish'
 apply from: rootProject.file('release-bintray.gradle')
 
 ext {
-    // Minimum requirement of Testerra version
-    testerraVersion = 1.0-RC-10
-//    testerraVersion = '[1.0-RC,2-SNAPSHOT)'
+    // Minimum required Testerra version
+    testerraCompileVersion = 1.0-RC-10
+    // Unit tests use the latest Testerra version
+    testerraTestVersion = '[1.0-RC,2-SNAPSHOT)'
     moduleVersion = '1-SNAPSHOT'
     if (System.properties.containsKey('moduleVersion')) {
         moduleVersion = System.getProperty('moduleVersion')
     }
-
-    libraries = [
-            testerra: [
-                    'eu.tsystems.mms.tic.testerra:driver-ui-desktop:' + testerraVersion,
-                    'eu.tsystems.mms.tic.testerra:report:' + testerraVersion
-            ]
-    ]
 
     group 'eu.tsystems.mms.tic.testerra'
     version moduleVersion
@@ -32,8 +26,11 @@ repositories {
 }
 
 dependencies {
-    compileOnly libraries.testerra
-    testImplementation libraries.testerra
+    compileOnly 'eu.tsystems.mms.tic.testerra:driver-ui-desktop:' + testerraCompileVersion
+    compileOnly 'eu.tsystems.mms.tic.testerra:report:' + testerraCompileVersion
+
+    testImplementation 'eu.tsystems.mms.tic.testerra:driver-ui-desktop:' + testerraTestVersion
+    testImplementation 'eu.tsystems.mms.tic.testerra:report:' + testerraTestVersion
 }
 
 test {
