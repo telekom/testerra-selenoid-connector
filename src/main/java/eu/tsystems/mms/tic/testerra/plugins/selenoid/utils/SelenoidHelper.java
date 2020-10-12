@@ -60,11 +60,11 @@ public class SelenoidHelper implements Loggable {
      */
     public boolean isSelenoidUsed(final DesktopWebDriverRequest webDriverRequest) {
 
-        if (webDriverRequest.storedExecutingNode == null) {
+        if (webDriverRequest.getExecutingNode() == null) {
             return false;
         }
 
-        final NodeInfo nodeInfo = webDriverRequest.storedExecutingNode;
+        final NodeInfo nodeInfo = webDriverRequest.getExecutingNode();
         try {
             String result = RESTUtils.requestGET(String.format("http://%s:%s/ping", nodeInfo.getHost(), nodeInfo.getPort()));
             if (result != null && result.contains("version")) {
@@ -86,7 +86,7 @@ public class SelenoidHelper implements Loggable {
      */
     public String getRemoteVncUrl(VideoRequest videoRequest) {
 
-        final NodeInfo n = videoRequest.webDriverRequest.storedExecutingNode;
+        final NodeInfo n = videoRequest.webDriverRequest.getExecutingNode();
         String sessionId = getSelenoidSessionId(videoRequest.webDriverRequest);
 
         return VNC_ADDRESS + "?host=" + n.getHost() + "&port=" + n.getPort() + "&path=vnc/" + sessionId + "&autoconnect=true&password=selenoid";
@@ -113,7 +113,7 @@ public class SelenoidHelper implements Loggable {
      * @return url
      */
     public String getRemoteVideoPath(VideoRequest r) {
-        return "http://" + r.webDriverRequest.storedExecutingNode.getHost() + ":" + r.webDriverRequest.storedExecutingNode.getPort() + "/video/" + r.selenoidVideoName;
+        return "http://" + r.webDriverRequest.getExecutingNode().getHost() + ":" + r.webDriverRequest.getExecutingNode().getPort() + "/video/" + r.selenoidVideoName;
     }
 
     /**
@@ -124,7 +124,7 @@ public class SelenoidHelper implements Loggable {
      */
     public String getRemoteVideoFile(VideoRequest r) {
 
-        if (r.webDriverRequest.storedExecutingNode == null) {
+        if (r.webDriverRequest.getExecutingNode() == null) {
             log().debug("Executing Node is not stored. Cannot fetch Selenoid video.");
             return null;
         }
@@ -159,7 +159,7 @@ public class SelenoidHelper implements Loggable {
      * @return absolute path
      */
     public String getRemoteDownloadPath(DesktopWebDriverRequest webDriverRequest, String filename) {
-        NodeInfo nodeInfo = webDriverRequest.storedExecutingNode;
+        NodeInfo nodeInfo = webDriverRequest.getExecutingNode();
         String sessionId = getSelenoidSessionId(webDriverRequest);
         return String.format("http://%s:%s/download/%s/%s", nodeInfo.getHost(), nodeInfo.getPort(), sessionId, filename);
     }
@@ -171,7 +171,7 @@ public class SelenoidHelper implements Loggable {
      * @return clipboard value
      */
     public String getClipboard(DesktopWebDriverRequest webDriverRequest) {
-        NodeInfo nodeInfo = webDriverRequest.storedExecutingNode;
+        NodeInfo nodeInfo = webDriverRequest.getExecutingNode();
         String sessionId = getSelenoidSessionId(webDriverRequest);
         log().info("Get session clipboard value");
         return RESTUtils.requestGET(String.format("http://%s:%s/clipboard/%s", nodeInfo.getHost(), nodeInfo.getPort(), sessionId));
@@ -184,7 +184,7 @@ public class SelenoidHelper implements Loggable {
      * @param value value to set
      */
     public void setClipboard(DesktopWebDriverRequest webDriverRequest, String value) {
-        NodeInfo nodeInfo = webDriverRequest.storedExecutingNode;
+        NodeInfo nodeInfo = webDriverRequest.getExecutingNode();
         String sessionId = getSelenoidSessionId(webDriverRequest);
         log().info("Set session clipboard value: " + value);
         final String url = String.format("http://%s:%s/clipboard/%s", nodeInfo.getHost(), nodeInfo.getPort(), sessionId);
@@ -192,7 +192,7 @@ public class SelenoidHelper implements Loggable {
     }
 
     private String getSelenoidSessionId(DesktopWebDriverRequest webDriverRequest) {
-        String sessionId = webDriverRequest.storedSessionId;
+        String sessionId = webDriverRequest.getSessionId();
         if (sessionId.length() >= 64) {
             // its a ggr session id, so cut first 32
             sessionId = sessionId.substring(32);

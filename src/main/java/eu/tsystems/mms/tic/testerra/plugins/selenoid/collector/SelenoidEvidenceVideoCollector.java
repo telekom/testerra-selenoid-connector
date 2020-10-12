@@ -115,7 +115,7 @@ public class SelenoidEvidenceVideoCollector implements
 
         if (relatedWebDriverRequest instanceof DesktopWebDriverRequest) {
             final DesktopWebDriverRequest r = (DesktopWebDriverRequest) relatedWebDriverRequest;
-            if (r.webDriverMode == WebDriverMode.remote && selenoidHelper.isSelenoidUsed(r)) {
+            if (r.getWebDriverMode() == WebDriverMode.remote && selenoidHelper.isSelenoidUsed(r)) {
                 for (final VideoRequest videoRequest : videoRequestStorage.list()) {
                     if (videoRequest.webDriverRequest == r) {
                         closedWebDriverSessions.get().add(videoRequest);
