@@ -72,7 +72,7 @@ public class SelenoidCapabilityProvider {
 
         desiredCapabilities.setCapability("enableVideo", VIDEO_ACTIVE);
         desiredCapabilities.setCapability("videoFrameRate", 2);
-        desiredCapabilities.setCapability("videoName", createVideoName(request.sessionKey, reportName, runConfigName));
+        desiredCapabilities.setCapability("videoName", createVideoName(request.getSessionKey(), reportName, runConfigName));
 
         final Map<String, String> map = new HashMap<>();
         map.put("ReportName", reportName);
