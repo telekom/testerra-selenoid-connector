@@ -34,6 +34,8 @@ import eu.tsystems.mms.tic.testframework.report.model.context.SuiteContext;
 import eu.tsystems.mms.tic.testframework.report.model.context.TestContextModel;
 import eu.tsystems.mms.tic.testframework.report.model.context.Video;
 import eu.tsystems.mms.tic.testframework.report.utils.ExecutionContextController;
+import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverManager;
+import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverSessionsManager;
 
 /**
  * Will download videos that where not fetched yet, e.g Exclusive Session.
@@ -81,7 +83,7 @@ public class SelenoidExclusiveSessionVideoWorker implements Loggable, ExecutionF
     private void linkVideoToMethodContext(final VideoRequest videoRequest, final Video video) {
 
         // session context of video.
-        final SessionContext sessionContext = videoRequest.webDriverRequest.sessionContext;
+        final SessionContext sessionContext = WebDriverSessionsManager.getSessionContext(videoRequest.webDriverRequest.getSessionId());
 
         for (SuiteContext suiteContext : ExecutionContextController.getCurrentExecutionContext().suiteContexts) {
             for (TestContextModel testContextModel : suiteContext.testContextModels) {
