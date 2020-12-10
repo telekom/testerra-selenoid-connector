@@ -101,7 +101,7 @@ without affecting your host system language.
 |tt.selenoid.vnc.enabled|true|VNC Stream will be activated and logged to the console.|
 |tt.selenoid.vnc.address|none|VNC Host address - Will be used to generate a unique url for accessing the VNC session. <br> For a hosted [noVNC server](https://github.com/novnc/noVNC) this should be `http://<host>:<port>/vnc.html`.|
 
-## Toubleshooting
+## Troubleshooting
 
 ### VNC url not displayed in my logfile
 
