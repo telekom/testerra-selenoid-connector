@@ -24,11 +24,12 @@ import eu.tsystems.mms.tic.testframework.report.utils.ExecutionContextController
 import eu.tsystems.mms.tic.testframework.utils.ReportUtils;
 import eu.tsystems.mms.tic.testframework.utils.StringUtils;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.DesktopWebDriverRequest;
+import org.openqa.selenium.Capabilities;
+import org.openqa.selenium.remote.DesiredCapabilities;
+
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import org.openqa.selenium.Capabilities;
-import org.openqa.selenium.remote.DesiredCapabilities;
 
 /**
  * Provide the capabilities needed for Selenoid video integration
@@ -86,14 +87,11 @@ public class SelenoidCapabilityProvider {
          * @see https://aerokube.com/selenoid/latest/#_per_session_environment_variables_env
          */
         final Locale browserLocale = Locale.getDefault();
-        desiredCapabilities.setCapability("env",
-                String.format(
-                        "[\"LANG=%s.UTF-8\", \"LANGUAGE=%s\", \"LC_ALL=%s.UTF-8\"]",
-                        browserLocale,
-                        browserLocale.getLanguage(),
-                        browserLocale
-                )
-        );
+        final String[] localeArray = {
+                "LANG=" + browserLocale + ".UTF-8",
+                "LANGUAGE=" + browserLocale.getLanguage() + ":en",
+                "LC_ALL=" + browserLocale + ".UTF-8"};
+        desiredCapabilities.setCapability("env", localeArray);
 
         return desiredCapabilities;
     }
