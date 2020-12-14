@@ -9,7 +9,7 @@ The module will register automatically by using `ModuleHook`.
 
 ## Releases
 
-* Latest Release: `1.0-RC-4`
+* Latest Release: `1.0-RC-5`
 
 ## Requirements
 
