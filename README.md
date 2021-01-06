@@ -89,15 +89,8 @@ browser session was started successfully.
 ## Set browser language and locale
 
 Sometimes you want to start your browser with a specific language / locale setting to test your websites in different language /
-locales.
-`Selenoid` can handle environment variables passed via the `DesiredCapabilities`. This approach is implemented in this module. So
-the `selenoid-connector` will use the JVM default locale to start the browser.
-
-So let's see how this works in an example. If system default language is us-english, your JVM will have these settings applied as
-default on startup. Without providing a specific property your browser will start with these settings as well. If you
-pass `-Duser.language=de -Duser.country=DE` the `selenoid-connector` will inject these settings into your browser and therefore the
-browser will have a different language/locale setting as your host system. With this in mind, you're able to do multi-language test
-without affecting your host system language.
+locales. `Selenoid` can handle environment variables passed via the `DesiredCapabilities`. For more information please visit
+[aerokube.com](https://aerokube.com/selenoid/latest/#_per_session_environment_variables_env)
 
 ## Properties
 
