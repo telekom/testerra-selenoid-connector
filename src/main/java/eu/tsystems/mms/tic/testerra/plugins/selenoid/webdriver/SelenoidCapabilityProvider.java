@@ -24,12 +24,10 @@ import eu.tsystems.mms.tic.testframework.report.utils.ExecutionContextController
 import eu.tsystems.mms.tic.testframework.utils.ReportUtils;
 import eu.tsystems.mms.tic.testframework.utils.StringUtils;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.DesktopWebDriverRequest;
+import java.util.HashMap;
+import java.util.Map;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.remote.DesiredCapabilities;
-
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
 
 /**
  * Provide the capabilities needed for Selenoid video integration
@@ -83,15 +81,18 @@ public class SelenoidCapabilityProvider {
         desiredCapabilities.setCapability("labels", map);
 
         /*
+         * DEPRECATED: This part of code was removed, because it is not valid for all selenoid images.
+         * e.g.: firefox was not able to start sessions when this env settings were provided
+         *
          * This is the standard way of setting the browser locale for Selenoid based sessions
          * @see https://aerokube.com/selenoid/latest/#_per_session_environment_variables_env
          */
-        final Locale browserLocale = Locale.getDefault();
-        final String[] localeArray = {
-                "LANG=" + browserLocale + ".UTF-8",
-                "LANGUAGE=" + browserLocale.getLanguage() + ":en",
-                "LC_ALL=" + browserLocale + ".UTF-8"};
-        desiredCapabilities.setCapability("env", localeArray);
+        //        final Locale browserLocale = Locale.getDefault();
+        //        final String[] localeArray = {
+        //                "LANG=" + browserLocale + ".UTF-8",
+        //                "LANGUAGE=" + browserLocale.getLanguage() + ":en",
+        //                "LC_ALL=" + browserLocale + ".UTF-8"};
+        //        desiredCapabilities.setCapability("env", localeArray);
 
         return desiredCapabilities;
     }
