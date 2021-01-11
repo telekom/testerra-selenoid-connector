@@ -66,6 +66,7 @@ public class SelenoidCapabilityProvider {
 
         final String reportName = ReportUtils.getReportName();
         final String runConfigName = ExecutionContextController.getCurrentExecutionContext().runConfig.RUNCFG;
+        final String methodName = ExecutionContextController.getCurrentMethodContext().getName();
 
         final DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
         desiredCapabilities.setCapability("enableVNC", VNC_ACTIVE);
@@ -77,6 +78,7 @@ public class SelenoidCapabilityProvider {
         final Map<String, String> map = new HashMap<>();
         map.put("ReportName", reportName);
         map.put("RunConfig", runConfigName);
+        map.put("Test", methodName);
 
         desiredCapabilities.setCapability("labels", map);
 
