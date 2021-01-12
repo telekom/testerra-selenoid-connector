@@ -102,6 +102,18 @@ locales. `Selenoid` can handle environment variables passed via the `DesiredCapa
 |tt.selenoid.vnc.enabled|true|VNC Stream will be activated and logged to the console.|
 |tt.selenoid.vnc.address|none|VNC Host address - Will be used to generate a unique url for accessing the VNC session. <br> For a hosted [noVNC server](https://github.com/novnc/noVNC) this should be `http://<host>:<port>/vnc.html`.|
 
+## Additional information
+
+The Selenoid connector adds some additional information to the new browser session. It uses the ``label`` capability to mark the session with the following information if available:
+
+|Label|Description|
+|---|---|
+| ReportName | Contains the Testerra report name |
+| RunConfig | Contains the Testerra run configuration |
+| Testmethod | Contains the current TestNG test method name |
+
+This feature is mentioned here: [https://aerokube.com/selenoid/latest/#_container_labels_labels](). 
+
 ## Troubleshooting
 
 ### VNC url not displayed in my logfile
