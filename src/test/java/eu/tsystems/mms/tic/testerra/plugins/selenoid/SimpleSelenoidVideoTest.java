@@ -37,6 +37,13 @@ public class SimpleSelenoidVideoTest extends TesterraTest {
             }
         });
 
+        WebDriverManager.setUserAgentConfig(Browsers.firefox, new FirefoxConfig() {
+            @Override
+            public void configure(FirefoxOptions firefoxOptions) {
+                firefoxOptions.setProxy(proxy);
+            }
+        });
+
     }
     @Test
     public void testT01_SuccessfulTestCaseWillNotCreateVideo() {
@@ -47,7 +54,7 @@ public class SimpleSelenoidVideoTest extends TesterraTest {
 
     @Test
     public void testT02_FailedTestCaseWillCreateVideo() {
-
+        WebDriverManager.setGlobalExtraCapability("sessionTimeout", "5m");
         final WebDriver driver = WebDriverManager.getWebDriver();
         driver.get("https://the-internet.herokuapp.com");
         Assert.fail("must fail");
