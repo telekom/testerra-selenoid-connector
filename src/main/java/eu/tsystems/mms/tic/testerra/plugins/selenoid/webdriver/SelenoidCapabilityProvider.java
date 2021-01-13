@@ -31,6 +31,7 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Provide the capabilities needed for Selenoid video integration
@@ -72,12 +73,8 @@ public class SelenoidCapabilityProvider {
 
         // Try to find out the current testmethod to add the name to the Selenoid caps
         String methodName = "";
-        final Method injectedMethod = ExecutionContextUtils.getInjectedMethod(ExecutionContextController.getCurrentTestResult());
-        if (injectedMethod != null) {
-            methodName = injectedMethod.getName();
-        } else {
-            methodName = ExecutionContextController.getCurrentMethodContext().getName();
-        }
+        final Optional<Method> optional = ExecutionContextUtils.getInjectedMethod(ExecutionContextController.getCurrentTestResult());
+        methodName = optional.map(Method::getName).orElseGet(() -> ExecutionContextController.getCurrentMethodContext().getName());
 
         final DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
         desiredCapabilities.setCapability("enableVNC", VNC_ACTIVE);
