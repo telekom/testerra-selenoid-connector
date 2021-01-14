@@ -21,13 +21,17 @@ package eu.tsystems.mms.tic.testerra.plugins.selenoid.webdriver;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.SelenoidProperties;
 import eu.tsystems.mms.tic.testframework.common.PropertyManager;
 import eu.tsystems.mms.tic.testframework.report.utils.ExecutionContextController;
+import eu.tsystems.mms.tic.testframework.report.utils.ExecutionContextUtils;
 import eu.tsystems.mms.tic.testframework.utils.ReportUtils;
 import eu.tsystems.mms.tic.testframework.utils.StringUtils;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.DesktopWebDriverRequest;
-import java.util.HashMap;
-import java.util.Map;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.remote.DesiredCapabilities;
+
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Provide the capabilities needed for Selenoid video integration
@@ -67,6 +71,11 @@ public class SelenoidCapabilityProvider {
         final String reportName = ReportUtils.getReportName();
         final String runConfigName = ExecutionContextController.getCurrentExecutionContext().runConfig.RUNCFG;
 
+        // Try to find out the current testmethod to add the name to the Selenoid caps
+        String methodName = "";
+        final Optional<Method> optional = ExecutionContextUtils.getInjectedMethod(ExecutionContextController.getCurrentTestResult());
+        methodName = optional.map(Method::getName).orElseGet(() -> ExecutionContextController.getCurrentMethodContext().getName());
+
         final DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
         desiredCapabilities.setCapability("enableVNC", VNC_ACTIVE);
 
@@ -77,6 +86,7 @@ public class SelenoidCapabilityProvider {
         final Map<String, String> map = new HashMap<>();
         map.put("ReportName", reportName);
         map.put("RunConfig", runConfigName);
+//        map.put("Testmethod", methodName);
 
         desiredCapabilities.setCapability("labels", map);
 
