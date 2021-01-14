@@ -9,11 +9,11 @@ The module will register automatically by using `ModuleHook`.
 
 ## Releases
 
-* Latest Release: `1.0-RC-6`
+* Latest Release: `1.0-RC-7`
 
 ## Requirements
 
-* Testerra in Version `1.0-RC-13`
+* Testerra in Version `1.0-RC-20`
 
 ## Usage
 
@@ -22,7 +22,7 @@ Include the following dependency in your project.
 Gradle:
 
 ````groovy
-implementation 'eu.tsystems.mms.tic.testerra:selenoid-connector:1.0-RC-6'
+implementation 'eu.tsystems.mms.tic.testerra:selenoid-connector:1.0-RC-7'
 ````
 
 Maven:
@@ -32,7 +32,7 @@ Maven:
 <dependency>
     <groupId>eu.tsystems.mms.tic.testerra</groupId>
     <artifactId>selenoid-connector</artifactId>
-    <version>1.0-RC-6</version>
+    <version>1.0-RC-7</version>
 </dependency>
 ````
 
@@ -101,6 +101,18 @@ locales. `Selenoid` can handle environment variables passed via the `DesiredCapa
 |tt.screencaster.active.on.failed|true|Generated video files will be attached the report for failed test methods|
 |tt.selenoid.vnc.enabled|true|VNC Stream will be activated and logged to the console.|
 |tt.selenoid.vnc.address|none|VNC Host address - Will be used to generate a unique url for accessing the VNC session. <br> For a hosted [noVNC server](https://github.com/novnc/noVNC) this should be `http://<host>:<port>/vnc.html`.|
+
+## Additional information
+
+The Selenoid connector adds some additional information to the new browser session. It uses the ``label`` capability to mark the session with the following information if available:
+
+|Label|Description|
+|---|---|
+| ReportName | Contains the Testerra report name |
+| RunConfig | Contains the Testerra run configuration |
+| Testmethod | Contains the current TestNG test method name |
+
+This feature is mentioned here: [https://aerokube.com/selenoid/latest/#_container_labels_labels](). 
 
 ## Troubleshooting
 
