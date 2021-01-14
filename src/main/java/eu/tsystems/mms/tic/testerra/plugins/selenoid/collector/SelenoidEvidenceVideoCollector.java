@@ -28,10 +28,12 @@ import eu.tsystems.mms.tic.testframework.execution.worker.finish.AbstractEvidenc
 import eu.tsystems.mms.tic.testframework.execution.worker.finish.WebDriverSessionHandler;
 import eu.tsystems.mms.tic.testframework.interop.VideoCollector;
 import eu.tsystems.mms.tic.testframework.logging.Loggable;
+import eu.tsystems.mms.tic.testframework.report.model.context.SessionContext;
 import eu.tsystems.mms.tic.testframework.report.model.context.Video;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.DesktopWebDriverRequest;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverManager;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverRequest;
+import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverSessionsManager;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.desktop.WebDriverMode;
 import org.openqa.selenium.WebDriver;
 
@@ -71,6 +73,9 @@ public class SelenoidEvidenceVideoCollector implements
             for (final VideoRequest videoRequest : closedWebDriverSessions.get()) {
                 final Video video = new VideoLoader().download(videoRequest);
                 if (video != null) {
+                    SessionContext sessionContext = WebDriverSessionsManager.getSessionContext(videoRequest.webDriverRequest.getSessionId());
+                    sessionContext.setVideo(video);
+
                     videoList.add(video);
                 }
             }

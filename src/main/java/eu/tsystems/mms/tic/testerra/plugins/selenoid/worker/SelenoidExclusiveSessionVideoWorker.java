@@ -80,22 +80,23 @@ public class SelenoidExclusiveSessionVideoWorker implements Loggable, ExecutionF
      */
     private void linkVideoToMethodContext(final VideoRequest videoRequest, final Video video) {
         // session context of video.
-        final SessionContext currentSessionContext = WebDriverSessionsManager.getSessionContext(videoRequest.webDriverRequest.getSessionId());
+        SessionContext currentSessionContext = WebDriverSessionsManager.getSessionContext(videoRequest.webDriverRequest.getSessionId());
+        currentSessionContext.setVideo(video);
 
-        Stream<SuiteContext> suiteContextStream = ExecutionContextController.getCurrentExecutionContext().readSuiteContexts();
-        suiteContextStream.forEach(suiteContext -> {
-            suiteContext.readTestContexts().forEach(testContext -> {
-                testContext.readClassContexts().forEach(classContext -> {
-                    classContext.readMethodContexts().forEach(methodContext -> {
-                        methodContext.readSessionContexts().forEach(sessionContext -> {
-                            if (sessionContext.equals(currentSessionContext)) {
-                                methodContext.addVideos(Stream.of(video));
-                            }
-                        });
-                    });
-                });
-            });
-        });
+//        Stream<SuiteContext> suiteContextStream = ExecutionContextController.getCurrentExecutionContext().readSuiteContexts();
+//        suiteContextStream.forEach(suiteContext -> {
+//            suiteContext.readTestContexts().forEach(testContext -> {
+//                testContext.readClassContexts().forEach(classContext -> {
+//                    classContext.readMethodContexts().forEach(methodContext -> {
+//                        methodContext.readSessionContexts().forEach(sessionContext -> {
+//                            if (sessionContext.equals(currentSessionContext)) {
+//                                methodContext.addVideos(Stream.of(video));
+//                            }
+//                        });
+//                    });
+//                });
+//            });
+//        });
 
 //            for (SuiteContext suiteContext : ExecutionContextController.getCurrentExecutionContext().suiteContexts) {
 //                for (TestContext testContextModel : suiteContext.testContexts) {
