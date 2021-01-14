@@ -22,7 +22,6 @@ import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.SelenoidProperties;
 import eu.tsystems.mms.tic.testframework.common.PropertyManager;
 import eu.tsystems.mms.tic.testframework.report.utils.ExecutionContextController;
 import eu.tsystems.mms.tic.testframework.report.utils.ExecutionContextUtils;
-import eu.tsystems.mms.tic.testframework.utils.ReportUtils;
 import eu.tsystems.mms.tic.testframework.utils.StringUtils;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.DesktopWebDriverRequest;
 import org.openqa.selenium.Capabilities;
@@ -68,7 +67,7 @@ public class SelenoidCapabilityProvider {
      */
     public Capabilities provide(DesktopWebDriverRequest request) {
 
-        final String reportName = ReportUtils.getReportName();
+        final String reportName = ExecutionContextController.getCurrentExecutionContext().runConfig.getReportName();
         final String runConfigName = ExecutionContextController.getCurrentExecutionContext().runConfig.RUNCFG;
 
         // Try to find out the current testmethod to add the name to the Selenoid caps
