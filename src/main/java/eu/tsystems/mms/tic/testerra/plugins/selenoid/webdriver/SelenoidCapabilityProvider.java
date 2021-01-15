@@ -85,7 +85,7 @@ public class SelenoidCapabilityProvider {
         final Map<String, String> map = new HashMap<>();
         map.put("ReportName", reportName);
         map.put("RunConfig", runConfigName);
-//        map.put("Testmethod", methodName);
+        map.put("Testmethod", methodName);
 
         desiredCapabilities.setCapability("labels", map);
 
