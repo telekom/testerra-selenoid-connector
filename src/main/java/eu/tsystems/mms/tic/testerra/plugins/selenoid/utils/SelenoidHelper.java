@@ -28,6 +28,7 @@ import eu.tsystems.mms.tic.testframework.utils.RESTUtils;
 import eu.tsystems.mms.tic.testframework.utils.Timer;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.DesktopWebDriverRequest;
 
+import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverRequest;
 import javax.ws.rs.core.MediaType;
 
 /**
@@ -55,10 +56,10 @@ public class SelenoidHelper implements Loggable {
     /**
      * Detemines if Selenoid is used by checking the /ping address of executing node.
      *
-     * @param webDriverRequest {@link DesktopWebDriverRequest}
+     * @param webDriverRequest {@link WebDriverRequest}
      * @return true, when seleniod is active.
      */
-    public boolean isSelenoidUsed(final DesktopWebDriverRequest webDriverRequest) {
+    public boolean isSelenoidUsed(WebDriverRequest webDriverRequest) {
 
         if (webDriverRequest.getExecutingNode() == null) {
             return false;
@@ -191,7 +192,7 @@ public class SelenoidHelper implements Loggable {
         RESTUtils.requestPOST(url, value, MediaType.WILDCARD_TYPE, RESTUtils.DEFAULT_TIMEOUT, String.class);
     }
 
-    private String getSelenoidSessionId(DesktopWebDriverRequest webDriverRequest) {
+    private String getSelenoidSessionId(WebDriverRequest webDriverRequest) {
         String sessionId = webDriverRequest.getSessionId();
         if (sessionId.length() >= 64) {
             // its a ggr session id, so cut first 32
