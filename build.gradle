@@ -27,10 +27,8 @@ repositories {
 
 dependencies {
     compileOnly 'eu.tsystems.mms.tic.testerra:driver-ui-desktop:' + testerraCompileVersion
-    compileOnly 'eu.tsystems.mms.tic.testerra:report:' + testerraCompileVersion
 
     testImplementation 'eu.tsystems.mms.tic.testerra:driver-ui-desktop:' + testerraTestVersion
-    testImplementation 'eu.tsystems.mms.tic.testerra:report:' + testerraTestVersion
 }
 
 
