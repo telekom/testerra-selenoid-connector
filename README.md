@@ -9,11 +9,11 @@ The module will register automatically by using `ModuleHook`.
 
 ## Releases
 
-* Latest Release: `1.0-RC-7`
+* Latest Release: `1.0-RC-8`
 
 ## Requirements
 
-* Testerra in Version `1.0-RC-20`
+* Testerra in Version `1.0-RC-21`
 
 ## Usage
 
