@@ -193,7 +193,7 @@ public class SelenoidHelper implements Loggable {
     }
 
     private String getSelenoidSessionId(WebDriverRequest webDriverRequest) {
-        String sessionId = webDriverRequest.getSessionId();
+        String sessionId = webDriverRequest.getRemoteSessionId();
         if (sessionId.length() >= 64) {
             // its a ggr session id, so cut first 32
             sessionId = sessionId.substring(32);

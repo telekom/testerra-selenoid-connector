@@ -20,11 +20,10 @@ package eu.tsystems.mms.tic.testerra.plugins.selenoid.utils;
 
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.request.VideoRequest;
 import eu.tsystems.mms.tic.testframework.logging.Loggable;
+import eu.tsystems.mms.tic.testframework.report.Report;
+import eu.tsystems.mms.tic.testframework.report.TesterraListener;
 import eu.tsystems.mms.tic.testframework.report.model.context.Video;
-import eu.tsystems.mms.tic.testframework.report.model.context.report.Report;
-
 import java.io.File;
-import java.io.IOException;
 
 /**
  * Will load Video via Selenoid API
@@ -52,11 +51,7 @@ public class VideoLoader implements Loggable {
             final String tempVideoFilePath = selenoidHelper.getRemoteVideoFile(videoRequest);
 
             if (tempVideoFilePath != null) {
-                try {
-                    video = Report.provideVideo(new File(tempVideoFilePath), Report.Mode.MOVE);
-                } catch (IOException e) {
-                    log().error("Error providing video to report.", e);
-                }
+                video = TesterraListener.getReport().provideVideo(new File(tempVideoFilePath), Report.FileMode.MOVE);
             }
         }
 
