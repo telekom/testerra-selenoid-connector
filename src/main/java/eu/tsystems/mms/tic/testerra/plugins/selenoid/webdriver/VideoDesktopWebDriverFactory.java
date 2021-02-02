@@ -23,6 +23,7 @@ import eu.tsystems.mms.tic.testerra.plugins.selenoid.request.VideoRequestStorage
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.SelenoidHelper;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.SelenoidProperties;
 import eu.tsystems.mms.tic.testframework.common.PropertyManager;
+import eu.tsystems.mms.tic.testframework.report.model.context.SessionContext;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.DesktopWebDriverFactory;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.DesktopWebDriverRequest;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverRequest;
@@ -55,7 +56,7 @@ public class VideoDesktopWebDriverFactory extends DesktopWebDriverFactory {
     }
 
     @Override
-    public WebDriver getRawWebDriver(DesktopWebDriverRequest request, DesiredCapabilities desiredCapabilities) {
+    public WebDriver getRawWebDriver(DesktopWebDriverRequest request, DesiredCapabilities desiredCapabilities, SessionContext sessionContext) {
 
         if (VNC_ACTIVE && StringUtils.isBlank(VNC_ADDRESS)) {
             log().warn(String.format("%s is set to true, but vnc host property %s was not set.", SelenoidProperties.VNC_ENABLED, SelenoidProperties.VNC_ADDRESS));
@@ -66,7 +67,7 @@ public class VideoDesktopWebDriverFactory extends DesktopWebDriverFactory {
         desiredCapabilities = desiredCapabilities.merge(videoCaps);
 
         // start webdriver with selenoid caps.
-        final WebDriver rawWebDriver = super.getRawWebDriver(request, desiredCapabilities);
+        final WebDriver rawWebDriver = super.getRawWebDriver(request, desiredCapabilities, sessionContext);
 
         // create a VideoRequest with request and videoName
         final VideoRequest videoRequest = new VideoRequest(request, videoCaps.asMap().get(SelenoidCapabilityProvider.Caps.videoName.toString()).toString());

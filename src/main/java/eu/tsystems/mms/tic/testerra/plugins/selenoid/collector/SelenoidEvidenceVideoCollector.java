@@ -73,7 +73,7 @@ public class SelenoidEvidenceVideoCollector implements
             for (final VideoRequest videoRequest : closedWebDriverSessions.get()) {
                 final Video video = new VideoLoader().download(videoRequest);
                 if (video != null) {
-                    SessionContext sessionContext = WebDriverSessionsManager.getSessionContext(videoRequest.webDriverRequest.getSessionId());
+                    SessionContext sessionContext = WebDriverSessionsManager.getSessionContext(videoRequest.webDriverRequest.getRemoteSessionId());
                     sessionContext.setVideo(video);
 
                     videoList.add(video);

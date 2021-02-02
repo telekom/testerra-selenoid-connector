@@ -80,7 +80,7 @@ public class SelenoidExclusiveSessionVideoWorker implements Loggable, ExecutionF
      */
     private void linkVideoToMethodContext(final VideoRequest videoRequest, final Video video) {
         // session context of video.
-        SessionContext currentSessionContext = WebDriverSessionsManager.getSessionContext(videoRequest.webDriverRequest.getSessionId());
+        SessionContext currentSessionContext = WebDriverSessionsManager.getSessionContext(videoRequest.webDriverRequest.getRemoteSessionId());
         currentSessionContext.setVideo(video);
 
 //        Stream<SuiteContext> suiteContextStream = ExecutionContextController.getCurrentExecutionContext().readSuiteContexts();
