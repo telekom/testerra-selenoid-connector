@@ -22,7 +22,6 @@ import com.google.common.eventbus.EventBus;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.collector.SelenoidEvidenceVideoCollector;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.SelenoidProperties;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.webdriver.VideoDesktopWebDriverFactory;
-import eu.tsystems.mms.tic.testerra.plugins.selenoid.worker.SelenoidExclusiveSessionVideoWorker;
 import eu.tsystems.mms.tic.testframework.common.PropertyManager;
 import eu.tsystems.mms.tic.testframework.constants.Browsers;
 import eu.tsystems.mms.tic.testframework.hooks.ModuleHook;
@@ -30,6 +29,7 @@ import eu.tsystems.mms.tic.testframework.interop.TestEvidenceCollector;
 import eu.tsystems.mms.tic.testframework.logging.Loggable;
 import eu.tsystems.mms.tic.testframework.report.TesterraListener;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverManager;
+import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverSessionsManager;
 
 /**
  * The simple Hook for Testerras {@link ModuleHook}
@@ -66,18 +66,19 @@ public class SelenoidVideoHook implements ModuleHook, Loggable {
         // Adding Video Handlers
         if (VIDEO_ACTIVE) {
 
+            SelenoidEvidenceVideoCollector selenoidEvidenceVideoCollector = new SelenoidEvidenceVideoCollector();
+
             // Register a shutdown handler to get informed about closing WebDriver sessions
-            WebDriverManager.registerWebDriverShutDownHandler(new SelenoidEvidenceVideoCollector());
+            WebDriverSessionsManager.registerWebDriverAfterShutdownHandler(selenoidEvidenceVideoCollector);
 
             // Register a evidence collector to link videos as test evidence when testerra will call it.
-            TestEvidenceCollector.registerVideoCollector(new SelenoidEvidenceVideoCollector());
+            TestEvidenceCollector.registerVideoCollector(selenoidEvidenceVideoCollector);
 
             // Register a AfterMethodWorker that will run AFTER video fetching - will ensure that video requests are discarded.
-            EventBus eventBus = TesterraListener.getEventBus();
-            eventBus.register(new SelenoidEvidenceVideoCollector());
-
-            // Register a Report Worker to fetch all videos from exclusive sessions and all videos that are not fetched but should be fetched.
-            eventBus.register(new SelenoidExclusiveSessionVideoWorker());
+//            EventBus eventBus = TesterraListener.getEventBus();
+//
+//            // Register a Report Worker to fetch all videos from exclusive sessions and all videos that are not fetched but should be fetched.
+//            eventBus.register(selenoidEvidenceVideoCollector);
         }
     }
 
