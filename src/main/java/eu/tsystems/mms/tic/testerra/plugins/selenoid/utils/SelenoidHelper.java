@@ -101,9 +101,10 @@ public class SelenoidHelper implements Loggable {
     public void deleteRemoteVideoFile(VideoRequest videoRequest) {
         final String remoteVideoPath = getRemoteVideoPath(videoRequest);
         try {
+            log().info("Delete " + remoteVideoPath);
             RESTUtils.requestDELETE(remoteVideoPath);
         } catch (Exception e) {
-            log().debug("Deleting remote video was not successful", e);
+            log().error("Deleting remote video was not successful", e);
         }
     }
 
