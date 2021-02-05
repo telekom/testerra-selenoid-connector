@@ -23,11 +23,10 @@ import eu.tsystems.mms.tic.testerra.plugins.selenoid.request.VideoRequest;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.request.VideoRequestStorage;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.SelenoidHelper;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.VideoLoader;
-import eu.tsystems.mms.tic.testframework.events.MethodEndEvent;
-import eu.tsystems.mms.tic.testframework.execution.worker.finish.AbstractEvidencesWorker;
-import eu.tsystems.mms.tic.testframework.execution.worker.finish.WebDriverSessionHandler;
+import eu.tsystems.mms.tic.testframework.events.ExecutionFinishEvent;
 import eu.tsystems.mms.tic.testframework.interop.VideoCollector;
 import eu.tsystems.mms.tic.testframework.logging.Loggable;
+import eu.tsystems.mms.tic.testframework.report.TesterraListener;
 import eu.tsystems.mms.tic.testframework.report.model.context.SessionContext;
 import eu.tsystems.mms.tic.testframework.report.model.context.Video;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.DesktopWebDriverRequest;
@@ -35,6 +34,8 @@ import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverManager;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverRequest;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverSessionsManager;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.desktop.WebDriverMode;
+import java.util.Optional;
+import java.util.function.Consumer;
 import org.openqa.selenium.WebDriver;
 
 import java.util.ArrayList;
@@ -42,25 +43,24 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Will collect Videos when Testerra asks for it via {@link AbstractEvidencesWorker#collect()}
+ * Will collect Videos when Testerra asks for it via {@link VideoCollector#collectVideos()}
  * Date: 15.04.2020
  * Time: 11:16
  *
  * @author Eric Kubenka
  */
 public class SelenoidEvidenceVideoCollector implements
-        WebDriverSessionHandler,
+        Consumer<WebDriver>,
         VideoCollector,
-        Loggable,
-        MethodEndEvent.Listener
+        Loggable
 {
 
     private final SelenoidHelper selenoidHelper = SelenoidHelper.get();
     private final VideoRequestStorage videoRequestStorage = VideoRequestStorage.get();
-    private static final ThreadLocal<List<VideoRequest>> closedWebDriverSessions = new ThreadLocal<>();
+    private final ThreadLocal<List<VideoRequest>> videoRequestsForClosedSessions = new ThreadLocal<>();
 
     /**
-     * This method will be called once per failed testcase by {@link eu.tsystems.mms.tic.testframework.execution.worker.finish.AbstractEvidencesWorker}
+     * This method will be called once per failed testcase
      * And after all related {@link WebDriver} sessions where closed
      */
     @Override
@@ -69,38 +69,14 @@ public class SelenoidEvidenceVideoCollector implements
         final List<Video> videoList = new ArrayList<>();
 
         // Iterate over all closed WebDriver sessions during last teardown and get their videos.
-        if (closedWebDriverSessions.get() != null) {
-            for (final VideoRequest videoRequest : closedWebDriverSessions.get()) {
-                final Video video = new VideoLoader().download(videoRequest);
-                if (video != null) {
-                    SessionContext sessionContext = WebDriverSessionsManager.getSessionContext(videoRequest.webDriverRequest.getRemoteSessionId());
-                    sessionContext.setVideo(video);
-
-                    videoList.add(video);
-                }
+        if (videoRequestsForClosedSessions.get() != null) {
+            for (final VideoRequest videoRequest : videoRequestsForClosedSessions.get()) {
+                Optional<Video> optionalVideo = downloadLinkAndCleanVideo(videoRequest);
+                optionalVideo.ifPresent(videoList::add);
             }
         }
-
+        videoRequestsForClosedSessions.remove();
         return videoList;
-    }
-
-    /**
-     * Remove all closed video requests.
-     * Runs after {@link #getVideos()}
-     */
-    @Override
-    @Subscribe
-    public void onMethodEnd(MethodEndEvent event) {
-        if (closedWebDriverSessions.get() != null) {
-
-            // delete every video on remote if not already done.
-            for (VideoRequest videoRequest : closedWebDriverSessions.get()) {
-                selenoidHelper.deleteRemoteVideoFile(videoRequest);
-            }
-            videoRequestStorage.remove(closedWebDriverSessions.get());
-        }
-
-        closedWebDriverSessions.remove();
     }
 
     /**
@@ -110,24 +86,43 @@ public class SelenoidEvidenceVideoCollector implements
      * @param webDriver @{@link WebDriver}
      */
     @Override
-    public void run(WebDriver webDriver) {
+    public void accept(WebDriver webDriver) {
+        if (WebDriverSessionsManager.isExclusiveSession(webDriver)) {
+            for (final VideoRequest videoRequest : videoRequestStorage.global()) {
+                downloadLinkAndCleanVideo(videoRequest);
+            }
+        } else {
+            if (videoRequestsForClosedSessions.get() == null) {
+                videoRequestsForClosedSessions.set(new LinkedList<>());
+            }
+            final WebDriverRequest relatedWebDriverRequest = WebDriverManager.getRelatedWebDriverRequest(webDriver);
 
-        if (closedWebDriverSessions.get() == null) {
-            closedWebDriverSessions.set(new LinkedList<>());
-        }
-
-        final WebDriverRequest relatedWebDriverRequest = WebDriverManager.getRelatedWebDriverRequest(webDriver);
-
-        if (relatedWebDriverRequest instanceof DesktopWebDriverRequest) {
-            final DesktopWebDriverRequest r = (DesktopWebDriverRequest) relatedWebDriverRequest;
-            if (r.getWebDriverMode() == WebDriverMode.remote && selenoidHelper.isSelenoidUsed(r)) {
-                for (final VideoRequest videoRequest : videoRequestStorage.list()) {
-                    if (videoRequest.webDriverRequest == r) {
-                        closedWebDriverSessions.get().add(videoRequest);
+            if (relatedWebDriverRequest instanceof DesktopWebDriverRequest) {
+                final DesktopWebDriverRequest webDriverRequest = (DesktopWebDriverRequest) relatedWebDriverRequest;
+                if (webDriverRequest.getWebDriverMode() == WebDriverMode.remote && selenoidHelper.isSelenoidUsed(webDriverRequest)) {
+                    for (final VideoRequest videoRequest : videoRequestStorage.list()) {
+                        if (videoRequest.webDriverRequest == webDriverRequest) {
+                            videoRequestsForClosedSessions.get().add(videoRequest);
+                        }
                     }
                 }
             }
         }
+    }
+
+    private Optional<Video> downloadLinkAndCleanVideo(final VideoRequest videoRequest) {
+        Video video = new VideoLoader().download(videoRequest);
+
+        if (video != null) {
+            SessionContext currentSessionContext = WebDriverSessionsManager.getSessionContext(videoRequest.webDriverRequest.getRemoteSessionId());
+            currentSessionContext.setVideo(video);
+            selenoidHelper.deleteRemoteVideoFile(videoRequest);
+        } else {
+            log().warn("Unable to download video");
+        }
+        videoRequestStorage.remove(videoRequest);
+
+        return Optional.ofNullable(video);
     }
 }
 
