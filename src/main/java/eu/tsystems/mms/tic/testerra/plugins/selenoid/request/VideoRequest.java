@@ -19,8 +19,7 @@
 package eu.tsystems.mms.tic.testerra.plugins.selenoid.request;
 
 import eu.tsystems.mms.tic.testframework.logging.Loggable;
-import eu.tsystems.mms.tic.testframework.webdrivermanager.DesktopWebDriverRequest;
-import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverRequest;
+import eu.tsystems.mms.tic.testframework.report.model.context.SessionContext;
 
 /**
  * Wraps DesktopWebDriverRequest by adding Video fields
@@ -32,11 +31,11 @@ import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverRequest;
  */
 public class VideoRequest implements Loggable {
 
-    public VideoRequest(WebDriverRequest webDriverRequest, String videoName) {
-        this.webDriverRequest = webDriverRequest;
+    public VideoRequest(SessionContext sessionContext, String videoName) {
+        this.sessionContext = sessionContext;
         this.selenoidVideoName = videoName;
     }
 
-    public final WebDriverRequest webDriverRequest;
+    public final SessionContext sessionContext;
     public final String selenoidVideoName;
 }
