@@ -70,7 +70,7 @@ public class VideoDesktopWebDriverFactory extends DesktopWebDriverFactory {
         final WebDriver rawWebDriver = super.getRawWebDriver(request, desiredCapabilities, sessionContext);
 
         // create a VideoRequest with request and videoName
-        final VideoRequest videoRequest = new VideoRequest(request, videoCaps.asMap().get(SelenoidCapabilityProvider.Caps.videoName.toString()).toString());
+        final VideoRequest videoRequest = new VideoRequest(sessionContext, videoCaps.asMap().get(SelenoidCapabilityProvider.Caps.videoName.toString()).toString());
 
         // store it.
         videoRequestStorage.store(videoRequest);
