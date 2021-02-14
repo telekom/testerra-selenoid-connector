@@ -24,9 +24,9 @@ import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.SelenoidHelper;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.SelenoidProperties;
 import eu.tsystems.mms.tic.testframework.common.PropertyManager;
 import eu.tsystems.mms.tic.testframework.report.model.context.SessionContext;
+import eu.tsystems.mms.tic.testframework.webdrivermanager.AbstractWebDriverRequest;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.DesktopWebDriverFactory;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.DesktopWebDriverRequest;
-import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriver;
@@ -51,7 +51,7 @@ public class VideoDesktopWebDriverFactory extends DesktopWebDriverFactory {
     private final VideoRequestStorage videoRequestStorage = VideoRequestStorage.get();
 
     @Override
-    protected DesktopWebDriverRequest buildRequest(WebDriverRequest request) {
+    protected DesktopWebDriverRequest buildRequest(AbstractWebDriverRequest request) {
         return super.buildRequest(request);
     }
 
