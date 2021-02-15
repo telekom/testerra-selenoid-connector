@@ -45,16 +45,11 @@ public class VideoLoader implements Loggable {
     public Video download(VideoRequest videoRequest) {
 
         Video video = null;
+        final String tempVideoFilePath = selenoidHelper.getRemoteVideoFile(videoRequest);
 
-        if (selenoidHelper.isSelenoidUsed(videoRequest.webDriverRequest)) {
-
-            final String tempVideoFilePath = selenoidHelper.getRemoteVideoFile(videoRequest);
-
-            if (tempVideoFilePath != null) {
-                video = TesterraListener.getReport().provideVideo(new File(tempVideoFilePath), Report.FileMode.MOVE);
-            }
+        if (tempVideoFilePath != null) {
+            video = TesterraListener.getReport().provideVideo(new File(tempVideoFilePath), Report.FileMode.MOVE);
         }
-
         // null or video... :)
         return video;
     }

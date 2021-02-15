@@ -18,26 +18,19 @@
  */
 package eu.tsystems.mms.tic.testerra.plugins.selenoid.collector;
 
-import com.google.common.eventbus.Subscribe;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.request.VideoRequest;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.request.VideoRequestStorage;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.SelenoidHelper;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.VideoLoader;
-import eu.tsystems.mms.tic.testframework.events.ExecutionFinishEvent;
 import eu.tsystems.mms.tic.testframework.interop.VideoCollector;
 import eu.tsystems.mms.tic.testframework.logging.Loggable;
-import eu.tsystems.mms.tic.testframework.report.TesterraListener;
 import eu.tsystems.mms.tic.testframework.report.model.context.SessionContext;
 import eu.tsystems.mms.tic.testframework.report.model.context.Video;
-import eu.tsystems.mms.tic.testframework.webdrivermanager.DesktopWebDriverRequest;
-import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverManager;
-import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverRequest;
+import eu.tsystems.mms.tic.testframework.utils.WebDriverUtils;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverSessionsManager;
-import eu.tsystems.mms.tic.testframework.webdrivermanager.desktop.WebDriverMode;
 import java.util.Optional;
 import java.util.function.Consumer;
 import org.openqa.selenium.WebDriver;
-
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -95,18 +88,14 @@ public class SelenoidEvidenceVideoCollector implements
             if (videoRequestsForClosedSessions.get() == null) {
                 videoRequestsForClosedSessions.set(new LinkedList<>());
             }
-            final WebDriverRequest relatedWebDriverRequest = WebDriverManager.getRelatedWebDriverRequest(webDriver);
-
-            if (relatedWebDriverRequest instanceof DesktopWebDriverRequest) {
-                final DesktopWebDriverRequest webDriverRequest = (DesktopWebDriverRequest) relatedWebDriverRequest;
-                if (webDriverRequest.getWebDriverMode() == WebDriverMode.remote && selenoidHelper.isSelenoidUsed(webDriverRequest)) {
-                    for (final VideoRequest videoRequest : videoRequestStorage.list()) {
-                        if (videoRequest.webDriverRequest == webDriverRequest) {
-                            videoRequestsForClosedSessions.get().add(videoRequest);
-                        }
-                    }
+            WebDriverSessionsManager.getSessionContext(webDriver).ifPresent(sessionContext -> {
+                if (selenoidHelper.isSelenoidUsed(sessionContext)) {
+                    videoRequestStorage.list().stream()
+                            .filter(videoRequest -> videoRequest.sessionContext == sessionContext)
+                            .findFirst()
+                            .ifPresent(videoRequest -> videoRequestsForClosedSessions.get().add(videoRequest));
                 }
-            }
+            });
         }
     }
 
@@ -114,8 +103,7 @@ public class SelenoidEvidenceVideoCollector implements
         Video video = new VideoLoader().download(videoRequest);
 
         if (video != null) {
-            SessionContext currentSessionContext = WebDriverSessionsManager.getSessionContext(videoRequest.webDriverRequest.getRemoteSessionId());
-            currentSessionContext.setVideo(video);
+            videoRequest.sessionContext.setVideo(video);
             selenoidHelper.deleteRemoteVideoFile(videoRequest);
         } else {
             log().warn("Unable to download video");

@@ -22,13 +22,14 @@ import eu.tsystems.mms.tic.testerra.plugins.selenoid.request.VideoRequest;
 import eu.tsystems.mms.tic.testframework.common.PropertyManager;
 import eu.tsystems.mms.tic.testframework.logging.Loggable;
 import eu.tsystems.mms.tic.testframework.model.NodeInfo;
+import eu.tsystems.mms.tic.testframework.report.model.context.SessionContext;
 import eu.tsystems.mms.tic.testframework.transfer.ThrowablePackedResponse;
 import eu.tsystems.mms.tic.testframework.utils.FileDownloader;
 import eu.tsystems.mms.tic.testframework.utils.RESTUtils;
 import eu.tsystems.mms.tic.testframework.utils.Timer;
-import eu.tsystems.mms.tic.testframework.webdrivermanager.DesktopWebDriverRequest;
 
-import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverRequest;
+import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverSessionsManager;
+import java.util.Optional;
 import javax.ws.rs.core.MediaType;
 
 /**
@@ -56,16 +57,15 @@ public class SelenoidHelper implements Loggable {
     /**
      * Detemines if Selenoid is used by checking the /ping address of executing node.
      *
-     * @param webDriverRequest {@link WebDriverRequest}
      * @return true, when seleniod is active.
      */
-    public boolean isSelenoidUsed(WebDriverRequest webDriverRequest) {
-
-        if (webDriverRequest.getExecutingNode() == null) {
+    public boolean isSelenoidUsed(SessionContext sessionContext) {
+        Optional<NodeInfo> optionalNodeInfo = sessionContext.getNodeInfo();
+        if (!optionalNodeInfo.isPresent()) {
             return false;
         }
 
-        final NodeInfo nodeInfo = webDriverRequest.getExecutingNode();
+        NodeInfo nodeInfo = optionalNodeInfo.get();
         try {
             String result = RESTUtils.requestGET(String.format("http://%s:%s/ping", nodeInfo.getHost(), nodeInfo.getPort()));
             if (result != null && result.contains("version")) {
@@ -86,11 +86,10 @@ public class SelenoidHelper implements Loggable {
      * @return String
      */
     public String getRemoteVncUrl(VideoRequest videoRequest) {
-
-        final NodeInfo n = videoRequest.webDriverRequest.getExecutingNode();
-        String sessionId = getSelenoidSessionId(videoRequest.webDriverRequest);
-
-        return VNC_ADDRESS + "?host=" + n.getHost() + "&port=" + n.getPort() + "&path=vnc/" + sessionId + "&autoconnect=true&password=selenoid";
+        String selenoidSessionId = getSelenoidSessionId(videoRequest.sessionContext.getRemoteSessionId());
+        return videoRequest.sessionContext.getNodeInfo()
+                .map(nodeInfo -> VNC_ADDRESS + "?host=" + nodeInfo.getHost() + "&port=" + nodeInfo.getPort() + "&path=vnc/" + selenoidSessionId + "&autoconnect=true&password=selenoid")
+                .orElse(null);
     }
 
     /**
@@ -99,40 +98,41 @@ public class SelenoidHelper implements Loggable {
      * @param videoRequest
      */
     public void deleteRemoteVideoFile(VideoRequest videoRequest) {
-        final String remoteVideoPath = getRemoteVideoPath(videoRequest);
-        try {
-            log().info("Delete " + remoteVideoPath);
-            RESTUtils.requestDELETE(remoteVideoPath);
-        } catch (Exception e) {
-            log().error("Deleting remote video was not successful", e);
-        }
+        getVideoUrlString(videoRequest).ifPresent(videoUrlString -> {
+            try {
+                log().info("Delete " + videoUrlString);
+                RESTUtils.requestDELETE(videoUrlString);
+            } catch (Exception e) {
+                log().error("Deleting remote video was not successful", e);
+            }
+        });
     }
 
     /**
      * Returns video remote path for {@link VideoRequest}
      *
-     * @param r {@link VideoRequest}
+     * @param videoRequest {@link VideoRequest}
      * @return url
      */
-    public String getRemoteVideoPath(VideoRequest r) {
-        return "http://" + r.webDriverRequest.getExecutingNode().getHost() + ":" + r.webDriverRequest.getExecutingNode().getPort() + "/video/" + r.selenoidVideoName;
+    public Optional<String> getVideoUrlString(VideoRequest videoRequest) {
+        return videoRequest.sessionContext.getNodeInfo()
+                .map(nodeInfo -> "http://" + nodeInfo.getHost() + ":" + nodeInfo.getPort() + "/video/" + videoRequest.selenoidVideoName);
     }
 
     /**
      * Downloads the remote video file by using {@link FileDownloader}
      *
-     * @param r {@link VideoRequest}
+     * @param videoRequest {@link VideoRequest}
      * @return absolute path
      */
-    public String getRemoteVideoFile(VideoRequest r) {
+    public String getRemoteVideoFile(VideoRequest videoRequest) {
 
-        if (r.webDriverRequest.getExecutingNode() == null) {
-            log().debug("Executing Node is not stored. Cannot fetch Selenoid video.");
+        Optional<String> optionalVideoUrlString = getVideoUrlString(videoRequest);
+        if (!optionalVideoUrlString.isPresent()) {
             return null;
         }
-
-        final String remoteFile = getRemoteVideoPath(r);
-        final String videoName = "video_" + r.selenoidVideoName;
+        final String videoUrlString = optionalVideoUrlString.get();
+        final String videoName = "video_" + videoRequest.selenoidVideoName;
         final FileDownloader downloader = new FileDownloader();
 
         final Timer timer = new Timer(5000, 20_000);
@@ -141,7 +141,7 @@ public class SelenoidHelper implements Loggable {
             public void run() throws Throwable {
                 setSkipThrowingException(true);
                 setAddThrowableToMethodContext(false);
-                final String download = downloader.download(null, remoteFile, videoName);
+                final String download = downloader.download(null, videoUrlString, videoName);
                 setReturningObject(download);
             }
         });
@@ -155,50 +155,42 @@ public class SelenoidHelper implements Loggable {
 
     /**
      * Returns the complete path for downloading files from a Selenoid browser container
-     *
-     * @param webDriverRequest {@link DesktopWebDriverRequest}
-     * @param filename
-     * @return absolute path
      */
-    public String getRemoteDownloadPath(DesktopWebDriverRequest webDriverRequest, String filename) {
-        NodeInfo nodeInfo = webDriverRequest.getExecutingNode();
-        String sessionId = getSelenoidSessionId(webDriverRequest);
-        return String.format("http://%s:%s/download/%s/%s", nodeInfo.getHost(), nodeInfo.getPort(), sessionId, filename);
+    public String getRemoteDownloadPath(SessionContext sessionContext, String filename) {
+        String selenoidSessionId = getSelenoidSessionId(sessionContext.getRemoteSessionId());
+        return sessionContext.getNodeInfo()
+                .map(nodeInfo -> String.format("http://%s:%s/download/%s/%s", nodeInfo.getHost(), nodeInfo.getPort(), selenoidSessionId, filename))
+                .orElse(null);
     }
 
     /**
      * Gets the clipboard value
-     *
-     * @param webDriverRequest {@link DesktopWebDriverRequest}
-     * @return clipboard value
      */
-    public String getClipboard(DesktopWebDriverRequest webDriverRequest) {
-        NodeInfo nodeInfo = webDriverRequest.getExecutingNode();
-        String sessionId = getSelenoidSessionId(webDriverRequest);
-        log().info("Get session clipboard value");
-        return RESTUtils.requestGET(String.format("http://%s:%s/clipboard/%s", nodeInfo.getHost(), nodeInfo.getPort(), sessionId));
+    public String getClipboard(SessionContext sessionContext) {
+        String selenoidSessionId = getSelenoidSessionId(sessionContext.getRemoteSessionId());
+        return sessionContext.getNodeInfo()
+                .map(nodeInfo -> RESTUtils.requestGET(String.format("http://%s:%s/clipboard/%s", nodeInfo.getHost(), nodeInfo.getPort(), selenoidSessionId)))
+                .orElse(null);
     }
 
     /**
      * Sets the clipboard value
-     *
-     * @param webDriverRequest {@link DesktopWebDriverRequest}
-     * @param value value to set
      */
-    public void setClipboard(DesktopWebDriverRequest webDriverRequest, String value) {
-        NodeInfo nodeInfo = webDriverRequest.getExecutingNode();
-        String sessionId = getSelenoidSessionId(webDriverRequest);
-        log().info("Set session clipboard value: " + value);
-        final String url = String.format("http://%s:%s/clipboard/%s", nodeInfo.getHost(), nodeInfo.getPort(), sessionId);
-        RESTUtils.requestPOST(url, value, MediaType.WILDCARD_TYPE, RESTUtils.DEFAULT_TIMEOUT, String.class);
+    public void setClipboard(SessionContext sessionContext, String value) {
+        String selenoidSessionId = getSelenoidSessionId(sessionContext.getRemoteSessionId());
+        sessionContext.getNodeInfo()
+                .ifPresent(nodeInfo -> {
+                    log().info("Set session clipboard value: " + value);
+                    final String url = String.format("http://%s:%s/clipboard/%s", nodeInfo.getHost(), nodeInfo.getPort(), selenoidSessionId);
+                    RESTUtils.requestPOST(url, value, MediaType.WILDCARD_TYPE, RESTUtils.DEFAULT_TIMEOUT, String.class);
+                });
     }
 
-    private String getSelenoidSessionId(WebDriverRequest webDriverRequest) {
-        String sessionId = webDriverRequest.getRemoteSessionId();
-        if (sessionId.length() >= 64) {
+    private String getSelenoidSessionId(String remoteSessionId) {
+        if (remoteSessionId.length() >= 64) {
             // its a ggr session id, so cut first 32
-            sessionId = sessionId.substring(32);
+            remoteSessionId = remoteSessionId.substring(32);
         }
-        return sessionId;
+        return remoteSessionId;
     }
 }
