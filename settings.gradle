@@ -21,4 +21,4 @@
 
 rootProject.name = 'selenoid-connector'
 
-//includeBuild "../testerra"
+includeBuild "../testerra"
