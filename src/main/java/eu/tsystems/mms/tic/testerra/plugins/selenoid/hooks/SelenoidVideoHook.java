@@ -18,17 +18,15 @@
  */
 package eu.tsystems.mms.tic.testerra.plugins.selenoid.hooks;
 
-import com.google.common.eventbus.EventBus;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.collector.SelenoidEvidenceVideoCollector;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.SelenoidProperties;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.webdriver.VideoDesktopWebDriverFactory;
 import eu.tsystems.mms.tic.testframework.common.PropertyManager;
+import eu.tsystems.mms.tic.testframework.common.Testerra;
 import eu.tsystems.mms.tic.testframework.constants.Browsers;
 import eu.tsystems.mms.tic.testframework.hooks.ModuleHook;
 import eu.tsystems.mms.tic.testframework.interop.TestEvidenceCollector;
 import eu.tsystems.mms.tic.testframework.logging.Loggable;
-import eu.tsystems.mms.tic.testframework.report.Report;
-import eu.tsystems.mms.tic.testframework.report.TesterraListener;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverManager;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverSessionsManager;
 
@@ -41,7 +39,7 @@ import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverSessionsManag
  */
 public class SelenoidVideoHook implements ModuleHook, Loggable {
 
-    private static final boolean VIDEO_ACTIVE = Report.Properties.SCREENCASTER_ACTIVE.asBool();
+    private static final boolean VIDEO_ACTIVE = Testerra.Properties.SCREENCASTER_ACTIVE.asBool();
     private static final boolean VNC_ACTIVE = PropertyManager.getBooleanProperty(SelenoidProperties.VNC_ENABLED, SelenoidProperties.Default.VNC_ENABLED);
 
     private static final String[] browsers = {
@@ -56,7 +54,7 @@ public class SelenoidVideoHook implements ModuleHook, Loggable {
 
         // VIDEO and VNC disabled by properties. Not doing anything here.
         if (!VIDEO_ACTIVE && !VNC_ACTIVE) {
-            log().info(String.format("testerra-selenoid-connector not registered. Neither %s nor %s is set to true.", Report.Properties.SCREENCASTER_ACTIVE.toString(), SelenoidProperties.VNC_ENABLED));
+            log().info(String.format("testerra-selenoid-connector not registered. Neither %s nor %s is set to true.", Testerra.Properties.SCREENCASTER_ACTIVE.toString(), SelenoidProperties.VNC_ENABLED));
             return;
         }
 
