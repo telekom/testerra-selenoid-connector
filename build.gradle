@@ -4,7 +4,7 @@ apply plugin: 'maven-publish'
 
 ext {
     // Minimum required Testerra version
-    testerraCompileVersion = '1.0-RC-26'
+    testerraCompileVersion = '1.0-RC-29'
     // Unit tests use the latest Testerra version
     testerraTestVersion = '[1.0-RC,2-SNAPSHOT)'
     moduleVersion = '1-SNAPSHOT'
@@ -29,7 +29,6 @@ dependencies {
     testImplementation 'eu.tsystems.mms.tic.testerra:driver-ui-desktop:' + testerraTestVersion
     testImplementation 'eu.tsystems.mms.tic.testerra:report-ng:' + testerraTestVersion
 }
-
 
 test {
     useTestNG()
