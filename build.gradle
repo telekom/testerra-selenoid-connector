@@ -19,6 +19,7 @@ ext {
     version moduleVersion
 }
 
+// Do not move this integration because `group` and `version` is needed for publishing
 apply from: rootProject.file('publish.gradle')
 
 repositories {
