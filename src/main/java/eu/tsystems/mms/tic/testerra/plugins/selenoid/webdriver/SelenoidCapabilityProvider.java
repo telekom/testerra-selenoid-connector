@@ -20,6 +20,7 @@ package eu.tsystems.mms.tic.testerra.plugins.selenoid.webdriver;
 
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.SelenoidProperties;
 import eu.tsystems.mms.tic.testframework.common.PropertyManager;
+import eu.tsystems.mms.tic.testframework.report.Report;
 import eu.tsystems.mms.tic.testframework.report.utils.ExecutionContextController;
 import eu.tsystems.mms.tic.testframework.report.utils.ExecutionContextUtils;
 import eu.tsystems.mms.tic.testframework.utils.StringUtils;
@@ -42,7 +43,7 @@ import java.util.Optional;
  */
 public class SelenoidCapabilityProvider {
 
-    private static final boolean VIDEO_ACTIVE = PropertyManager.getBooleanProperty(SelenoidProperties.VIDEO_ENABLED, SelenoidProperties.Default.VIDEO_ENABLED);
+    private static final boolean VIDEO_ACTIVE = Report.Properties.SCREENCASTER_ACTIVE.asBool();
     private static final boolean VNC_ACTIVE = PropertyManager.getBooleanProperty(SelenoidProperties.VNC_ENABLED, SelenoidProperties.Default.VNC_ENABLED);
 
     public enum Caps {
