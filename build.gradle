@@ -5,11 +5,9 @@ apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'maven-publish'
 
-apply from: rootProject.file('release-bintray.gradle')
-
 ext {
     // Minimum required Testerra version
-    testerraCompileVersion = '1-SNAPSHOT'
+    testerraCompileVersion = '1.0-RC-26'
     // Unit tests use the latest Testerra version
     testerraTestVersion = '[1.0-RC,2-SNAPSHOT)'
     moduleVersion = '1-SNAPSHOT'
@@ -20,6 +18,8 @@ ext {
     group 'eu.tsystems.mms.tic.testerra'
     version moduleVersion
 }
+
+apply from: rootProject.file('publish.gradle')
 
 repositories {
     mavenCentral()
