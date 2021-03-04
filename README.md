@@ -138,17 +138,17 @@ you to all of them.
 ### ... to a Maven repo
 
 _Publishing to local repo_
-```sh
+```shell
 gradle publishToMavenLocal
 ```
 
 _Publishing to remote repo_
-```sh
+```shell
 gradle publish -DdeployUrl=<repo-url> -DdeployUsername=<repo-user> -DdeployPassword=<repo-password>
 ```
 
 _Set a custom version_
-```shell script
+```shell
 gradle publish -DmoduleVersion=<version>
 ```
 ### ... to GitHub Packages
