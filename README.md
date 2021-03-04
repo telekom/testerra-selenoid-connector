@@ -137,18 +137,17 @@ you to all of them.
 
 ### ... to a Maven repo
 
+_Publishing to local repo_
 ```sh
 gradle publishToMavenLocal
 ```
 
-or pass then properties via. CLI
-
+_Publishing to remote repo_
 ```sh
 gradle publish -DdeployUrl=<repo-url> -DdeployUsername=<repo-user> -DdeployPassword=<repo-password>
 ```
 
-Set a custom version
-
+_Set a custom version_
 ```shell script
 gradle publish -DmoduleVersion=<version>
 ```
