@@ -18,6 +18,9 @@
  */
 package eu.tsystems.mms.tic.testerra.plugins.selenoid.hooks;
 
+import com.google.inject.AbstractModule;
+import com.google.inject.Scopes;
+import com.google.inject.multibindings.Multibinder;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.collector.SelenoidEvidenceVideoCollector;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.SelenoidProperties;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.webdriver.VideoDesktopWebDriverFactory;
@@ -37,7 +40,7 @@ import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverSessionsManag
  *
  * @author Eric Kubenka
  */
-public class SelenoidVideoHook implements ModuleHook, Loggable {
+public class SelenoidVideoHook extends AbstractModule implements ModuleHook, Loggable {
 
     private static final boolean VIDEO_ACTIVE = Testerra.Properties.SCREENCASTER_ACTIVE.asBool();
     private static final boolean VNC_ACTIVE = PropertyManager.getBooleanProperty(SelenoidProperties.VNC_ENABLED, SelenoidProperties.Default.VNC_ENABLED);
