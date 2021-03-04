@@ -13,7 +13,7 @@ The module will register automatically by using `ModuleHook`.
 
 ## Requirements
 
-* Testerra in Version `1.0-RC-29`
+* Testerra in Version: `1.0-RC-29`
 
 ## Usage
 
