@@ -9,11 +9,11 @@ The module will register automatically by using `ModuleHook`.
 
 ## Releases
 
-* Latest Release: `1.0-RC-11`
+* Latest Release: `2.0-RC-1`
 
 ## Requirements
 
-* Testerra in Version: `1.0-RC-29`
+* Testerra in Version: `2.0-RC-1
 
 ## Usage
 
@@ -22,7 +22,7 @@ Include the following dependency in your project.
 Gradle:
 
 ````groovy
-implementation 'eu.tsystems.mms.tic.testerra:selenoid-connector:1.0-RC-11'
+implementation 'eu.tsystems.mms.tic.testerra:selenoid-connector:2.0-RC-1'
 ````
 
 Maven:
@@ -32,7 +32,7 @@ Maven:
 <dependency>
     <groupId>eu.tsystems.mms.tic.testerra</groupId>
     <artifactId>selenoid-connector</artifactId>
-    <version>1.0-RC-11</version>
+    <version>2.0-RC-1/version>
 </dependency>
 ````
 
