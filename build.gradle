@@ -25,6 +25,8 @@ repositories {
 
 dependencies {
     compileOnly 'eu.tsystems.mms.tic.testerra:driver-ui-desktop:' + testerraCompileVersion
+    implementation 'org.apache.httpcomponents:httpclient:4.5.12'
+    implementation 'com.google.code.gson:gson:2.8.6'
 
     testImplementation 'eu.tsystems.mms.tic.testerra:driver-ui-desktop:' + testerraTestVersion
     testImplementation 'eu.tsystems.mms.tic.testerra:report-ng:' + testerraTestVersion

@@ -18,6 +18,7 @@
  */
 package eu.tsystems.mms.tic.testerra.plugins.selenoid.utils;
 
+import com.google.gson.Gson;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.request.VideoRequest;
 import eu.tsystems.mms.tic.testframework.common.PropertyManager;
 import eu.tsystems.mms.tic.testframework.logging.Loggable;
@@ -25,12 +26,19 @@ import eu.tsystems.mms.tic.testframework.model.NodeInfo;
 import eu.tsystems.mms.tic.testframework.report.model.context.SessionContext;
 import eu.tsystems.mms.tic.testframework.transfer.ThrowablePackedResponse;
 import eu.tsystems.mms.tic.testframework.utils.FileDownloader;
-import eu.tsystems.mms.tic.testframework.utils.RESTUtils;
 import eu.tsystems.mms.tic.testframework.utils.Timer;
-
-import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverSessionsManager;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Map;
 import java.util.Optional;
-import javax.ws.rs.core.MediaType;
+import org.apache.commons.io.IOUtils;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 
 /**
  * Methods for communication with Selenoid API
@@ -66,14 +74,20 @@ public class SelenoidHelper implements Loggable {
         }
 
         NodeInfo nodeInfo = optionalNodeInfo.get();
-        try {
-            String result = RESTUtils.requestGET(String.format("http://%s:%s/ping", nodeInfo.getHost(), nodeInfo.getPort()));
-            if (result != null && result.contains("version")) {
+        final String url = String.format("http://%s:%s/ping", nodeInfo.getHost(), nodeInfo.getPort());
+        try (CloseableHttpClient client = HttpClients.createDefault()) {
+            HttpGet request = new HttpGet(url);
+            CloseableHttpResponse response = client.execute(request);
+            Gson gson = new Gson();
+            Map result = gson.fromJson(new InputStreamReader(response.getEntity().getContent()), Map.class);
+            if (result != null && result.containsKey("version")) {
                 log().debug("Selenoid ping: " + nodeInfo + ": " + result);
                 return true;
+            } else {
+                log().warn("No Selenoid response from " + url + ", status: " + response.getStatusLine().getStatusCode());
             }
-        } catch (Exception e) {
-            log().debug("Not selenoid.");
+        } catch (IOException e) {
+            log().error("Error pinging selenoid", e);
         }
 
         return false;
@@ -98,10 +112,14 @@ public class SelenoidHelper implements Loggable {
      * @param videoRequest
      */
     public void deleteRemoteVideoFile(VideoRequest videoRequest) {
+
         getVideoUrlString(videoRequest).ifPresent(videoUrlString -> {
             try {
-                log().info("Delete " + videoUrlString);
-                RESTUtils.requestDELETE(videoUrlString);
+                try (CloseableHttpClient client = HttpClients.createDefault()) {
+                    HttpDelete request = new HttpDelete(videoUrlString);
+                    CloseableHttpResponse response = client.execute(request);
+                    log().info("Deleted video on " + videoUrlString + " with status code: " + response.getStatusLine().getStatusCode());
+                }
             } catch (Exception e) {
                 log().error("Deleting remote video was not successful", e);
             }
@@ -169,7 +187,17 @@ public class SelenoidHelper implements Loggable {
     public String getClipboard(SessionContext sessionContext) {
         String selenoidSessionId = getSelenoidSessionId(sessionContext.getRemoteSessionId());
         return sessionContext.getNodeInfo()
-                .map(nodeInfo -> RESTUtils.requestGET(String.format("http://%s:%s/clipboard/%s", nodeInfo.getHost(), nodeInfo.getPort(), selenoidSessionId)))
+                .map(nodeInfo -> {
+                    final String url = String.format("http://%s:%s/clipboard/%s", nodeInfo.getHost(), nodeInfo.getPort(), selenoidSessionId);
+                    try (CloseableHttpClient client = HttpClients.createDefault()) {
+                        HttpGet request = new HttpGet(url);
+                        CloseableHttpResponse response = client.execute(request);
+                        return IOUtils.toString(response.getEntity().getContent(), response.getEntity().getContentEncoding().getValue());
+                    } catch (IOException e) {
+                        log().error("Error getting clipboard value", e);
+                        return null;
+                    }
+                })
                 .orElse(null);
     }
 
@@ -180,9 +208,15 @@ public class SelenoidHelper implements Loggable {
         String selenoidSessionId = getSelenoidSessionId(sessionContext.getRemoteSessionId());
         sessionContext.getNodeInfo()
                 .ifPresent(nodeInfo -> {
-                    log().info("Set session clipboard value: " + value);
                     final String url = String.format("http://%s:%s/clipboard/%s", nodeInfo.getHost(), nodeInfo.getPort(), selenoidSessionId);
-                    RESTUtils.requestPOST(url, value, MediaType.WILDCARD_TYPE, RESTUtils.DEFAULT_TIMEOUT, String.class);
+                    try (CloseableHttpClient client = HttpClients.createDefault()) {
+                        HttpPost request = new HttpPost(url);
+                        request.setEntity(new StringEntity(value));
+                        CloseableHttpResponse response = client.execute(request);
+                        log().info("Set clipboard value with status code: " + response.getStatusLine().getStatusCode());
+                    } catch (IOException e) {
+                        log().error("Error setting clipboard value", e);
+                    }
                 });
     }
 
