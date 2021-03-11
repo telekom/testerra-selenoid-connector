@@ -9,3 +9,27 @@ to our attention by contacting us via an GitHub issue.
 
 Components:
 -----------
+
+Component: 	eu.tsystems.mms.tic.testerra.driver-ui-desktop
+Version:	1.0-RC-29
+Website:   	https://testerra.io
+Repository:	https://github.com/telekom/testerra
+License:   	Apache-2.0
+
+Component: 	org.apache.httpcomponents.httpclient
+Version:	4.5.12
+Website:   	http://hc.apache.org/httpcomponents-client
+Repository:	https://github.com/apache/httpcomponents-client
+License:   	Apache 2.0
+
+Component: 	org.apache.httpcomponents.httpcore
+Version:	4.4.13
+Website:   	http://hc.apache.org/httpcomponents-core-ga
+Repository:	https://github.com/apache/httpcomponents-core
+License:   	Apache 2.0
+
+Component: 	com.google.code.gson.gson
+Version:	2.8.6
+Website:   	https://github.com/google/gson
+Repository:	https://github.com/google/gson
+License:   	Apache 2.0
