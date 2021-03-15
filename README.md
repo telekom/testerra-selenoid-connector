@@ -7,9 +7,8 @@
 </p>
 
 <p align="center">
-  <a href="#installation">Installation</a> •
+  <a href="#setup">Setup</a> •
   <a href="#documentation">Documentation</a> •
-  <a href="#development">Development</a> •
   <a href="#support-and-feedback">Support</a> •
   <a href="#how-to-contribute">Contribute</a> •
   <a href="#contributors">Contributors</a> •
@@ -18,6 +17,8 @@
 
 ## About this module
 
+This module provides additional features to [Testerra Framework](https://github.com/telekom/testerra) for automated tests.
+
 Using a Selenium Grid based on [Selenoid](https://github.com/aerokube/selenoid) this module provides access to videos and VNC
 streams.
 
@@ -25,11 +26,13 @@ The module will register automatically by using `ModuleHook`.
 
 ----
 
-## Requirements
+## Setup
+
+### Requirements
 
 * Testerra in Version: `1.0-RC-29`
 
-## Usage
+### Usage
 
 Include the following dependency in your project.
 
@@ -50,7 +53,9 @@ Maven:
 </dependency>
 ````
 
-## Video support
+## Documentation
+
+### Video support
 
 The Selenoid connector can collect the generated video stream and provide it for the Testerra report.
 
@@ -74,17 +79,17 @@ After finishing the test run the connector collects the video files and adds the
 
 > IMPORTANT: By default only video files of failed methods will be added.
 
-## VNC support
+### VNC support
 
 For debugging you tests in a Selenoid grid you can activate the support for linking the VNC streaming URL. As VNC client we are
 using [noVNC](https://github.com/novnc/noVNC).
 
-### Set up a noVNC server.
+*Setup a noVNC server*
 
 * Please not that your Grid must be available by your noVNC client.
 * We prefer to use one the many Docker images available at https://hub.docker.com/.
 
-### Configure your `test.properties` file
+*Configure your `test.properties` file*
 
 ````
 # test.properties
@@ -92,21 +97,21 @@ tt.selenoid.vnc.enabled=true
 tt.selenoid.vnc.address=http://<your-no-vnc-client>:<port>/vnc.html
 ````
 
-### Start your test locally
+*Start your test locally*
 
 Starting your test in your local IDE you will find the VNC client URL in the log messages. The URL can only be generated if a
 browser session was started successfully.
 
-*Some IDEs mark the URL as clickable link.*
+Some IDEs mark the URL as clickable link.
 ![](doc/selenoid_connector_vnc_url.png)
 
-## Set browser language and locale
+### Set browser language and locale
 
 Sometimes you want to start your browser with a specific language / locale setting to test your websites in different language /
 locales. `Selenoid` can handle environment variables passed via the `DesiredCapabilities`. For more information please visit
 [aerokube.com](https://aerokube.com/selenoid/latest/#_per_session_environment_variables_env)
 
-## Properties
+### Properties
 
 |Property|Default|Description|
 |---|---|---|
@@ -116,7 +121,7 @@ locales. `Selenoid` can handle environment variables passed via the `DesiredCapa
 |tt.selenoid.vnc.enabled|true|VNC Stream will be activated and logged to the console.|
 |tt.selenoid.vnc.address|none|VNC Host address - Will be used to generate a unique url for accessing the VNC session. <br> For a hosted [noVNC server](https://github.com/novnc/noVNC) this should be `http://<host>:<port>/vnc.html`.|
 
-## Additional information
+### Additional information
 
 The Selenoid connector adds some additional information to the new browser session. It uses the ``label`` capability to mark the session with the following information if available:
 
@@ -128,18 +133,18 @@ The Selenoid connector adds some additional information to the new browser sessi
 
 This feature is mentioned here: [https://aerokube.com/selenoid/latest/#_container_labels_labels](). 
 
-## Troubleshooting
+### Troubleshooting
 
-### VNC url not displayed in my logfile
+#### VNC url not displayed in my logfile
 
 Please ensure that you setup up the `tt.selenoid.vnc.address` correctly, by using an url like
 this `http://novnc-host:no-vnc-port/vnc.html`.
 
-### Videos not show up in report
+#### Videos not show up in report
 
 Please ensure that you setup `tt.screencaster.active` and its related sub-properties for successful/failed methods properly.
 
-### I got the same video on multiple test methods
+#### I got the same video on multiple test methods
 
 Congratulations. You're using exclusive WebDriver sessions. This is a feature from Testerra. One WebDriver session will be used
 across multiple test methods until you close it. Because the generated video is valid for multiple test methods, we linked it for
@@ -165,16 +170,13 @@ _Set a custom version_
 ```shell
 gradle publish -DmoduleVersion=<version>
 ```
+
 ### ... to GitHub Packages
 
 Some hints for using GitHub Packages as Maven repository
 
 * Deploy URL is https://maven.pkg.github.com/OWNER/REPOSITRY
 * As password generate an access token and grant permissions to ``write:packages`` (Settings -> Developer settings -> Personal access token)
-
-## Documentation
-
-Check out our comprehensive [Testerra documentation](http://docs.testerra.io)!
 
 ## Code of Conduct
 
@@ -194,15 +196,6 @@ The following channels are available for discussions, feedback, and support requ
 | ------------------------ | ------------------------------------------------------ |
 | **Issues**   | <a href="/../../issues/new/choose" title="Issues"><img src="https://img.shields.io/github/issues/telekom/testerra-selenoid-connector?style=flat"></a> |
 | **Other Requests**    | <a href="mailto:testerra@t-systems-mms.com" title="Email us"><img src="https://img.shields.io/badge/email-CWA%20team-green?logo=mail.ru&style=flat-square&logoColor=white"></a>   |
-
-
-## Repositories
-
-| Repository          | Description                                                           |
-| ------------------- | --------------------------------------------------------------------- |
-| [testerra] | Testerra |
-
-[testerra]: https://github.com/telekom/testerra
 
 ## How to Contribute
 
