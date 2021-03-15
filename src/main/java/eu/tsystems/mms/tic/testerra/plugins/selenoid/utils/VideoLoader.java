@@ -22,7 +22,6 @@ import eu.tsystems.mms.tic.testerra.plugins.selenoid.request.VideoRequest;
 import eu.tsystems.mms.tic.testframework.common.Testerra;
 import eu.tsystems.mms.tic.testframework.logging.Loggable;
 import eu.tsystems.mms.tic.testframework.report.Report;
-import eu.tsystems.mms.tic.testframework.report.TesterraListener;
 import eu.tsystems.mms.tic.testframework.report.model.context.Video;
 import java.io.File;
 
