@@ -17,14 +17,12 @@
 
 ## About this module
 
-This module provides additional features to [Testerra Framework](https://github.com/telekom/testerra) for automated tests.
+This module provides additional features for [Testerra Framework](https://github.com/telekom/testerra) for automated tests.
 
 Using a Selenium Grid based on [Selenoid](https://github.com/aerokube/selenoid) this module provides access to videos and VNC
 streams.
 
 The module will register automatically by using `ModuleHook`.
-
-----
 
 ## Setup
 
