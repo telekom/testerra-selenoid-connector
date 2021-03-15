@@ -171,9 +171,6 @@ Some hints for using GitHub Packages as Maven repository
 
 * Deploy URL is https://maven.pkg.github.com/OWNER/REPOSITRY
 * As password generate an access token and grant permissions to ``write:packages`` (Settings -> Developer settings -> Personal access token)
-<h1 align="center">
-   Testerra Selenoid Connector
-</h1>
 
 ## Documentation
 
