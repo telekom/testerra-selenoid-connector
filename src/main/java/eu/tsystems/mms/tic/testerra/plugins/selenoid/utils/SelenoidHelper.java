@@ -220,11 +220,13 @@ public class SelenoidHelper implements Loggable {
                 });
     }
 
-    private String getSelenoidSessionId(String remoteSessionId) {
-        if (remoteSessionId.length() >= 64) {
-            // its a ggr session id, so cut first 32
-            remoteSessionId = remoteSessionId.substring(32);
-        }
-        return remoteSessionId;
+    private String getSelenoidSessionId(Optional<String> optionalremoteSessionId) {
+        return optionalremoteSessionId.map(remoteSessionId -> {
+            if (remoteSessionId.length() >= 64) {
+                // its a ggr session id, so cut first 32
+                remoteSessionId = remoteSessionId.substring(32);
+            }
+            return remoteSessionId;
+        }).orElse(null);
     }
 }
