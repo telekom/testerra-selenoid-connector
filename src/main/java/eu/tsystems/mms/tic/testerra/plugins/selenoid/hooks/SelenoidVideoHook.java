@@ -24,12 +24,10 @@ import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.SelenoidProperties;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.webdriver.VideoDesktopWebDriverFactory;
 import eu.tsystems.mms.tic.testframework.common.PropertyManager;
 import eu.tsystems.mms.tic.testframework.common.Testerra;
-import eu.tsystems.mms.tic.testframework.constants.Browsers;
 import eu.tsystems.mms.tic.testframework.hooks.ModuleHook;
 import eu.tsystems.mms.tic.testframework.interop.TestEvidenceCollector;
 import eu.tsystems.mms.tic.testframework.logging.Loggable;
-import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverManager;
-import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverSessionsManager;
+import eu.tsystems.mms.tic.testframework.testing.WebDriverManagerProvider;
 
 /**
  * The simple Hook for Testerras {@link ModuleHook}
@@ -38,20 +36,21 @@ import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverSessionsManag
  *
  * @author Eric Kubenka
  */
-public class SelenoidVideoHook extends AbstractModule implements ModuleHook, Loggable {
+public class SelenoidVideoHook extends AbstractModule implements
+        ModuleHook,
+        Loggable,
+        WebDriverManagerProvider
+{
 
     private static final boolean VIDEO_ACTIVE = Testerra.Properties.SCREENCASTER_ACTIVE.asBool();
     private static final boolean VNC_ACTIVE = PropertyManager.getBooleanProperty(SelenoidProperties.VNC_ENABLED, SelenoidProperties.Default.VNC_ENABLED);
 
-    private static final String[] browsers = {
-            Browsers.chrome,
-            Browsers.chromeHeadless,
-            Browsers.firefox,
-            Browsers.edge
-    };
-
     @Override
     public void init() {
+
+        VideoDesktopWebDriverFactory videoDesktopWebDriverFactory = new VideoDesktopWebDriverFactory();
+
+        WEB_DRIVER_MANAGER.registerWebDriverRequestConfigurator(videoDesktopWebDriverFactory);
 
         // VIDEO and VNC disabled by properties. Not doing anything here.
         if (!VIDEO_ACTIVE && !VNC_ACTIVE) {
@@ -59,17 +58,15 @@ public class SelenoidVideoHook extends AbstractModule implements ModuleHook, Log
             return;
         }
 
-        // Register a new VideoWebDriverfactory for defined browsers.
-        WebDriverManager.registerWebDriverFactory(new VideoDesktopWebDriverFactory(), browsers);
-        log().debug("Registered " + VideoDesktopWebDriverFactory.class.getSimpleName());
-
         // Adding Video Handlers
         if (VIDEO_ACTIVE) {
+
+            WEB_DRIVER_MANAGER.registerWebDriverAfterStartupHandler(videoDesktopWebDriverFactory);
 
             SelenoidEvidenceVideoCollector selenoidEvidenceVideoCollector = new SelenoidEvidenceVideoCollector();
 
             // Register a shutdown handler to get informed about closing WebDriver sessions
-            WebDriverSessionsManager.registerWebDriverAfterShutdownHandler(selenoidEvidenceVideoCollector);
+            WEB_DRIVER_MANAGER.registerWebDriverAfterShutdownHandler(selenoidEvidenceVideoCollector);
 
             // Register a evidence collector to link videos as test evidence when testerra will call it.
             TestEvidenceCollector.registerVideoCollector(selenoidEvidenceVideoCollector);
