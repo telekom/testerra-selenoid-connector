@@ -29,7 +29,10 @@ The module will register automatically by using `ModuleHook`.
 
 ### Requirements
 
-![Maven Central](https://img.shields.io/maven-central/v/io.testerra/core/1.0-RC-32?label=Testerra)
+| Selenoid connector    | Testerra                  |
+| --------------------- | ------------------------- |
+| `1.0-RC-13`           | ` 1.0-RC-32 - 1.0-RC-33`  |
+| `1.0-RC-14`           | `>= 1.0-RC-34`            |
 
 ### Usage
 
