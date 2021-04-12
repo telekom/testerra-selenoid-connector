@@ -23,14 +23,18 @@ import eu.tsystems.mms.tic.testerra.plugins.selenoid.request.VideoRequestStorage
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.SelenoidHelper;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.SelenoidProperties;
 import eu.tsystems.mms.tic.testframework.common.PropertyManager;
+import eu.tsystems.mms.tic.testframework.common.Testerra;
+import eu.tsystems.mms.tic.testframework.constants.Browsers;
+import eu.tsystems.mms.tic.testframework.logging.Loggable;
 import eu.tsystems.mms.tic.testframework.report.model.context.SessionContext;
-import eu.tsystems.mms.tic.testframework.webdrivermanager.AbstractWebDriverRequest;
-import eu.tsystems.mms.tic.testframework.webdrivermanager.DesktopWebDriverFactory;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.DesktopWebDriverRequest;
+import eu.tsystems.mms.tic.testframework.webdrivermanager.IWebDriverManager;
+import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverRequest;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.remote.DesiredCapabilities;
 
 /**
  * Extends DesktopWebDriverFactory by using selenoid video capabilities.
@@ -40,7 +44,11 @@ import org.openqa.selenium.remote.DesiredCapabilities;
  *
  * @author Eric Kubenka
  */
-public class VideoDesktopWebDriverFactory extends DesktopWebDriverFactory {
+public class VideoDesktopWebDriverFactory implements
+        Loggable,
+        Consumer<WebDriver>,
+        BiConsumer<WebDriverRequest, SessionContext>
+{
 
     private static final boolean VNC_ACTIVE = PropertyManager.getBooleanProperty(SelenoidProperties.VNC_ENABLED, SelenoidProperties.Default.VNC_ENABLED);
     private static final String VNC_ADDRESS = PropertyManager.getProperty(SelenoidProperties.VNC_ADDRESS, SelenoidProperties.Default.VNC_ADDRESS);
@@ -51,32 +59,33 @@ public class VideoDesktopWebDriverFactory extends DesktopWebDriverFactory {
     private final VideoRequestStorage videoRequestStorage = VideoRequestStorage.get();
 
     @Override
-    protected DesktopWebDriverRequest buildRequest(AbstractWebDriverRequest request) {
-        return super.buildRequest(request);
+    public void accept(WebDriver webDriver) {
+        IWebDriverManager webDriverManager = Testerra.getInjector().getInstance(IWebDriverManager.class);
+        webDriverManager.getSessionContext(webDriver).ifPresent(sessionContext -> {
+            // create a VideoRequest with request and videoName
+            final VideoRequest videoRequest = new VideoRequest(sessionContext, sessionContext.getWebDriverRequest().getCapabilities().get(SelenoidCapabilityProvider.Caps.videoName.toString()).toString());
+
+            // store it.
+            videoRequestStorage.store(videoRequest);
+            log().info("VNC Streaming URL: " + selenoidHelper.getRemoteVncUrl(videoRequest));
+        });
     }
 
     @Override
-    public WebDriver getRawWebDriver(DesktopWebDriverRequest request, DesiredCapabilities desiredCapabilities, SessionContext sessionContext) {
+    public void accept(WebDriverRequest webDriverRequest, SessionContext sessionContext) {
+
+        // Only accept webdrivers for desktop
+        if (!(webDriverRequest instanceof DesktopWebDriverRequest)) {
+            return;
+        }
 
         if (VNC_ACTIVE && StringUtils.isBlank(VNC_ADDRESS)) {
             log().warn(String.format("%s is set to true, but vnc host property %s was not set.", SelenoidProperties.VNC_ENABLED, SelenoidProperties.VNC_ADDRESS));
         }
 
+        DesktopWebDriverRequest desktopWebDriverRequest = (DesktopWebDriverRequest)webDriverRequest;
         // determine everything for selenoid... incl. video name on remote.
-        final Capabilities videoCaps = selenoidCapabilityProvider.provide(request);
-        desiredCapabilities = desiredCapabilities.merge(videoCaps);
-
-        // start webdriver with selenoid caps.
-        final WebDriver rawWebDriver = super.getRawWebDriver(request, desiredCapabilities, sessionContext);
-
-        // create a VideoRequest with request and videoName
-        final VideoRequest videoRequest = new VideoRequest(sessionContext, videoCaps.asMap().get(SelenoidCapabilityProvider.Caps.videoName.toString()).toString());
-
-        // store it.
-        videoRequestStorage.store(videoRequest);
-
-        // get vnc path and log
-        log().info("VNC Streaming URL: " + selenoidHelper.getRemoteVncUrl(videoRequest));
-        return rawWebDriver;
+        final Capabilities videoCaps = selenoidCapabilityProvider.provide(desktopWebDriverRequest);
+        desktopWebDriverRequest.getDesiredCapabilities().merge(videoCaps);
     }
 }
