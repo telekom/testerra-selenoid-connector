@@ -61,7 +61,7 @@ public class SelenoidHelper implements Loggable {
 
     }
 
-    public NodeInfo getNodeInfo(URL seleniumUrl, String sessionId) {
+    public URL getNodeInfo(URL seleniumUrl, String sessionId) {
         String url = seleniumUrl.toString();
 
         url = url.replace("/wd/hub", "");
@@ -74,10 +74,12 @@ public class SelenoidHelper implements Loggable {
             Gson gson = new GsonBuilder().create();
             Map map = gson.fromJson(nodeResponse, Map.class);
             double port = Double.parseDouble(map.get("Port").toString());
-            return new NodeInfo(map.get("Name").toString(), (int) port);
+            String scheme = map.get("Scheme").toString();
+            if (scheme.isEmpty()) scheme = "http";
+            return new URL(scheme, map.get("Name").toString(), (int) port, "");
         } catch (Exception e) {
-            log().warn("Could not get node info: " + e.getMessage());
-            return new NodeInfo(seleniumUrl.getHost(), seleniumUrl.getPort());
+            log().warn("Could not get node info. Falling back to " + seleniumUrl.toString(), e);
+            return seleniumUrl;
         }
     }
 

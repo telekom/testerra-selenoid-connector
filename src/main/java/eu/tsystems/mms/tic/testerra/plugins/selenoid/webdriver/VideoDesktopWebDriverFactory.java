@@ -23,19 +23,16 @@ import eu.tsystems.mms.tic.testerra.plugins.selenoid.request.VideoRequestStorage
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.SelenoidHelper;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.SelenoidProperties;
 import eu.tsystems.mms.tic.testframework.common.PropertyManager;
-import eu.tsystems.mms.tic.testframework.common.Testerra;
-import eu.tsystems.mms.tic.testframework.constants.Browsers;
 import eu.tsystems.mms.tic.testframework.logging.Loggable;
 import eu.tsystems.mms.tic.testframework.report.model.context.SessionContext;
+import eu.tsystems.mms.tic.testframework.testing.WebDriverManagerProvider;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.DesktopWebDriverRequest;
-import eu.tsystems.mms.tic.testframework.webdrivermanager.IWebDriverManager;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverRequest;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 /**
@@ -49,7 +46,8 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 public class VideoDesktopWebDriverFactory implements
         Loggable,
         Consumer<WebDriver>,
-        BiConsumer<WebDriverRequest, SessionContext>
+        BiConsumer<WebDriverRequest, SessionContext>,
+        WebDriverManagerProvider
 {
 
     private static final boolean VNC_ACTIVE = PropertyManager.getBooleanProperty(SelenoidProperties.VNC_ENABLED, SelenoidProperties.Default.VNC_ENABLED);
@@ -60,14 +58,20 @@ public class VideoDesktopWebDriverFactory implements
 
     private final VideoRequestStorage videoRequestStorage = VideoRequestStorage.get();
 
+    // After startup
     @Override
     public void accept(WebDriver webDriver) {
-        IWebDriverManager webDriverManager = Testerra.getInjector().getInstance(IWebDriverManager.class);
-        webDriverManager.getSessionContext(webDriver).ifPresent(sessionContext -> {
-    if (rawWebDriver instanceof RemoteWebDriver && request.getSeleniumServerUrl() != null) {
-            sessionContext.setNodeInfo(SelenoidHelper.get().getNodeInfo(request.getSeleniumServerUrl(), ((RemoteWebDriver) rawWebDriver).getSessionId().toString()));
-        }        // create a VideoRequest with request and videoName
-            final VideoRequest videoRequest = new VideoRequest(sessionContext, sessionContext.getWebDriverRequest().getCapabilities().get(SelenoidCapabilityProvider.Caps.videoName.toString()).toString());
+        WEB_DRIVER_MANAGER.getSessionContext(webDriver).ifPresent(sessionContext -> {
+            WebDriverRequest webDriverRequest = sessionContext.getWebDriverRequest();
+
+            sessionContext.getRemoteSessionId().ifPresent(remoteSessionId -> {
+                    webDriverRequest.getServerUrl().ifPresent(url -> {
+                        sessionContext.setNodeUrl(SelenoidHelper.get().getNodeInfo(url, remoteSessionId));
+                    });
+            });
+
+            // create a VideoRequest with request and videoName
+            final VideoRequest videoRequest = new VideoRequest(sessionContext, webDriverRequest.getCapabilities().get(SelenoidCapabilityProvider.Caps.videoName.toString()).toString());
 
             // store it.
             videoRequestStorage.store(videoRequest);
