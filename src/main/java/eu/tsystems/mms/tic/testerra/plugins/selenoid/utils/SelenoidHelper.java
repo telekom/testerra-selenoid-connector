@@ -19,6 +19,7 @@
 package eu.tsystems.mms.tic.testerra.plugins.selenoid.utils;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.request.VideoRequest;
 import eu.tsystems.mms.tic.testframework.common.PropertyManager;
 import eu.tsystems.mms.tic.testframework.logging.Loggable;
@@ -26,9 +27,11 @@ import eu.tsystems.mms.tic.testframework.model.NodeInfo;
 import eu.tsystems.mms.tic.testframework.report.model.context.SessionContext;
 import eu.tsystems.mms.tic.testframework.transfer.ThrowablePackedResponse;
 import eu.tsystems.mms.tic.testframework.utils.FileDownloader;
+import eu.tsystems.mms.tic.testframework.utils.RESTUtils;
 import eu.tsystems.mms.tic.testframework.utils.Timer;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.Map;
 import java.util.Optional;
 import org.apache.commons.io.IOUtils;
@@ -56,6 +59,26 @@ public class SelenoidHelper implements Loggable {
 
     private SelenoidHelper() {
 
+    }
+
+    public NodeInfo getNodeInfo(URL seleniumUrl, String sessionId) {
+        String url = seleniumUrl.toString();
+
+        url = url.replace("/wd/hub", "");
+
+        /**
+         * See https://aerokube.com/ggr/latest/#_getting_host_by_session_id for getting Selenoid node information via Selenoid GGR
+         */
+        try {
+            String nodeResponse = RESTUtils.requestGET(url + "/host/" + sessionId, 30 * 1000, String.class);
+            Gson gson = new GsonBuilder().create();
+            Map map = gson.fromJson(nodeResponse, Map.class);
+            double port = Double.parseDouble(map.get("Port").toString());
+            return new NodeInfo(map.get("Name").toString(), (int) port);
+        } catch (Exception e) {
+            log().warn("Could not get node info: " + e.getMessage());
+            return new NodeInfo(seleniumUrl.getHost(), seleniumUrl.getPort());
+        }
     }
 
     public static SelenoidHelper get() {

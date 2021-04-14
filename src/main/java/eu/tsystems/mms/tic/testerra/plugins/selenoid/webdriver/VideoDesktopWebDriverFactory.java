@@ -35,6 +35,8 @@ import java.util.function.Consumer;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
 /**
  * Extends DesktopWebDriverFactory by using selenoid video capabilities.
@@ -62,7 +64,9 @@ public class VideoDesktopWebDriverFactory implements
     public void accept(WebDriver webDriver) {
         IWebDriverManager webDriverManager = Testerra.getInjector().getInstance(IWebDriverManager.class);
         webDriverManager.getSessionContext(webDriver).ifPresent(sessionContext -> {
-            // create a VideoRequest with request and videoName
+    if (rawWebDriver instanceof RemoteWebDriver && request.getSeleniumServerUrl() != null) {
+            sessionContext.setNodeInfo(SelenoidHelper.get().getNodeInfo(request.getSeleniumServerUrl(), ((RemoteWebDriver) rawWebDriver).getSessionId().toString()));
+        }        // create a VideoRequest with request and videoName
             final VideoRequest videoRequest = new VideoRequest(sessionContext, sessionContext.getWebDriverRequest().getCapabilities().get(SelenoidCapabilityProvider.Caps.videoName.toString()).toString());
 
             // store it.
