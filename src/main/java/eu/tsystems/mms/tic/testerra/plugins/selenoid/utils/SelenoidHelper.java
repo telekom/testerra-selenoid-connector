@@ -66,8 +66,8 @@ public class SelenoidHelper implements Loggable {
 
         url = url.replace("/wd/hub", "");
 
-        /*
-        grid3 mode
+        /**
+         * See https://aerokube.com/ggr/latest/#_getting_host_by_session_id for getting Selenoid node information via Selenoid GGR
          */
         try {
             String nodeResponse = RESTUtils.requestGET(url + "/host/" + sessionId, 30 * 1000, String.class);
