@@ -71,7 +71,7 @@ public class VideoDesktopWebDriverFactory extends DesktopWebDriverFactory {
         final WebDriver rawWebDriver = super.getRawWebDriver(request, desiredCapabilities, sessionContext);
 
         if (rawWebDriver instanceof RemoteWebDriver && request.getSeleniumServerUrl() != null) {
-            sessionContext.setNodeInfo(SelenoidHelper.get().getNodeInfo(request.getSeleniumServerUrl(), ((RemoteWebDriver) rawWebDriver).getSessionId().toString()));
+            SelenoidHelper.get().updateNodeInfo(request.getSeleniumServerUrl(), ((RemoteWebDriver) rawWebDriver).getSessionId().toString(), sessionContext);
         }
 
         // create a VideoRequest with request and videoName
