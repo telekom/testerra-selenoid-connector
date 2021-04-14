@@ -31,6 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
 /**
  * Extends DesktopWebDriverFactory by using selenoid video capabilities.
@@ -68,6 +69,10 @@ public class VideoDesktopWebDriverFactory extends DesktopWebDriverFactory {
 
         // start webdriver with selenoid caps.
         final WebDriver rawWebDriver = super.getRawWebDriver(request, desiredCapabilities, sessionContext);
+
+        if (rawWebDriver instanceof RemoteWebDriver && request.getSeleniumServerUrl() != null) {
+            SelenoidHelper.get().updateNodeInfo(request.getSeleniumServerUrl(), ((RemoteWebDriver) rawWebDriver).getSessionId().toString(), sessionContext);
+        }
 
         // create a VideoRequest with request and videoName
         final VideoRequest videoRequest = new VideoRequest(sessionContext, videoCaps.asMap().get(SelenoidCapabilityProvider.Caps.videoName.toString()).toString());
