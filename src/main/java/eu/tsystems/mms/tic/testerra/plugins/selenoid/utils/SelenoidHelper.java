@@ -76,8 +76,7 @@ public class SelenoidHelper implements Loggable {
             double port = Double.parseDouble(map.get("Port").toString());
             String scheme = map.get("Scheme").toString();
             if (scheme.isEmpty()) scheme = "http";
-            return new URL(scheme, map.get("Name").toString(), (int) port, "");
-            sessionContext.setNodeInfo(new NodeInfo(map.get("Name").toString(), (int) port));
+            sessionContext.setNodeUrl(new URL(scheme, map.get("Name").toString(), (int) port, ""));
         } catch (Exception e) {
             log().warn("Could not get node info: " + e.getMessage());
         }

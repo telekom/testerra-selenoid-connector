@@ -33,7 +33,6 @@ import java.util.function.Consumer;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.remote.RemoteWebDriver;
 
 /**
  * Extends DesktopWebDriverFactory by using selenoid video capabilities.
@@ -66,7 +65,7 @@ public class VideoDesktopWebDriverFactory implements
 
             sessionContext.getRemoteSessionId().ifPresent(remoteSessionId -> {
                     webDriverRequest.getServerUrl().ifPresent(url -> {
-                        sessionContext.setNodeUrl(SelenoidHelper.get().getNodeInfo(url, remoteSessionId));
+                        SelenoidHelper.get().updateNodeInfo(url, remoteSessionId, sessionContext);
                     });
             });
 
