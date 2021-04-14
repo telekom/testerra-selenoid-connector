@@ -61,7 +61,7 @@ public class SelenoidHelper implements Loggable {
 
     }
 
-    public URL getNodeInfo(URL seleniumUrl, String sessionId) {
+    public void updateNodeInfo(URL seleniumUrl, String remoteSessionId, SessionContext sessionContext) {
         String url = seleniumUrl.toString();
 
         url = url.replace("/wd/hub", "");
@@ -70,16 +70,16 @@ public class SelenoidHelper implements Loggable {
          * See https://aerokube.com/ggr/latest/#_getting_host_by_session_id for getting Selenoid node information via Selenoid GGR
          */
         try {
-            String nodeResponse = RESTUtils.requestGET(url + "/host/" + sessionId, 30 * 1000, String.class);
+            String nodeResponse = RESTUtils.requestGET(url + "/host/" + remoteSessionId, 30 * 1000, String.class);
             Gson gson = new GsonBuilder().create();
             Map map = gson.fromJson(nodeResponse, Map.class);
             double port = Double.parseDouble(map.get("Port").toString());
             String scheme = map.get("Scheme").toString();
             if (scheme.isEmpty()) scheme = "http";
             return new URL(scheme, map.get("Name").toString(), (int) port, "");
+            sessionContext.setNodeInfo(new NodeInfo(map.get("Name").toString(), (int) port));
         } catch (Exception e) {
-            log().warn("Could not get node info. Falling back to " + seleniumUrl.toString(), e);
-            return seleniumUrl;
+            log().warn("Could not get node info: " + e.getMessage());
         }
     }
 
