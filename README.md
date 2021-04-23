@@ -1,7 +1,7 @@
 # Selenoid Connector
 
 <p align="center">
-    <a href="https://mvnrepository.com/artifact/io.testerra/selenoid-connector" title="MavenCentral"><img src="https://img.shields.io/maven-central/v/io.testerra/selenoid-connector?label=Maven%20Central"></a>
+    <a href="https://mvnrepository.com/artifact/io.testerra/selenoid-connector" title="MavenCentral"><img src="https://img.shields.io/maven-central/v/io.testerra/selenoid-connector/1?label=Maven%20Central"></a>
     <a href="/../../commits/" title="Last Commit"><img src="https://img.shields.io/github/last-commit/telekom/testerra-selenoid-connector?style=flat"></a>
     <a href="/../../issues" title="Open Issues"><img src="https://img.shields.io/github/issues/telekom/testerra-selenoid-connector?style=flat"></a>
     <a href="./LICENSE" title="License"><img src="https://img.shields.io/badge/License-Apache%202.0-green.svg?style=flat"></a>
