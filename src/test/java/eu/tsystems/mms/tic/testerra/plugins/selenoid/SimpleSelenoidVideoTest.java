@@ -59,6 +59,11 @@ public class SimpleSelenoidVideoTest extends TesterraTest {
         Assert.fail("must fail");
     }
 
+    @Test(dependsOnMethods = "testT02_FailedTestCaseWillCreateVideo", alwaysRun = true)
+    public void test_Video_is_present_in_SessionContext_on_failed_test() {
+        this.Video_is_present_in_SessionContext();
+    }
+
     @Test
     public void test_collect_Video_on_collected_assertion() {
         final WebDriver driver = WebDriverManager.getWebDriver();
