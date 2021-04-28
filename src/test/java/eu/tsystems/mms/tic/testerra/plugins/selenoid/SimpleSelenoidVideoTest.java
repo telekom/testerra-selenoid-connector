@@ -20,7 +20,7 @@ public class SimpleSelenoidVideoTest extends AbstractSelenoidTest {
         driver.get("https://the-internet.herokuapp.com");
     }
 
-    @Test(dependsOnMethods = "testT01_SuccessfulTestCaseWillNotCreateVideo", alwaysRun = true)
+    @Test( dependsOnMethods = "testT01_SuccessfulTestCaseWillNotCreateVideo", alwaysRun = true)
     public void test_Video_is_not_present_in_SessionContext_on_passed_test() {
         this.Video_is_present_in_SessionContext("testT01_SuccessfulTestCaseWillNotCreateVideo", false);
     }
@@ -36,18 +36,6 @@ public class SimpleSelenoidVideoTest extends AbstractSelenoidTest {
     @Test(dependsOnMethods = "testT02_FailedTestCaseWillCreateVideo", alwaysRun = true)
     public void test_Video_is_present_in_SessionContext_on_failed_test() {
         this.Video_is_present_in_SessionContext("testT02_FailedTestCaseWillCreateVideo", true);
-    }
-
-    @Test()
-    public void test_fails_without_closing_webdriver() {
-        WebDriverManager.getConfig().setShutdownSessionAfterTestMethod(false);
-        final WebDriver driver = WebDriverManager.getWebDriver();
-        driver.get("https://the-internet.herokuapp.com");
-    }
-
-    @Test(dependsOnMethods = "test_fails_without_closing_webdriver")
-    public void test_Video_is_present_after_manually_closed() {
-        WebDriverManager.forceShutdown();
     }
 
     @Test

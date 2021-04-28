@@ -83,7 +83,7 @@ public abstract class AbstractSelenoidTest extends TesterraTest {
         Assert.assertTrue(optionalSessionContext.isPresent(), String.format("MethodContext \"%s\" has session context", methodName));
 
         boolean videoPresent = optionalSessionContext.get().getVideo().isPresent();
-        Assert.assertEquals(expectPresence, videoPresent, String.format("SessionContext for MethodContext \"%s\" has video", methodName));
+        Assert.assertEquals(videoPresent, expectPresence, String.format("SessionContext for MethodContext \"%s\" has video", methodName));
 
         return expectPresence == videoPresent;
     }

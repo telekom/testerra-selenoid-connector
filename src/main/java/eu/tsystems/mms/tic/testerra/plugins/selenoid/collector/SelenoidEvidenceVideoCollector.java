@@ -26,6 +26,7 @@ import eu.tsystems.mms.tic.testframework.common.PropertyManager;
 import eu.tsystems.mms.tic.testframework.constants.TesterraProperties;
 import eu.tsystems.mms.tic.testframework.logging.Loggable;
 import eu.tsystems.mms.tic.testframework.report.TestStatusController;
+import eu.tsystems.mms.tic.testframework.report.model.context.ExecutionContext;
 import eu.tsystems.mms.tic.testframework.report.model.context.MethodContext;
 import eu.tsystems.mms.tic.testframework.report.model.context.SessionContext;
 import eu.tsystems.mms.tic.testframework.report.model.context.Video;
@@ -34,6 +35,7 @@ import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverSessionsManag
 import java.util.Optional;
 import java.util.function.Consumer;
 import org.openqa.selenium.WebDriver;
+import org.testng.ITestResult;
 
 /**
  * Will collect Videos when Testerra closes a WebDriver session
@@ -60,29 +62,32 @@ public class SelenoidEvidenceVideoCollector implements
      */
     @Override
     public void accept(WebDriver webDriver) {
+        WebDriverSessionsManager.getSessionContext(webDriver).ifPresent(sessionContext -> {
+            // Exklusive session
+            if (sessionContext.getParentContext() instanceof ExecutionContext) {
+                collectVideoForSessionContext(sessionContext);
+            } else {
+                // Check if any of the methods allows grabbing videos
+                if (sessionContext.readMethodContexts().anyMatch(methodContext -> {
+                    if (methodContext.getTestNgResult().isPresent()) {
+                        ITestResult testResult = methodContext.getTestNgResult().get();
+                        if (!testResult.isSuccess() && SCREENCASTER_ACTIVE_ON_FAILED) {
+                            return true;
+                        } else if (SCREENCASTER_ACTIVE_ON_SUCCESS) {
+                            return true;
 
-        MethodContext currentMethodContext = ExecutionContextController.getCurrentMethodContext();
-        if (currentMethodContext != null) {
-            currentMethodContext.getTestNgResult().ifPresent(testResult -> {
-                /**
-                 * Don't handle session when there is no video
-                 */
-                if (testResult.getMethod().isTest()) {
-                    if (currentMethodContext.isFailed() && SCREENCASTER_ACTIVE_ON_FAILED) {
-                        collectVideoForWebDriver(webDriver);
-                    } else if (currentMethodContext.isPassed() && SCREENCASTER_ACTIVE_ON_SUCCESS) {
-                        collectVideoForWebDriver(webDriver);
-
-                    } else if (currentMethodContext.isSkipped()) {
-                        if (currentMethodContext.getStatus() == TestStatusController.Status.FAILED_RETRIED) {
-                            collectVideoForWebDriver(webDriver);
+                        } else if (testResult.getStatus() == ITestResult.SKIP) {
+                            if (methodContext.getStatus() == TestStatusController.Status.FAILED_RETRIED) {
+                                return true;
+                            }
                         }
                     }
-                }
-            });
-        } else if (WebDriverSessionsManager.isExclusiveSession(webDriver)) {
-            collectVideoForWebDriver(webDriver);
-        }
+                    return false;
+                })) {
+                    collectVideoForSessionContext(sessionContext);
+                };
+            }
+        });
     }
 
     /**
@@ -101,21 +106,18 @@ public class SelenoidEvidenceVideoCollector implements
         return Optional.ofNullable(video);
     }
 
-    protected void collectVideoForWebDriver(WebDriver webDriver) {
-        // Check if session exists in general
-        WebDriverSessionsManager.getSessionContext(webDriver).ifPresent(closedSessionContext -> {
-            // Check is session context is a selenoid session
-            if (selenoidHelper.isSelenoidUsed(closedSessionContext)) {
-                // Check if there exists a video request for this session
-                videoRequestStorage.list().stream()
-                        .filter(videoRequest -> videoRequest.sessionContext == closedSessionContext)
-                        .findFirst()
-                        .ifPresent(videoRequest -> {
-                            this.downloadLinkAndCleanVideo(videoRequest);
-                            videoRequestStorage.remove(videoRequest);
-                        });
-            }
-        });
+    protected void collectVideoForSessionContext(SessionContext sessionContext) {
+        // Check is session context is a selenoid session
+        if (selenoidHelper.isSelenoidUsed(sessionContext)) {
+            // Check if there exists a video request for this session
+            videoRequestStorage.list().stream()
+                    .filter(videoRequest -> videoRequest.sessionContext == sessionContext)
+                    .findFirst()
+                    .ifPresent(videoRequest -> {
+                        this.downloadLinkAndCleanVideo(videoRequest);
+                        videoRequestStorage.remove(videoRequest);
+                    });
+        }
     }
 }
 
