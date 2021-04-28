@@ -1,5 +1,9 @@
 package eu.tsystems.mms.tic.testerra.plugins.selenoid;
 
+import com.google.common.eventbus.Subscribe;
+import eu.tsystems.mms.tic.testframework.events.ExecutionFinishEvent;
+import eu.tsystems.mms.tic.testframework.logging.Loggable;
+import eu.tsystems.mms.tic.testframework.report.TesterraListener;
 import eu.tsystems.mms.tic.testframework.testing.TesterraTest;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverManager;
 import org.junit.Assert;
@@ -14,7 +18,7 @@ import org.testng.annotations.Test;
  *
  * @author Eric Kubenka
  */
-public class ExclusiveSessionSelenoidVideoTest extends TesterraTest {
+public class ExclusiveSessionSelenoidVideoTest extends AbstractSelenoidTest implements Loggable {
 
     private static String WEBDRIVER_SESSION = "";
 
@@ -39,5 +43,22 @@ public class ExclusiveSessionSelenoidVideoTest extends TesterraTest {
         final WebDriver driver = WebDriverManager.getWebDriver(WEBDRIVER_SESSION);
         driver.get("https://golem.de");
         Assert.fail("This should fail.");
+    }
+
+    @Test(dependsOnMethods = "testT03_FailingTestWillStopVideo", alwaysRun = true)
+    public void test_Video_is_present_after_execution() {
+
+        ExclusiveSessionSelenoidVideoTest self = this;
+
+        TesterraListener.getEventBus().register(new ExecutionFinishEvent.Listener() {
+            @Override
+            @Subscribe
+            public void onExecutionFinish(ExecutionFinishEvent event) {
+                /**
+                 * TODO: Move that into a TestUnderTest
+                 */
+                self.Video_is_present_in_SessionContext("testT03_FailingTestWillStopVideo", true);
+            }
+        });
     }
 }
