@@ -63,7 +63,7 @@ public abstract class AbstractSelenoidTest extends TesterraTest {
 
     }
 
-    protected boolean Video_is_present_in_SessionContext(String methodName, boolean expectPresence) {
+    protected boolean isVideoPresentInMethodContext(String methodName, boolean expectPresence) {
         Optional<MethodContext> optionalMethodContext = ExecutionContextController.getCurrentExecutionContext().readSuiteContexts()
                 .flatMap(SuiteContext::readTestContexts)
                 .flatMap(TestContext::readClassContexts)

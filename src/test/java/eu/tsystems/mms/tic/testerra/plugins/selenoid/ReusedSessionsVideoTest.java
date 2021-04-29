@@ -72,7 +72,7 @@ public class ReusedSessionsVideoTest extends AbstractSelenoidTest {
                 /**
                  * TODO: Move that into a TestUnderTest
                  */
-                self.Video_is_present_in_SessionContext("test_fails_without_closing_webdriver", true);
+                self.isVideoPresentInMethodContext("test_fails_without_closing_webdriver", true);
             }
         });
     }

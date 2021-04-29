@@ -22,7 +22,7 @@ public class SimpleSelenoidVideoTest extends AbstractSelenoidTest {
 
     @Test( dependsOnMethods = "testT01_SuccessfulTestCaseWillNotCreateVideo", alwaysRun = true)
     public void test_Video_is_not_present_in_SessionContext_on_passed_test() {
-        this.Video_is_present_in_SessionContext("testT01_SuccessfulTestCaseWillNotCreateVideo", false);
+        this.isVideoPresentInMethodContext("testT01_SuccessfulTestCaseWillNotCreateVideo", false);
     }
 
     @Test
@@ -35,7 +35,7 @@ public class SimpleSelenoidVideoTest extends AbstractSelenoidTest {
 
     @Test(dependsOnMethods = "testT02_FailedTestCaseWillCreateVideo", alwaysRun = true)
     public void test_Video_is_present_in_SessionContext_on_failed_test() {
-        this.Video_is_present_in_SessionContext("testT02_FailedTestCaseWillCreateVideo", true);
+        this.isVideoPresentInMethodContext("testT02_FailedTestCaseWillCreateVideo", true);
     }
 
     @Test
@@ -47,6 +47,6 @@ public class SimpleSelenoidVideoTest extends AbstractSelenoidTest {
 
     @Test(dependsOnMethods = "test_collect_Video_on_collected_assertion", alwaysRun = true)
     public void test_Video_is_present_in_SessionContext_on_collected_assertion() {
-        this.Video_is_present_in_SessionContext("test_collect_Video_on_collected_assertion",true);
+        this.isVideoPresentInMethodContext("test_collect_Video_on_collected_assertion",true);
     }
 }

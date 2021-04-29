@@ -4,7 +4,6 @@ import com.google.common.eventbus.Subscribe;
 import eu.tsystems.mms.tic.testframework.events.ExecutionFinishEvent;
 import eu.tsystems.mms.tic.testframework.logging.Loggable;
 import eu.tsystems.mms.tic.testframework.report.TesterraListener;
-import eu.tsystems.mms.tic.testframework.testing.TesterraTest;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverManager;
 import org.junit.Assert;
 import org.openqa.selenium.WebDriver;
@@ -57,7 +56,7 @@ public class ExclusiveSessionSelenoidVideoTest extends AbstractSelenoidTest impl
                 /**
                  * TODO: Move that into a TestUnderTest
                  */
-                self.Video_is_present_in_SessionContext("testT03_FailingTestWillStopVideo", true);
+                self.isVideoPresentInMethodContext("testT03_FailingTestWillStopVideo", true);
             }
         });
     }
