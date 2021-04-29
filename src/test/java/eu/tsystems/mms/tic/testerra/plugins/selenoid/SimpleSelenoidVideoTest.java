@@ -21,7 +21,7 @@ public class SimpleSelenoidVideoTest extends AbstractSelenoidTest {
     }
 
     @Test( dependsOnMethods = "testT01_SuccessfulTestCaseWillNotCreateVideo", alwaysRun = true)
-    public void test_Video_is_not_present_in_SessionContext_on_passed_test() {
+    public void test_VideoIsNotPresent_after_SuccessfulTestCaseWillNotCreateVideo() {
         this.isVideoPresentInMethodContext("testT01_SuccessfulTestCaseWillNotCreateVideo", false);
     }
 
@@ -34,19 +34,19 @@ public class SimpleSelenoidVideoTest extends AbstractSelenoidTest {
     }
 
     @Test(dependsOnMethods = "testT02_FailedTestCaseWillCreateVideo", alwaysRun = true)
-    public void test_Video_is_present_in_SessionContext_on_failed_test() {
+    public void test_VideoIsPresent_after_FailedTestCaseWillCreateVideo() {
         this.isVideoPresentInMethodContext("testT02_FailedTestCaseWillCreateVideo", true);
     }
 
     @Test
-    public void test_collect_Video_on_collected_assertion() {
+    public void testT03_FailedTestWithCollectedAssertions() {
         final WebDriver driver = WebDriverManager.getWebDriver();
         driver.get("https://the-internet.herokuapp.com");
         AssertCollector.assertTrue(false);
     }
 
-    @Test(dependsOnMethods = "test_collect_Video_on_collected_assertion", alwaysRun = true)
-    public void test_Video_is_present_in_SessionContext_on_collected_assertion() {
+    @Test(dependsOnMethods = "testT03_FailedTestWithCollectedAssertions", alwaysRun = true)
+    public void test_VideoIsPresent_after_FailedTestWithCollectedAssertions() {
         this.isVideoPresentInMethodContext("test_collect_Video_on_collected_assertion",true);
     }
 }

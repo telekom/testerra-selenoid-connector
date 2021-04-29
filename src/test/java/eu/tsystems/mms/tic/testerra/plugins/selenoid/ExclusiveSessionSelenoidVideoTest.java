@@ -45,7 +45,7 @@ public class ExclusiveSessionSelenoidVideoTest extends AbstractSelenoidTest impl
     }
 
     @Test(dependsOnMethods = "testT03_FailingTestWillStopVideo", alwaysRun = true)
-    public void test_Video_is_present_after_execution() {
+    public void test_VideoIsPresent_after_FailingTestWillStopVideo() {
 
         ExclusiveSessionSelenoidVideoTest self = this;
 

@@ -37,7 +37,7 @@ public class ReusedSessionsVideoTest extends AbstractSelenoidTest {
     private WebDriver webDriver;
 
     @Test()
-    public void test_fails_without_closing_webdriver() {
+    public void test_FailsWithoutClosingWebdriver() {
         System.setProperty(TesterraProperties.CLOSE_WINDOWS_AFTER_TEST_METHODS, "false");
         System.setProperty(TesterraProperties.CLOSE_WINDOWS_ON_FAILURE, "false");
         WebDriverManagerConfig config = WebDriverManager.getConfig();
@@ -47,8 +47,8 @@ public class ReusedSessionsVideoTest extends AbstractSelenoidTest {
         Assert.fail("must fail");
     }
 
-    @Test(dependsOnMethods = "test_fails_without_closing_webdriver", alwaysRun = true)
-    public void test_Video_is_present_after_execution() {
+    @Test(dependsOnMethods = "test_FailsWithoutClosingWebdriver", alwaysRun = true)
+    public void test_VideoIsPresent_after_FailsWithoutClosingWebdriver() {
         Assert.assertTrue(WebDriverSessionsManager.getSessionContext(this.webDriver).isPresent(), "SessionContext is present");
         WebDriverManagerConfig config = WebDriverManager.getConfig();
 
@@ -72,7 +72,7 @@ public class ReusedSessionsVideoTest extends AbstractSelenoidTest {
                 /**
                  * TODO: Move that into a TestUnderTest
                  */
-                self.isVideoPresentInMethodContext("test_fails_without_closing_webdriver", true);
+                self.isVideoPresentInMethodContext("test_FailsWithoutClosingWebdriver", true);
             }
         });
     }
