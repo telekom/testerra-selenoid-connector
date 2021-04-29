@@ -47,6 +47,6 @@ public class SimpleSelenoidVideoTest extends AbstractSelenoidTest {
 
     @Test(dependsOnMethods = "testT03_FailedTestWithCollectedAssertions", alwaysRun = true)
     public void test_VideoIsPresent_after_FailedTestWithCollectedAssertions() {
-        this.isVideoPresentInMethodContext("test_collect_Video_on_collected_assertion",true);
+        this.isVideoPresentInMethodContext("testT03_FailedTestWithCollectedAssertions",true);
     }
 }
