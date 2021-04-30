@@ -107,17 +107,14 @@ public class SelenoidEvidenceVideoCollector implements
     }
 
     protected void collectVideoForSessionContext(SessionContext sessionContext) {
-        // Check is session context is a selenoid session
-        if (selenoidHelper.isSelenoidUsed(sessionContext)) {
-            // Check if there exists a video request for this session
-            videoRequestStorage.list().stream()
-                    .filter(videoRequest -> videoRequest.sessionContext == sessionContext)
-                    .findFirst()
-                    .ifPresent(videoRequest -> {
-                        this.downloadLinkAndCleanVideo(videoRequest);
-                        videoRequestStorage.remove(videoRequest);
-                    });
-        }
+        // Check if there exists a video request for this session
+        videoRequestStorage.list().stream()
+                .filter(videoRequest -> videoRequest.sessionContext == sessionContext)
+                .findFirst()
+                .ifPresent(videoRequest -> {
+                    this.downloadLinkAndCleanVideo(videoRequest);
+                    videoRequestStorage.remove(videoRequest);
+                });
     }
 }
 
