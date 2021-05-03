@@ -22,21 +22,23 @@ import eu.tsystems.mms.tic.testerra.plugins.selenoid.request.VideoRequest;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.request.VideoRequestStorage;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.SelenoidHelper;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.VideoLoader;
-import eu.tsystems.mms.tic.testframework.interop.VideoCollector;
+import eu.tsystems.mms.tic.testframework.common.PropertyManager;
+import eu.tsystems.mms.tic.testframework.constants.TesterraProperties;
 import eu.tsystems.mms.tic.testframework.logging.Loggable;
+import eu.tsystems.mms.tic.testframework.report.TestStatusController;
+import eu.tsystems.mms.tic.testframework.report.model.context.ExecutionContext;
+import eu.tsystems.mms.tic.testframework.report.model.context.MethodContext;
 import eu.tsystems.mms.tic.testframework.report.model.context.SessionContext;
 import eu.tsystems.mms.tic.testframework.report.model.context.Video;
-import eu.tsystems.mms.tic.testframework.utils.WebDriverUtils;
+import eu.tsystems.mms.tic.testframework.report.utils.ExecutionContextController;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverSessionsManager;
 import java.util.Optional;
 import java.util.function.Consumer;
 import org.openqa.selenium.WebDriver;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import org.testng.ITestResult;
 
 /**
- * Will collect Videos when Testerra asks for it via {@link VideoCollector#collectVideos()}
+ * Will collect Videos when Testerra closes a WebDriver session
  * Date: 15.04.2020
  * Time: 11:16
  *
@@ -44,33 +46,13 @@ import java.util.List;
  */
 public class SelenoidEvidenceVideoCollector implements
         Consumer<WebDriver>,
-        VideoCollector,
         Loggable
 {
 
     private final SelenoidHelper selenoidHelper = SelenoidHelper.get();
     private final VideoRequestStorage videoRequestStorage = VideoRequestStorage.get();
-    private final ThreadLocal<List<VideoRequest>> videoRequestsForClosedSessions = new ThreadLocal<>();
-
-    /**
-     * This method will be called once per failed testcase
-     * And after all related {@link WebDriver} sessions where closed
-     */
-    @Override
-    public List<Video> getVideos() {
-
-        final List<Video> videoList = new ArrayList<>();
-
-        // Iterate over all closed WebDriver sessions during last teardown and get their videos.
-        if (videoRequestsForClosedSessions.get() != null) {
-            for (final VideoRequest videoRequest : videoRequestsForClosedSessions.get()) {
-                Optional<Video> optionalVideo = downloadLinkAndCleanVideo(videoRequest);
-                optionalVideo.ifPresent(videoList::add);
-            }
-        }
-        videoRequestsForClosedSessions.remove();
-        return videoList;
-    }
+    private final boolean SCREENCASTER_ACTIVE_ON_SUCCESS = PropertyManager.getBooleanProperty(TesterraProperties.SCREENCASTER_ACTIVE_ON_SUCCESS, false);
+    private final boolean SCREENCASTER_ACTIVE_ON_FAILED = PropertyManager.getBooleanProperty(TesterraProperties.SCREENCASTER_ACTIVE_ON_FAILED, true);
 
     /**
      * This method will be called for each WebDriver that is still active after a Test method
@@ -80,25 +62,37 @@ public class SelenoidEvidenceVideoCollector implements
      */
     @Override
     public void accept(WebDriver webDriver) {
-        if (WebDriverSessionsManager.isExclusiveSession(webDriver)) {
-            for (final VideoRequest videoRequest : videoRequestStorage.global()) {
-                downloadLinkAndCleanVideo(videoRequest);
+        WebDriverSessionsManager.getSessionContext(webDriver).ifPresent(sessionContext -> {
+            // Exklusive session
+            if (sessionContext.getParentContext() instanceof ExecutionContext) {
+                collectVideoForSessionContext(sessionContext);
+            } else {
+                // Check if any of the methods allows grabbing videos
+                if (sessionContext.readMethodContexts().anyMatch(methodContext -> {
+                    if (methodContext.getTestNgResult().isPresent()) {
+                        ITestResult testResult = methodContext.getTestNgResult().get();
+                        if (!testResult.isSuccess() && SCREENCASTER_ACTIVE_ON_FAILED) {
+                            return true;
+                        } else if (SCREENCASTER_ACTIVE_ON_SUCCESS) {
+                            return true;
+
+                        } else if (testResult.getStatus() == ITestResult.SKIP) {
+                            if (methodContext.getStatus() == TestStatusController.Status.FAILED_RETRIED) {
+                                return true;
+                            }
+                        }
+                    }
+                    return false;
+                })) {
+                    collectVideoForSessionContext(sessionContext);
+                };
             }
-        } else {
-            if (videoRequestsForClosedSessions.get() == null) {
-                videoRequestsForClosedSessions.set(new LinkedList<>());
-            }
-            WebDriverSessionsManager.getSessionContext(webDriver).ifPresent(sessionContext -> {
-                if (selenoidHelper.isSelenoidUsed(sessionContext)) {
-                    videoRequestStorage.list().stream()
-                            .filter(videoRequest -> videoRequest.sessionContext == sessionContext)
-                            .findFirst()
-                            .ifPresent(videoRequest -> videoRequestsForClosedSessions.get().add(videoRequest));
-                }
-            });
-        }
+        });
     }
 
+    /**
+     * Downloads the video and add its to the {@link SessionContext}
+     */
     private Optional<Video> downloadLinkAndCleanVideo(final VideoRequest videoRequest) {
         Video video = new VideoLoader().download(videoRequest);
 
@@ -108,9 +102,19 @@ public class SelenoidEvidenceVideoCollector implements
         } else {
             log().warn("Unable to download video");
         }
-        videoRequestStorage.remove(videoRequest);
 
         return Optional.ofNullable(video);
+    }
+
+    protected void collectVideoForSessionContext(SessionContext sessionContext) {
+        // Check if there exists a video request for this session
+        videoRequestStorage.list().stream()
+                .filter(videoRequest -> videoRequest.sessionContext == sessionContext)
+                .findFirst()
+                .ifPresent(videoRequest -> {
+                    this.downloadLinkAndCleanVideo(videoRequest);
+                    videoRequestStorage.remove(videoRequest);
+                });
     }
 }
 

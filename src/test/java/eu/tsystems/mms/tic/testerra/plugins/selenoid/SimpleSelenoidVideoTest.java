@@ -1,20 +1,9 @@
 package eu.tsystems.mms.tic.testerra.plugins.selenoid;
 
-import eu.tsystems.mms.tic.testframework.constants.Browsers;
 import eu.tsystems.mms.tic.testframework.execution.testng.AssertCollector;
-import eu.tsystems.mms.tic.testframework.report.model.context.SessionContext;
-import eu.tsystems.mms.tic.testframework.report.utils.ExecutionContextController;
-import eu.tsystems.mms.tic.testframework.testing.TesterraTest;
-import eu.tsystems.mms.tic.testframework.useragents.ChromeConfig;
-import eu.tsystems.mms.tic.testframework.useragents.FirefoxConfig;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverManager;
-import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverProxyUtils;
-import org.junit.Assert;
-import org.openqa.selenium.Proxy;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.firefox.FirefoxOptions;
-import org.testng.annotations.BeforeSuite;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
@@ -23,32 +12,17 @@ import org.testng.annotations.Test;
  *
  * @author Eric Kubenka
  */
-public class SimpleSelenoidVideoTest extends TesterraTest {
+public class SimpleSelenoidVideoTest extends AbstractSelenoidTest {
 
-    @BeforeSuite
-    public void configureChromeOptions() {
-        Proxy proxy = new WebDriverProxyUtils().getDefaultHttpProxy();
-
-        WebDriverManager.setUserAgentConfig(Browsers.chrome, new ChromeConfig() {
-            @Override
-            public void configure(ChromeOptions options) {
-                options.setProxy(proxy);
-            }
-        });
-
-        WebDriverManager.setUserAgentConfig(Browsers.firefox, new FirefoxConfig() {
-            @Override
-            public void configure(FirefoxOptions firefoxOptions) {
-                firefoxOptions.setProxy(proxy);
-            }
-        });
-
-    }
-    @Test
+    @Test()
     public void testT01_SuccessfulTestCaseWillNotCreateVideo() {
-
         final WebDriver driver = WebDriverManager.getWebDriver();
         driver.get("https://the-internet.herokuapp.com");
+    }
+
+    @Test( dependsOnMethods = "testT01_SuccessfulTestCaseWillNotCreateVideo", alwaysRun = true)
+    public void test_VideoIsNotPresent_after_SuccessfulTestCaseWillNotCreateVideo() {
+        this.isVideoPresentInMethodContext("testT01_SuccessfulTestCaseWillNotCreateVideo", false);
     }
 
     @Test
@@ -60,26 +34,19 @@ public class SimpleSelenoidVideoTest extends TesterraTest {
     }
 
     @Test(dependsOnMethods = "testT02_FailedTestCaseWillCreateVideo", alwaysRun = true)
-    public void test_Video_is_present_in_SessionContext_on_failed_test() {
-        this.Video_is_present_in_SessionContext();
+    public void test_VideoIsPresent_after_FailedTestCaseWillCreateVideo() {
+        this.isVideoPresentInMethodContext("testT02_FailedTestCaseWillCreateVideo", true);
     }
 
     @Test
-    public void test_collect_Video_on_collected_assertion() {
+    public void testT03_FailedTestWithCollectedAssertions() {
         final WebDriver driver = WebDriverManager.getWebDriver();
         driver.get("https://the-internet.herokuapp.com");
         AssertCollector.assertTrue(false);
     }
 
-    @Test(dependsOnMethods = "test_collect_Video_on_collected_assertion", alwaysRun = true)
-    public void test_Video_is_present_in_SessionContext_on_collected_assertion() {
-        this.Video_is_present_in_SessionContext();
+    @Test(dependsOnMethods = "testT03_FailedTestWithCollectedAssertions", alwaysRun = true)
+    public void test_VideoIsPresent_after_FailedTestWithCollectedAssertions() {
+        this.isVideoPresentInMethodContext("testT03_FailedTestWithCollectedAssertions",true);
     }
-
-    private void Video_is_present_in_SessionContext() {
-        SessionContext currentSessionContext = ExecutionContextController.getCurrentSessionContext();
-        Assert.assertNotNull(currentSessionContext);
-        Assert.assertTrue(currentSessionContext.getVideo().isPresent());
-    }
-
 }

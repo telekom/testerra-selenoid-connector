@@ -21,9 +21,8 @@ package eu.tsystems.mms.tic.testerra.plugins.selenoid.request;
 
 import eu.tsystems.mms.tic.testframework.logging.Loggable;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Stores {@link VideoRequest} and associated {@link eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverRequest}
@@ -37,8 +36,7 @@ public class VideoRequestStorage implements Loggable {
 
     private final static VideoRequestStorage INSTANCE = new VideoRequestStorage();
 
-    private static final ThreadLocal<List<VideoRequest>> VIDEO_WEBDRIVER_REQUESTS = new ThreadLocal<>();
-    private static final List<VideoRequest> GLOBAL_VIDEO_WEBDRIVER_REQUESTS = Collections.synchronizedList(new LinkedList<>());
+    private static final Queue<VideoRequest> GLOBAL_VIDEO_WEBDRIVER_REQUESTS = new ConcurrentLinkedQueue<>();
 
     private VideoRequestStorage() {
 
@@ -53,16 +51,7 @@ public class VideoRequestStorage implements Loggable {
      *
      * @return List
      */
-    public List<VideoRequest> list() {
-        return VIDEO_WEBDRIVER_REQUESTS.get();
-    }
-
-    /**
-     * Returns global list of current valid {@link VideoRequest}
-     *
-     * @return List
-     */
-    public List<VideoRequest> global() {
+    public Queue<VideoRequest> list() {
         return GLOBAL_VIDEO_WEBDRIVER_REQUESTS;
     }
 
@@ -73,13 +62,7 @@ public class VideoRequestStorage implements Loggable {
      */
     public void store(VideoRequest request) {
 
-        // creating storage when not created yet.
-        if (VIDEO_WEBDRIVER_REQUESTS.get() == null) {
-            VIDEO_WEBDRIVER_REQUESTS.set(new LinkedList<>());
-        }
-
         // adding
-        VIDEO_WEBDRIVER_REQUESTS.get().add(request);
         GLOBAL_VIDEO_WEBDRIVER_REQUESTS.add(request);
     }
 
@@ -89,39 +72,6 @@ public class VideoRequestStorage implements Loggable {
      * @param request {@link VideoRequest}
      */
     public void remove(VideoRequest request) {
-
-        if (VIDEO_WEBDRIVER_REQUESTS.get() != null) {
-            VIDEO_WEBDRIVER_REQUESTS.get().remove(request);
-        }
-
         GLOBAL_VIDEO_WEBDRIVER_REQUESTS.remove(request);
     }
-
-
-    /**
-     * Removes a list of {@link VideoRequest} from storage. Called when video grabbing is done.
-     *
-     * @param requests {@link List} of {@link VideoRequest}
-     */
-    public void remove(List<VideoRequest> requests) {
-
-        if (VIDEO_WEBDRIVER_REQUESTS.get() != null) {
-            VIDEO_WEBDRIVER_REQUESTS.get().removeAll(requests);
-        }
-
-        GLOBAL_VIDEO_WEBDRIVER_REQUESTS.removeAll(requests);
-    }
-
-    /**
-     * Clears ALL Thread-Local and GLOBAL DATA.
-     */
-    public void clear() {
-
-        if (VIDEO_WEBDRIVER_REQUESTS.get() != null) {
-            VIDEO_WEBDRIVER_REQUESTS.get().clear();
-        }
-
-        GLOBAL_VIDEO_WEBDRIVER_REQUESTS.clear();
-    }
-
 }
