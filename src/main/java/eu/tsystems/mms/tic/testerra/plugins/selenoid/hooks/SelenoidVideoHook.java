@@ -25,7 +25,6 @@ import eu.tsystems.mms.tic.testerra.plugins.selenoid.webdriver.VideoDesktopWebDr
 import eu.tsystems.mms.tic.testframework.common.PropertyManager;
 import eu.tsystems.mms.tic.testframework.common.Testerra;
 import eu.tsystems.mms.tic.testframework.hooks.ModuleHook;
-import eu.tsystems.mms.tic.testframework.interop.TestEvidenceCollector;
 import eu.tsystems.mms.tic.testframework.logging.Loggable;
 import eu.tsystems.mms.tic.testframework.testing.WebDriverManagerProvider;
 
@@ -67,15 +66,6 @@ public class SelenoidVideoHook extends AbstractModule implements
 
             // Register a shutdown handler to get informed about closing WebDriver sessions
             WEB_DRIVER_MANAGER.registerWebDriverAfterShutdownHandler(selenoidEvidenceVideoCollector);
-
-            // Register a evidence collector to link videos as test evidence when testerra will call it.
-            TestEvidenceCollector.registerVideoCollector(selenoidEvidenceVideoCollector);
-
-            // Register a AfterMethodWorker that will run AFTER video fetching - will ensure that video requests are discarded.
-//            EventBus eventBus = TesterraListener.getEventBus();
-//
-//            // Register a Report Worker to fetch all videos from exclusive sessions and all videos that are not fetched but should be fetched.
-//            eventBus.register(selenoidEvidenceVideoCollector);
         }
     }
 

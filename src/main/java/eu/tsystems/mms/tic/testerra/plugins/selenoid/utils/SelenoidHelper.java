@@ -61,7 +61,11 @@ public class SelenoidHelper implements Loggable {
 
     }
 
-    public void updateNodeInfo(URL seleniumUrl, String remoteSessionId, SessionContext sessionContext) {
+    /**
+     * Updates the selenoid node info
+     * @return TRUE if this node is a Selenoid node, otherwise FALSE
+     */
+    public boolean updateNodeInfo(URL seleniumUrl, String remoteSessionId, SessionContext sessionContext) {
         String url = seleniumUrl.toString();
 
         url = url.replace("/wd/hub", "");
@@ -77,8 +81,10 @@ public class SelenoidHelper implements Loggable {
             String scheme = map.get("Scheme").toString();
             if (scheme.isEmpty()) scheme = "http";
             sessionContext.setNodeUrl(new URL(scheme, map.get("Name").toString(), (int) port, ""));
+            return true;
         } catch (Exception e) {
             log().warn("Could not get node info: " + e.getMessage());
+            return false;
         }
     }
 

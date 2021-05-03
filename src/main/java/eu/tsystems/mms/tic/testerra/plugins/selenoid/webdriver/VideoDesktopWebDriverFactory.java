@@ -65,16 +65,16 @@ public class VideoDesktopWebDriverFactory implements
 
             sessionContext.getRemoteSessionId().ifPresent(remoteSessionId -> {
                     webDriverRequest.getServerUrl().ifPresent(url -> {
-                        SelenoidHelper.get().updateNodeInfo(url, remoteSessionId, sessionContext);
+                        if (selenoidHelper.updateNodeInfo(url, remoteSessionId, sessionContext)) {
+                            // create a VideoRequest with request and videoName
+                            final VideoRequest videoRequest = new VideoRequest(sessionContext, webDriverRequest.getCapabilities().get(SelenoidCapabilityProvider.Caps.videoName.toString()).toString());
+
+                            // store it.
+                            videoRequestStorage.store(videoRequest);
+                            log().info("VNC Streaming URL: " + selenoidHelper.getRemoteVncUrl(videoRequest));
+                        }
                     });
             });
-
-            // create a VideoRequest with request and videoName
-            final VideoRequest videoRequest = new VideoRequest(sessionContext, webDriverRequest.getCapabilities().get(SelenoidCapabilityProvider.Caps.videoName.toString()).toString());
-
-            // store it.
-            videoRequestStorage.store(videoRequest);
-            log().info("VNC Streaming URL: " + selenoidHelper.getRemoteVncUrl(videoRequest));
         });
     }
 
