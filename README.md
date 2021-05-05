@@ -43,7 +43,7 @@ Include the following dependency in your project.
 Gradle:
 
 ````groovy
-implementation 'io.testerra:selenoid-connector:1.0.0'
+implementation 'io.testerra:selenoid-connector:1.1'
 ````
 
 Maven:
@@ -53,7 +53,7 @@ Maven:
 <dependency>
     <groupId>io.testerra</groupId>
     <artifactId>selenoid-connector</artifactId>
-    <version>1.0.0</version>
+    <version>1.1</version>
 </dependency>
 ````
 
