@@ -29,11 +29,12 @@ The module will register automatically by using `ModuleHook`.
 
 ### Requirements
 
-| Selenoid connector    | Testerra                  |
-| --------------------- | ------------------------- |
-| `1.0-RC-13`           | ` 1.0-RC-32 - 1.0-RC-33`  |
-| `1.0-RC-14`           | ` 1.0-RC-34`              |
-| `1.0.0`               | `>= 1.0.0`                |
+| Selenoid connector   | Testerra      |
+| -------------------- | --------------|
+| `1.0-RC-13`          | ` 1.0-RC-32`  |
+| `1.0-RC-14`          | ` 1.0-RC-34`  |
+| `1.0.0`              | ` 1.0.0`      |
+| `1.1`                | `>= 1.1`      |
 
 ### Usage
 
