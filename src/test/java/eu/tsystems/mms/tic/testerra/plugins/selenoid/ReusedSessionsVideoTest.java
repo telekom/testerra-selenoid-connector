@@ -22,50 +22,43 @@
 package eu.tsystems.mms.tic.testerra.plugins.selenoid;
 
 import com.google.common.eventbus.Subscribe;
-import eu.tsystems.mms.tic.testframework.constants.TesterraProperties;
+import eu.tsystems.mms.tic.testframework.common.Testerra;
 import eu.tsystems.mms.tic.testframework.events.ExecutionFinishEvent;
-import eu.tsystems.mms.tic.testframework.report.TesterraListener;
-import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverManager;
-import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverManagerConfig;
-import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverSessionsManager;
+import eu.tsystems.mms.tic.testframework.testing.WebDriverManagerProvider;
+import eu.tsystems.mms.tic.testframework.webdrivermanager.DesktopWebDriverRequest;
 import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-public class ReusedSessionsVideoTest extends AbstractSelenoidTest {
+public class ReusedSessionsVideoTest extends AbstractSelenoidTest implements WebDriverManagerProvider {
 
     private WebDriver webDriver;
 
+    private WebDriver getWebDriver() {
+        if (this.webDriver == null) {
+            DesktopWebDriverRequest desktopWebDriverRequest = new DesktopWebDriverRequest();
+            desktopWebDriverRequest.setShutdownAfterTestFailed(false);
+            desktopWebDriverRequest.setShutdownAfterTest(false);
+            this.webDriver = WEB_DRIVER_MANAGER.getWebDriver(desktopWebDriverRequest);
+        }
+        return this.webDriver;
+    }
+
     @Test()
     public void test_FailsWithoutClosingWebdriver() {
-        System.setProperty(TesterraProperties.CLOSE_WINDOWS_AFTER_TEST_METHODS, "false");
-        System.setProperty(TesterraProperties.CLOSE_WINDOWS_ON_FAILURE, "false");
-        WebDriverManagerConfig config = WebDriverManager.getConfig();
-        config.reset();
-        this.webDriver = WebDriverManager.getWebDriver();
-        this.webDriver.get("https://the-internet.herokuapp.com");
+        WebDriver webDriver = getWebDriver();
+        webDriver.get("https://the-internet.herokuapp.com");
         Assert.fail("must fail");
     }
 
     @Test(dependsOnMethods = "test_FailsWithoutClosingWebdriver", alwaysRun = true)
     public void test_VideoIsPresent_after_FailsWithoutClosingWebdriver() {
-        Assert.assertTrue(WebDriverSessionsManager.getSessionContext(this.webDriver).isPresent(), "SessionContext is present");
-        WebDriverManagerConfig config = WebDriverManager.getConfig();
-
-        Assert.assertFalse(config.shouldShutdownSessionAfterTestMethod());
-        Assert.assertFalse(config.shouldShutdownSessionOnFailure());
-
-        System.setProperty(TesterraProperties.CLOSE_WINDOWS_AFTER_TEST_METHODS, "true");
-        System.setProperty(TesterraProperties.CLOSE_WINDOWS_ON_FAILURE, "true");
-
-        config.reset();
-
-        Assert.assertTrue(config.shouldShutdownSessionAfterTestMethod());
-        Assert.assertTrue(config.shouldShutdownSessionOnFailure());
+        WebDriver webDriver = getWebDriver();
+        Assert.assertTrue(WEB_DRIVER_MANAGER.getSessionContext(webDriver).isPresent(), "SessionContext is present");
 
         ReusedSessionsVideoTest self = this;
 
-        TesterraListener.getEventBus().register(new ExecutionFinishEvent.Listener() {
+        Testerra.getEventBus().register(new ExecutionFinishEvent.Listener() {
             @Override
             @Subscribe
             public void onExecutionFinish(ExecutionFinishEvent event) {
