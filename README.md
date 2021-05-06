@@ -34,8 +34,10 @@ The module will register automatically by using `ModuleHook`.
 | `1.0-RC-13`           | ` 1.0-RC-32 - 1.0-RC-33`  |
 | `1.0-RC-14`           | ` 1.0-RC-34`              |
 | `1.0.0`               | `>= 1.0.0`                |
+| `1.1`                | `>= 1.1`      |
 | `2.0-RC-1`           | `...2.0-RC-3`  |
 | `2.0-RC-2`           | `>= 2.0-RC-4`            |
+| `2.0-RC-3`           | `>= 2.0-RC-5`            |
 
 ### Usage
 
