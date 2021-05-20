@@ -28,12 +28,8 @@ import eu.tsystems.mms.tic.testframework.report.model.context.SessionContext;
 import eu.tsystems.mms.tic.testframework.transfer.ThrowablePackedResponse;
 import eu.tsystems.mms.tic.testframework.utils.FileDownloader;
 import eu.tsystems.mms.tic.testframework.utils.RESTUtils;
+import eu.tsystems.mms.tic.testframework.utils.StringUtils;
 import eu.tsystems.mms.tic.testframework.utils.Timer;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.util.Map;
-import java.util.Optional;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
@@ -42,6 +38,12 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Methods for communication with Selenoid API
@@ -63,6 +65,7 @@ public class SelenoidHelper implements Loggable {
 
     /**
      * Updates the selenoid node info
+     *
      * @return TRUE if this node is a Selenoid node, otherwise FALSE
      */
     public boolean updateNodeInfo(URL seleniumUrl, String remoteSessionId, SessionContext sessionContext) {
@@ -74,14 +77,23 @@ public class SelenoidHelper implements Loggable {
          * See https://aerokube.com/ggr/latest/#_getting_host_by_session_id for getting Selenoid node information via Selenoid GGR
          */
         try {
+
             String nodeResponse = RESTUtils.requestGET(url + "/host/" + remoteSessionId, 30 * 1000, String.class);
+
+            // A standalone Selenoid returns something like 'You are using Selenoid 1.10.1!'
+            if (StringUtils.isNotBlank(nodeResponse) && nodeResponse.toLowerCase().contains("selenoid")) {
+                return true;
+            }
+
+            // A GGR with Selenoid returns a valid JSON response
             Gson gson = new GsonBuilder().create();
             Map map = gson.fromJson(nodeResponse, Map.class);
             double port = Double.parseDouble(map.get("Port").toString());
             sessionContext.setNodeInfo(new NodeInfo(map.get("Name").toString(), (int) port));
             return true;
+
         } catch (Exception e) {
-            log().warn("Could not get node info: " + e.getMessage());
+            log().warn("It seems you are not using Selenoid - could not get node info: " + e.getMessage());
             return false;
         }
     }
