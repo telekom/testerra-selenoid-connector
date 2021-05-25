@@ -36,6 +36,8 @@ The module will register automatically by using `ModuleHook`.
 | `1.0.0`              | ` 1.0.0`      |
 | `>= 1.1`             | `>= 1.1`      |
 
+You need at least Selenoid 1.10.1 or above.
+
 ### Usage
 
 Include the following dependency in your project.
