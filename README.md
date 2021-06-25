@@ -111,11 +111,37 @@ browser session was started successfully.
 Some IDEs mark the URL as clickable link.
 ![](doc/selenoid_connector_vnc_url.png)
 
-### Set browser language and locale
+### Use other Selenoid features
+
+#### Download files from browser
+
+Selenoid supports to download files your browser downloaded before from a site.
+
+````java
+SessionContext currentSessionContext = ExecutionContextController.getCurrentSessionContext();
+String path = SelenoidHelper.get().getRemoteDownloadPath(currentSessionContext, "filename.jpg");
+// Path contains something like http://my.selenoid.host:4444/download/<sessions-id>/filename.jpg
+````
+
+More details: https://aerokube.com/selenoid/latest/#_downloading_files_from_browser
+
+#### Accessing clipboard
+
+Selenoid can returns the content of the clipboard of your browser session.
+
+´´´´java
+SessionContext currentSessionContext = ExecutionContextController.getCurrentSessionContext();
+String clipboard = SelenoidHelper.get().getClipboard(currentSessionContext);
+´´´´
+
+More details: https://aerokube.com/selenoid/latest/#_accessing_clipboard
+
+#### Set browser language and locale
 
 Sometimes you want to start your browser with a specific language / locale setting to test your websites in different language /
-locales. `Selenoid` can handle environment variables passed via the `DesiredCapabilities`. For more information please visit
-[aerokube.com](https://aerokube.com/selenoid/latest/#_per_session_environment_variables_env)
+locales. `Selenoid` can handle environment variables passed via the `DesiredCapabilities`. 
+
+More details: https://aerokube.com/selenoid/latest/#_per_session_environment_variables_env
 
 ### Properties
 
