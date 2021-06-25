@@ -73,16 +73,18 @@ public class VideoDesktopWebDriverFactory extends DesktopWebDriverFactory {
         if (rawWebDriver instanceof RemoteWebDriver && request.getSeleniumServerUrl() != null) {
 
             // Only create video requests for Selenoid nodes
-            if (selenoidHelper.updateNodeInfo(request.getSeleniumServerUrl(), ((RemoteWebDriver) rawWebDriver).getSessionId().toString(), sessionContext)) {
+            final String sessionId = ((RemoteWebDriver) rawWebDriver).getSessionId().toString();
+            if (selenoidHelper.updateNodeInfo(request.getSeleniumServerUrl(), sessionId, sessionContext)) {
 
-                // create a VideoRequest with request and videoName
+                // Create a VideoRequest with request and videoName
                 final VideoRequest videoRequest = new VideoRequest(sessionContext, videoCaps.asMap().get(SelenoidCapabilityProvider.Caps.videoName.toString()).toString());
 
-                // store it.
+                // Store it.
                 videoRequestStorage.store(videoRequest);
 
-                // get vnc path and log
-                log().info("VNC Streaming URL: " + selenoidHelper.getRemoteVncUrl(videoRequest));
+                // Get vnc path and log
+                // At this time VideoRequest::sessionContext does not contain the current Selenoid session id -> needs to get from rawWebDriver
+                log().info("VNC Streaming URL: " + selenoidHelper.getRemoteVncUrl(videoRequest, sessionId));
             }
         }
 
