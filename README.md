@@ -127,7 +127,7 @@ More details: https://aerokube.com/selenoid/latest/#_downloading_files_from_brow
 
 #### Accessing clipboard
 
-Selenoid can returns the content of the clipboard of your browser session.
+Selenoid can return the content of the clipboard of your browser session.
 
 ´´´´java
 SessionContext currentSessionContext = ExecutionContextController.getCurrentSessionContext();
