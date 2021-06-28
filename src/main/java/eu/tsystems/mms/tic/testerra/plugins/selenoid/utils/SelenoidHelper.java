@@ -140,8 +140,13 @@ public class SelenoidHelper implements Loggable {
      * @return String
      */
     public String getRemoteVncUrl(VideoRequest videoRequest, String sessionId) {
+        if (sessionId.length() >= 64) {
+            // It's a GGR session id, so cut first 32 chars
+            sessionId = sessionId.substring(32);
+        }
+        String finalSessionId = sessionId;
         return videoRequest.sessionContext.getNodeInfo()
-                .map(nodeInfo -> VNC_ADDRESS + "?host=" + nodeInfo.getHost() + "&port=" + nodeInfo.getPort() + "&path=vnc/" + sessionId + "&autoconnect=true&password=selenoid")
+                .map(nodeInfo -> VNC_ADDRESS + "?host=" + nodeInfo.getHost() + "&port=" + nodeInfo.getPort() + "&path=vnc/" + finalSessionId + "&autoconnect=true&password=selenoid")
                 .orElse(null);
     }
 
