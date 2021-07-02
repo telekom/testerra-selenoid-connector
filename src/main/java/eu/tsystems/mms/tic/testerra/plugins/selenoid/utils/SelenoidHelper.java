@@ -32,7 +32,6 @@ import eu.tsystems.mms.tic.testframework.utils.StringUtils;
 import eu.tsystems.mms.tic.testframework.utils.Timer;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -162,17 +161,15 @@ public class SelenoidHelper implements Loggable {
      */
     public void deleteRemoteVideoFile(VideoRequest videoRequest) {
 
-        getVideoUrlString(videoRequest).ifPresent(videoUrlString -> {
-            try {
-                try (CloseableHttpClient client = HttpClients.createDefault()) {
-                    HttpDelete request = new HttpDelete(videoUrlString);
-                    CloseableHttpResponse response = client.execute(request);
-                    log().info("Deleted video on " + videoUrlString + " with status code: " + response.getStatusLine().getStatusCode());
-                }
-            } catch (Exception e) {
-                log().error("Deleting remote video was not successful", e);
-            }
-        });
+        Optional<String> url = getSelenoidUrl(videoRequest.sessionContext.getNodeInfo());
+        if (!url.isPresent()) {
+            log().error("Cannot delete Selenoid video because there is no host.");
+        }
+        SelenoidRestClient client = new SelenoidRestClient(url.get());
+        Optional<String> response = client.deleteVideofile(videoRequest.selenoidVideoName);
+        if (!response.isPresent()) {
+            log().error("Deleting remote video was not successful.");
+        }
     }
 
     /**

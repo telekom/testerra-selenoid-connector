@@ -31,7 +31,6 @@ import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -53,7 +52,7 @@ public class SelenoidRestClient implements Loggable {
     public Optional<String> getHost(String remoteSessionid) {
         Response response = this.getBuilder("/host/" + remoteSessionid).get();
         if (response.getStatus() != HttpStatus.SC_OK) {
-            log().warn("No Selenoid found.");
+            log().error("No Selenoid found. (" + response.getStatus() + ")");
             return Optional.empty();
         }
         return Optional.of(response.readEntity(String.class));
@@ -62,36 +61,28 @@ public class SelenoidRestClient implements Loggable {
     public Optional<String> getPing() {
         Response response = this.getBuilder("/ping").get();
         if (response.getStatus() != HttpStatus.SC_OK) {
-            log().error("No Selenoid found.");
+            log().error("No Selenoid found. (" + response.getStatus() + ")");
             return Optional.empty();
         }
         return Optional.of(response.readEntity(String.class));
     }
 
     public Optional<String> deleteVideofile(String videoFileName) {
-        Response response = this.getBuilder("(video/" + videoFileName).get();
+        Response response = this.getBuilder("/video/" + videoFileName).delete();
         if (response.getStatus() != HttpStatus.SC_OK) {
-            log().error("Cannot delete video file " + videoFileName);
+            log().error("Cannot delete video file " + videoFileName + "(" + response.getStatus() + ")");
+            log().error(response.readEntity(String.class));
             return Optional.empty();
         }
         return Optional.of(response.readEntity(String.class));
     }
 
     private Invocation.Builder getBuilder(String path) {
-        return this.getBuilder(path, null);
-    }
-
-    private Invocation.Builder getBuilder(String path, Map<String, String> params) {
         WebTarget webTarget = client
                 .target(this.url)
                 .path(path);
-
-        if (params != null) {
-            log().warn("Params not supported here. Will be ignored.");
-        }
-
+        log().debug(webTarget.getUri().toString());
         Invocation.Builder builder = webTarget.request(MediaType.APPLICATION_JSON);
-
         return builder;
     }
 
