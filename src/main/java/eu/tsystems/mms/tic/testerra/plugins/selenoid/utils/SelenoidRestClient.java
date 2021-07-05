@@ -23,7 +23,6 @@
 package eu.tsystems.mms.tic.testerra.plugins.selenoid.utils;
 
 import eu.tsystems.mms.tic.testframework.logging.Loggable;
-import org.apache.http.HttpStatus;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -52,7 +51,7 @@ public class SelenoidRestClient implements Loggable {
 
     public Optional<String> getHost(String remoteSessionid) {
         Response response = this.getBuilder("/host/" + remoteSessionid).get();
-        if (response.getStatus() != HttpStatus.SC_OK) {
+        if (response.getStatus() != Response.Status.OK.getStatusCode()) {
             log().error("No Selenoid found. (" + response.getStatus() + ")");
             return Optional.empty();
         }
@@ -61,7 +60,7 @@ public class SelenoidRestClient implements Loggable {
 
     public Optional<String> getPing() {
         Response response = this.getBuilder("/ping").get();
-        if (response.getStatus() != HttpStatus.SC_OK) {
+        if (response.getStatus() != Response.Status.OK.getStatusCode()) {
             log().error("No Selenoid found. (" + response.getStatus() + ")");
             return Optional.empty();
         }
@@ -70,7 +69,7 @@ public class SelenoidRestClient implements Loggable {
 
     public Optional<String> deleteVideofile(String videoFileName) {
         Response response = this.getBuilder("/video/" + videoFileName).delete();
-        if (response.getStatus() != HttpStatus.SC_OK) {
+        if (response.getStatus() != Response.Status.OK.getStatusCode()) {
             log().error("Cannot delete video file " + videoFileName + "(" + response.getStatus() + ")");
             log().error(response.readEntity(String.class));
             return Optional.empty();
@@ -81,7 +80,7 @@ public class SelenoidRestClient implements Loggable {
     public Optional<String> getClipboard(String remoteSessionId) {
         Response response = this.getBuilder("/clipboard/" + remoteSessionId).get();
         String result = response.readEntity(String.class);
-        if (response.getStatus() != HttpStatus.SC_OK) {
+        if (response.getStatus() != Response.Status.OK.getStatusCode()) {
             log().error("Cannot read clipboard from session (" + response.getStatus() + ")");
             log().error(result);
             return Optional.empty();
@@ -91,7 +90,7 @@ public class SelenoidRestClient implements Loggable {
 
     public void setClipbard(String remoteSessionId, String value) {
         Response response = this.getBuilder("/clipboard/" + remoteSessionId).post(Entity.entity(value, MediaType.TEXT_PLAIN_TYPE));
-        if (response.getStatus() != HttpStatus.SC_OK) {
+        if (response.getStatus() != Response.Status.OK.getStatusCode()) {
             log().error("Cannot set clipboard to session (" + response.getStatus() + ")");
             log().error(response.readEntity(String.class));
         }
