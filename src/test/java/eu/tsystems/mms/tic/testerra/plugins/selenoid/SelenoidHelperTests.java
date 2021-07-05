@@ -51,7 +51,6 @@ public class SelenoidHelperTests extends AbstractSelenoidTest {
 
     @Test
     public void test_GetClipboard() {
-        WebDriverManager.setGlobalExtraCapability("sessionTimeout", "10m");
         final WebDriver driver = WebDriverManager.getWebDriver();
         driver.get("https://the-internet.herokuapp.com");
         GuiElement element = new GuiElement(driver, By.xpath("//body"));
@@ -60,7 +59,25 @@ public class SelenoidHelperTests extends AbstractSelenoidTest {
 
         SessionContext currentSessionContext = ExecutionContextController.getCurrentSessionContext();
         String clipboard = SelenoidHelper.get().getClipboard(currentSessionContext);
+        Assert.assertNotNull(clipboard);
         Assert.assertTrue(clipboard.contains("Welcome to the-internet"));
     }
+
+    @Test
+    public void test_SetClipboard() {
+        WebDriverManager.setGlobalExtraCapability("sessionTimeout", "10m");
+        final WebDriver driver = WebDriverManager.getWebDriver();
+        driver.get("http://the-internet.herokuapp.com/tinymce");
+        final String value = "clipboard text";
+
+        SessionContext currentSessionContext = ExecutionContextController.getCurrentSessionContext();
+        SelenoidHelper.get().setClipboard(currentSessionContext, value);
+        GuiElement iframe = new GuiElement(driver, By.id("mce_0_ifr"));
+        GuiElement textArea = new GuiElement(driver, By.xpath("//body/p"), iframe);
+        textArea.sendKeys(Keys.CONTROL + "v");
+
+        textArea.asserts().assertTextContains(value);
+    }
+
 
 }

@@ -30,15 +30,7 @@ import eu.tsystems.mms.tic.testframework.transfer.ThrowablePackedResponse;
 import eu.tsystems.mms.tic.testframework.utils.FileDownloader;
 import eu.tsystems.mms.tic.testframework.utils.StringUtils;
 import eu.tsystems.mms.tic.testframework.utils.Timer;
-import org.apache.commons.io.IOUtils;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.Map;
 import java.util.Optional;
@@ -238,19 +230,6 @@ public class SelenoidHelper implements Loggable {
         SelenoidRestClient client = new SelenoidRestClient(url.get());
         Optional<String> clipboard = client.getClipboard(selenoidSessionId);
         return clipboard.orElse(null);
-//        return sessionContext.getNodeInfo()
-//                .map(nodeInfo -> {
-//                    final String url = String.format("http://%s:%s/clipboard/%s", nodeInfo.getHost(), nodeInfo.getPort(), selenoidSessionId);
-//                    try (CloseableHttpClient client = HttpClients.createDefault()) {
-//                        HttpGet request = new HttpGet(url);
-//                        CloseableHttpResponse response = client.execute(request);
-//                        return IOUtils.toString(response.getEntity().getContent(), response.getEntity().getContentEncoding().getValue());
-//                    } catch (IOException e) {
-//                        log().error("Error getting clipboard value", e);
-//                        return null;
-//                    }
-//                })
-//                .orElse(null);
     }
 
     /**
@@ -258,18 +237,12 @@ public class SelenoidHelper implements Loggable {
      */
     public void setClipboard(SessionContext sessionContext, String value) {
         String selenoidSessionId = getSelenoidSessionId(sessionContext.getRemoteSessionId());
-        sessionContext.getNodeInfo()
-                .ifPresent(nodeInfo -> {
-                    final String url = String.format("http://%s:%s/clipboard/%s", nodeInfo.getHost(), nodeInfo.getPort(), selenoidSessionId);
-                    try (CloseableHttpClient client = HttpClients.createDefault()) {
-                        HttpPost request = new HttpPost(url);
-                        request.setEntity(new StringEntity(value));
-                        CloseableHttpResponse response = client.execute(request);
-                        log().info("Set clipboard value with status code: " + response.getStatusLine().getStatusCode());
-                    } catch (IOException e) {
-                        log().error("Error setting clipboard value", e);
-                    }
-                });
+        Optional<String> url = getSelenoidUrl(sessionContext.getNodeInfo());
+        if (!url.isPresent()) {
+            log().error("Cannot set clipboard because there is no host.");
+        }
+        SelenoidRestClient client = new SelenoidRestClient(url.get());
+        client.setClipbard(selenoidSessionId, value);
     }
 
     private Optional<String> getSelenoidUrl(Optional<NodeInfo> nodeInfo) {
