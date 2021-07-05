@@ -160,7 +160,6 @@ public class SelenoidHelper implements Loggable {
      * @param videoRequest
      */
     public void deleteRemoteVideoFile(VideoRequest videoRequest) {
-
         Optional<String> url = getSelenoidUrl(videoRequest.sessionContext.getNodeInfo());
         if (!url.isPresent()) {
             log().error("Cannot delete Selenoid video because there is no host.");
@@ -232,19 +231,26 @@ public class SelenoidHelper implements Loggable {
      */
     public String getClipboard(SessionContext sessionContext) {
         String selenoidSessionId = getSelenoidSessionId(sessionContext.getRemoteSessionId());
-        return sessionContext.getNodeInfo()
-                .map(nodeInfo -> {
-                    final String url = String.format("http://%s:%s/clipboard/%s", nodeInfo.getHost(), nodeInfo.getPort(), selenoidSessionId);
-                    try (CloseableHttpClient client = HttpClients.createDefault()) {
-                        HttpGet request = new HttpGet(url);
-                        CloseableHttpResponse response = client.execute(request);
-                        return IOUtils.toString(response.getEntity().getContent(), response.getEntity().getContentEncoding().getValue());
-                    } catch (IOException e) {
-                        log().error("Error getting clipboard value", e);
-                        return null;
-                    }
-                })
-                .orElse(null);
+        Optional<String> url = getSelenoidUrl(sessionContext.getNodeInfo());
+        if (!url.isPresent()) {
+            log().error("Cannot read clipboard because there is no host.");
+        }
+        SelenoidRestClient client = new SelenoidRestClient(url.get());
+        Optional<String> clipboard = client.getClipboard(selenoidSessionId);
+        return clipboard.orElse(null);
+//        return sessionContext.getNodeInfo()
+//                .map(nodeInfo -> {
+//                    final String url = String.format("http://%s:%s/clipboard/%s", nodeInfo.getHost(), nodeInfo.getPort(), selenoidSessionId);
+//                    try (CloseableHttpClient client = HttpClients.createDefault()) {
+//                        HttpGet request = new HttpGet(url);
+//                        CloseableHttpResponse response = client.execute(request);
+//                        return IOUtils.toString(response.getEntity().getContent(), response.getEntity().getContentEncoding().getValue());
+//                    } catch (IOException e) {
+//                        log().error("Error getting clipboard value", e);
+//                        return null;
+//                    }
+//                })
+//                .orElse(null);
     }
 
     /**

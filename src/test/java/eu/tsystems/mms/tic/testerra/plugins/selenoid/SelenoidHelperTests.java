@@ -23,9 +23,12 @@
 package eu.tsystems.mms.tic.testerra.plugins.selenoid;
 
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.SelenoidHelper;
+import eu.tsystems.mms.tic.testframework.pageobjects.GuiElement;
 import eu.tsystems.mms.tic.testframework.report.model.context.SessionContext;
 import eu.tsystems.mms.tic.testframework.report.utils.ExecutionContextController;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverManager;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -35,7 +38,7 @@ import org.testng.annotations.Test;
  *
  * @author mgn
  */
-public class SelenoidHelperTests extends AbstractSelenoidTest{
+public class SelenoidHelperTests extends AbstractSelenoidTest {
 
     @Test
     public void test_SelenoidIsUsed() {
@@ -44,6 +47,20 @@ public class SelenoidHelperTests extends AbstractSelenoidTest{
         SessionContext currentSessionContext = ExecutionContextController.getCurrentSessionContext();
         boolean selenoidUsed = SelenoidHelper.get().isSelenoidUsed(currentSessionContext);
         Assert.assertTrue(selenoidUsed);
+    }
+
+    @Test
+    public void test_GetClipboard() {
+        WebDriverManager.setGlobalExtraCapability("sessionTimeout", "10m");
+        final WebDriver driver = WebDriverManager.getWebDriver();
+        driver.get("https://the-internet.herokuapp.com");
+        GuiElement element = new GuiElement(driver, By.xpath("//body"));
+        element.sendKeys(Keys.CONTROL + "a");
+        element.sendKeys(Keys.CONTROL + "c");
+
+        SessionContext currentSessionContext = ExecutionContextController.getCurrentSessionContext();
+        String clipboard = SelenoidHelper.get().getClipboard(currentSessionContext);
+        Assert.assertTrue(clipboard.contains("Welcome to the-internet"));
     }
 
 }

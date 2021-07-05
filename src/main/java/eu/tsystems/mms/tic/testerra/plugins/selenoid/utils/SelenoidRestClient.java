@@ -77,6 +77,17 @@ public class SelenoidRestClient implements Loggable {
         return Optional.of(response.readEntity(String.class));
     }
 
+    public Optional<String> getClipboard(String remoteSessionId) {
+        Response response = this.getBuilder("/clipboard/" + remoteSessionId).get();
+        String result = response.readEntity(String.class);
+        if (response.getStatus() != HttpStatus.SC_OK) {
+            log().error("Cannot read clipboard (" + response.getStatus() + ")");
+            log().error(result);
+            return Optional.empty();
+        }
+        return Optional.of(result);
+    }
+
     private Invocation.Builder getBuilder(String path) {
         WebTarget webTarget = client
                 .target(this.url)
