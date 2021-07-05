@@ -155,11 +155,12 @@ public class SelenoidHelper implements Loggable {
         Optional<String> url = getSelenoidUrl(videoRequest.sessionContext.getNodeInfo());
         if (!url.isPresent()) {
             log().error("Cannot delete Selenoid video because there is no host.");
-        }
-        SelenoidRestClient client = new SelenoidRestClient(url.get());
-        Optional<String> response = client.deleteVideofile(videoRequest.selenoidVideoName);
-        if (!response.isPresent()) {
-            log().error("Deleting remote video was not successful.");
+        } else {
+            SelenoidRestClient client = new SelenoidRestClient(url.get());
+            Optional<String> response = client.deleteVideofile(videoRequest.selenoidVideoName);
+            if (!response.isPresent()) {
+                log().error("Deleting remote video was not successful.");
+            }
         }
     }
 
@@ -226,10 +227,12 @@ public class SelenoidHelper implements Loggable {
         Optional<String> url = getSelenoidUrl(sessionContext.getNodeInfo());
         if (!url.isPresent()) {
             log().error("Cannot read clipboard because there is no host.");
+            return null;
         }
         SelenoidRestClient client = new SelenoidRestClient(url.get());
         Optional<String> clipboard = client.getClipboard(selenoidSessionId);
         return clipboard.orElse(null);
+
     }
 
     /**
@@ -240,9 +243,10 @@ public class SelenoidHelper implements Loggable {
         Optional<String> url = getSelenoidUrl(sessionContext.getNodeInfo());
         if (!url.isPresent()) {
             log().error("Cannot set clipboard because there is no host.");
+        } else {
+            SelenoidRestClient client = new SelenoidRestClient(url.get());
+            client.setClipbard(selenoidSessionId, value);
         }
-        SelenoidRestClient client = new SelenoidRestClient(url.get());
-        client.setClipbard(selenoidSessionId, value);
     }
 
     private Optional<String> getSelenoidUrl(Optional<NodeInfo> nodeInfo) {
