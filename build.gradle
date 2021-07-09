@@ -31,8 +31,11 @@ repositories {
 
 dependencies {
     compileOnly 'io.testerra:driver-ui-desktop:' + testerraCompileVersion
-    implementation 'org.apache.httpcomponents:httpclient:4.5.12'
     implementation 'com.google.code.gson:gson:2.8.6'
+
+    // Rest client
+    implementation 'org.glassfish.jersey.core:jersey-client:2.34'
+    implementation 'org.glassfish.jersey.inject:jersey-hk2:2.34'
 
     testImplementation 'io.testerra:driver-ui-desktop:' + testerraTestVersion
     testImplementation 'io.testerra:report-ng:' + testerraTestVersion

@@ -20,6 +20,7 @@ package eu.tsystems.mms.tic.testerra.plugins.selenoid.utils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.request.VideoRequest;
 import eu.tsystems.mms.tic.testframework.common.PropertyManager;
 import eu.tsystems.mms.tic.testframework.logging.Loggable;
@@ -27,20 +28,9 @@ import eu.tsystems.mms.tic.testframework.model.NodeInfo;
 import eu.tsystems.mms.tic.testframework.report.model.context.SessionContext;
 import eu.tsystems.mms.tic.testframework.transfer.ThrowablePackedResponse;
 import eu.tsystems.mms.tic.testframework.utils.FileDownloader;
-import eu.tsystems.mms.tic.testframework.utils.RESTUtils;
 import eu.tsystems.mms.tic.testframework.utils.StringUtils;
 import eu.tsystems.mms.tic.testframework.utils.Timer;
-import org.apache.commons.io.IOUtils;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Map;
 import java.util.Optional;
@@ -77,8 +67,14 @@ public class SelenoidHelper implements Loggable {
          * See https://aerokube.com/ggr/latest/#_getting_host_by_session_id for getting Selenoid node information via Selenoid GGR
          */
         try {
+            SelenoidRestClient client = new SelenoidRestClient(url);
+            Optional<String> response = client.getHost(remoteSessionId);
 
-            String nodeResponse = RESTUtils.requestGET(url + "/host/" + remoteSessionId, 30 * 1000, String.class);
+            if (!response.isPresent()) {
+                throw new Exception("There was no response from Selenium server.");
+            }
+
+            String nodeResponse = response.get();
 
             // A standalone Selenoid returns something like 'You are using Selenoid 1.10.1!'
             if (StringUtils.isNotBlank(nodeResponse) && nodeResponse.toLowerCase().contains("selenoid")) {
@@ -108,25 +104,29 @@ public class SelenoidHelper implements Loggable {
      * @return true, when seleniod is active.
      */
     public boolean isSelenoidUsed(SessionContext sessionContext) {
-        Optional<NodeInfo> optionalNodeInfo = sessionContext.getNodeInfo();
-        if (!optionalNodeInfo.isPresent()) {
+        Optional<String> url = getSelenoidUrl(sessionContext.getNodeInfo());
+        if (!url.isPresent()) {
             return false;
         }
 
-        NodeInfo nodeInfo = optionalNodeInfo.get();
-        final String url = String.format("http://%s:%s/ping", nodeInfo.getHost(), nodeInfo.getPort());
-        try (CloseableHttpClient client = HttpClients.createDefault()) {
-            HttpGet request = new HttpGet(url);
-            CloseableHttpResponse response = client.execute(request);
+        SelenoidRestClient client = new SelenoidRestClient(url.get());
+        Optional<String> response = client.getPing();
+        if (!response.isPresent()) {
+            log().warn("Empty response from " + url.get());
+            return false;
+        }
+
+        try {
+            String ping = response.get();
             Gson gson = new Gson();
-            Map result = gson.fromJson(new InputStreamReader(response.getEntity().getContent()), Map.class);
+            Map result = gson.fromJson(ping, Map.class);
             if (result != null && result.containsKey("version")) {
-                log().debug("Selenoid ping: " + nodeInfo + ": " + result);
+                log().debug("Selenoid ping from " + url.get() + ": " + result);
                 return true;
             } else {
-                log().warn("No Selenoid response from " + url + ", status: " + response.getStatusLine().getStatusCode());
+                log().warn("No Selenoid response from " + url.get());
             }
-        } catch (IOException e) {
+        } catch (JsonSyntaxException e) {
             log().error("Error pinging selenoid", e);
         }
 
@@ -152,18 +152,16 @@ public class SelenoidHelper implements Loggable {
      * @param videoRequest
      */
     public void deleteRemoteVideoFile(VideoRequest videoRequest) {
-
-        getVideoUrlString(videoRequest).ifPresent(videoUrlString -> {
-            try {
-                try (CloseableHttpClient client = HttpClients.createDefault()) {
-                    HttpDelete request = new HttpDelete(videoUrlString);
-                    CloseableHttpResponse response = client.execute(request);
-                    log().info("Deleted video on " + videoUrlString + " with status code: " + response.getStatusLine().getStatusCode());
-                }
-            } catch (Exception e) {
-                log().error("Deleting remote video was not successful", e);
+        Optional<String> url = getSelenoidUrl(videoRequest.sessionContext.getNodeInfo());
+        if (!url.isPresent()) {
+            log().error("Cannot delete Selenoid video because there is no host.");
+        } else {
+            SelenoidRestClient client = new SelenoidRestClient(url.get());
+            Optional<String> response = client.deleteVideofile(videoRequest.selenoidVideoName);
+            if (!response.isPresent()) {
+                log().error("Deleting remote video was not successful.");
             }
-        });
+        }
     }
 
     /**
@@ -226,19 +224,15 @@ public class SelenoidHelper implements Loggable {
      */
     public String getClipboard(SessionContext sessionContext) {
         String selenoidSessionId = getSelenoidSessionId(sessionContext.getRemoteSessionId());
-        return sessionContext.getNodeInfo()
-                .map(nodeInfo -> {
-                    final String url = String.format("http://%s:%s/clipboard/%s", nodeInfo.getHost(), nodeInfo.getPort(), selenoidSessionId);
-                    try (CloseableHttpClient client = HttpClients.createDefault()) {
-                        HttpGet request = new HttpGet(url);
-                        CloseableHttpResponse response = client.execute(request);
-                        return IOUtils.toString(response.getEntity().getContent(), response.getEntity().getContentEncoding().getValue());
-                    } catch (IOException e) {
-                        log().error("Error getting clipboard value", e);
-                        return null;
-                    }
-                })
-                .orElse(null);
+        Optional<String> url = getSelenoidUrl(sessionContext.getNodeInfo());
+        if (!url.isPresent()) {
+            log().error("Cannot read clipboard because there is no host.");
+            return null;
+        }
+        SelenoidRestClient client = new SelenoidRestClient(url.get());
+        Optional<String> clipboard = client.getClipboard(selenoidSessionId);
+        return clipboard.orElse(null);
+
     }
 
     /**
@@ -246,18 +240,20 @@ public class SelenoidHelper implements Loggable {
      */
     public void setClipboard(SessionContext sessionContext, String value) {
         String selenoidSessionId = getSelenoidSessionId(sessionContext.getRemoteSessionId());
-        sessionContext.getNodeInfo()
-                .ifPresent(nodeInfo -> {
-                    final String url = String.format("http://%s:%s/clipboard/%s", nodeInfo.getHost(), nodeInfo.getPort(), selenoidSessionId);
-                    try (CloseableHttpClient client = HttpClients.createDefault()) {
-                        HttpPost request = new HttpPost(url);
-                        request.setEntity(new StringEntity(value));
-                        CloseableHttpResponse response = client.execute(request);
-                        log().info("Set clipboard value with status code: " + response.getStatusLine().getStatusCode());
-                    } catch (IOException e) {
-                        log().error("Error setting clipboard value", e);
-                    }
-                });
+        Optional<String> url = getSelenoidUrl(sessionContext.getNodeInfo());
+        if (!url.isPresent()) {
+            log().error("Cannot set clipboard because there is no host.");
+        } else {
+            SelenoidRestClient client = new SelenoidRestClient(url.get());
+            client.setClipbard(selenoidSessionId, value);
+        }
+    }
+
+    private Optional<String> getSelenoidUrl(Optional<NodeInfo> nodeInfo) {
+        if (nodeInfo.isPresent()) {
+            return Optional.of(String.format("http://%s:%s/", nodeInfo.get().getHost(), nodeInfo.get().getPort()));
+        }
+        return Optional.empty();
     }
 
     private String getSelenoidSessionId(Optional<String> optionalremoteSessionId) {
