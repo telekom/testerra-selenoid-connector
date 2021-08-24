@@ -129,10 +129,10 @@ More details: https://aerokube.com/selenoid/latest/#_downloading_files_from_brow
 
 Selenoid can return the content of the clipboard of your browser session.
 
-´´´´java
+````java
 SessionContext currentSessionContext = ExecutionContextController.getCurrentSessionContext();
 String clipboard = SelenoidHelper.get().getClipboard(currentSessionContext);
-´´´´
+````
 
 More details: https://aerokube.com/selenoid/latest/#_accessing_clipboard
 
