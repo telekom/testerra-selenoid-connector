@@ -34,7 +34,8 @@ The module will register automatically by using `ModuleHook`.
 | `1.0-RC-13`          | ` 1.0-RC-32`  |
 | `1.0-RC-14`          | ` 1.0-RC-34`  |
 | `1.0.0`              | ` 1.0.0`      |
-| `>= 1.1`             | `>= 1.1`      |
+| `1.1 ... 1.3`        | `>= 1.1`      |
+| `>= 1.4`             | `>= 1.7`      |
 
 You need at least Selenoid 1.10.1 or above.
 
@@ -45,7 +46,7 @@ Include the following dependency in your project.
 Gradle:
 
 ````groovy
-implementation 'io.testerra:selenoid-connector:1.2'
+implementation 'io.testerra:selenoid-connector:1.4'
 ````
 
 Maven:
@@ -55,7 +56,7 @@ Maven:
 <dependency>
     <groupId>io.testerra</groupId>
     <artifactId>selenoid-connector</artifactId>
-    <version>1.2</version>
+    <version>1.4</version>
 </dependency>
 ````
 
@@ -163,7 +164,9 @@ The Selenoid connector adds some additional information to the new browser sessi
 | RunConfig | Contains the Testerra run configuration |
 | Testmethod | Contains the current TestNG test method name |
 
-This feature is mentioned here: [https://aerokube.com/selenoid/latest/#_container_labels_labels](). 
+This feature is mentioned here: [https://aerokube.com/selenoid/latest/#_container_labels_labels]().
+
+The Selenoid containers screen resolution is set via. Testerra property `tt.window.size`.
 
 ### Troubleshooting
 
