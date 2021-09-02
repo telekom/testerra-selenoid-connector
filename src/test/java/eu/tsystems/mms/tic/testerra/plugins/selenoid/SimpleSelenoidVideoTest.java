@@ -23,7 +23,11 @@
 package eu.tsystems.mms.tic.testerra.plugins.selenoid;
 
 import eu.tsystems.mms.tic.testframework.execution.testng.AssertCollector;
+import eu.tsystems.mms.tic.testframework.report.model.context.MethodContext;
+import eu.tsystems.mms.tic.testframework.report.model.context.SessionContext;
+import eu.tsystems.mms.tic.testframework.report.model.context.Video;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverManager;
+import java.util.Optional;
 import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -38,7 +42,7 @@ public class SimpleSelenoidVideoTest extends AbstractSelenoidTest {
 
     @Test(dependsOnMethods = "testT01_SuccessfulTestCaseWillNotCreateVideo", alwaysRun = true)
     public void test_VideoIsNotPresent_after_SuccessfulTestCaseWillNotCreateVideo() {
-        this.isVideoPresentInMethodContext("testT01_SuccessfulTestCaseWillNotCreateVideo", false);
+        this.assertVideoIsPresentInMethodContext("testT01_SuccessfulTestCaseWillNotCreateVideo", false);
     }
 
     @Test
@@ -51,7 +55,15 @@ public class SimpleSelenoidVideoTest extends AbstractSelenoidTest {
 
     @Test(dependsOnMethods = "testT02_FailedTestCaseWillCreateVideo", alwaysRun = true)
     public void test_VideoIsPresent_after_FailedTestCaseWillCreateVideo() {
-        this.isVideoPresentInMethodContext("testT02_FailedTestCaseWillCreateVideo", true);
+        //this.isVideoPresentInMethodContext("testT02_FailedTestCaseWillCreateVideo", true);
+        String methodName = "testT02_FailedTestCaseWillCreateVideo";
+        Optional<Video> optionalVideo = this.findMethodContext(methodName)
+                .flatMap(MethodContext::readSessionContexts)
+                .map(SessionContext::getVideo)
+                .flatMap(Optional::stream)
+                .findFirst();
+
+        assertVideoIsPresent(methodName, optionalVideo, true);
     }
 
     @Test
@@ -63,7 +75,7 @@ public class SimpleSelenoidVideoTest extends AbstractSelenoidTest {
 
     @Test(dependsOnMethods = "testT03_FailedTestWithCollectedAssertions", alwaysRun = true)
     public void test_VideoIsPresent_after_FailedTestWithCollectedAssertions() {
-        this.isVideoPresentInMethodContext("testT03_FailedTestWithCollectedAssertions", true);
+        this.assertVideoIsPresentInMethodContext("testT03_FailedTestWithCollectedAssertions", true);
     }
 
 }
