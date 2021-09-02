@@ -20,11 +20,13 @@ package eu.tsystems.mms.tic.testerra.plugins.selenoid.webdriver;
 
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.SelenoidProperties;
 import eu.tsystems.mms.tic.testframework.common.PropertyManager;
+import eu.tsystems.mms.tic.testframework.constants.TesterraProperties;
 import eu.tsystems.mms.tic.testframework.report.utils.ExecutionContextController;
 import eu.tsystems.mms.tic.testframework.report.utils.ExecutionContextUtils;
 import eu.tsystems.mms.tic.testframework.utils.StringUtils;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.DesktopWebDriverRequest;
 import org.openqa.selenium.Capabilities;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 import java.lang.reflect.Method;
@@ -81,6 +83,8 @@ public class SelenoidCapabilityProvider {
         desiredCapabilities.setCapability("enableVideo", VIDEO_ACTIVE);
         desiredCapabilities.setCapability("videoFrameRate", 2);
         desiredCapabilities.setCapability("videoName", createVideoName(request.getSessionKey(), reportName, runConfigName));
+        Dimension windowSize = request.getWindowSize();
+        desiredCapabilities.setCapability("screenResolution", String.format("%sx%sx24", windowSize.getWidth(), windowSize.getHeight()));
 
         final Map<String, String> map = new HashMap<>();
         map.put("ReportName", reportName);

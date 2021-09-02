@@ -56,7 +56,7 @@ public class ExclusiveSessionSelenoidVideoTest extends AbstractSelenoidTest impl
                 /**
                  * TODO: Move that into a TestUnderTest
                  */
-                self.isVideoPresentInMethodContext("testT03_FailingTestWillStopVideo", true);
+                self.assertVideoIsPresentInMethodContext("testT03_FailingTestWillStopVideo", true);
             }
         });
     }
