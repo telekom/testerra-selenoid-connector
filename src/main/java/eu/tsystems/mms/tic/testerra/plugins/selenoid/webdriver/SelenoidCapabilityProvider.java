@@ -20,6 +20,7 @@ package eu.tsystems.mms.tic.testerra.plugins.selenoid.webdriver;
 
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.SelenoidProperties;
 import eu.tsystems.mms.tic.testframework.common.PropertyManager;
+import eu.tsystems.mms.tic.testframework.constants.TesterraProperties;
 import eu.tsystems.mms.tic.testframework.report.utils.ExecutionContextController;
 import eu.tsystems.mms.tic.testframework.report.utils.ExecutionContextUtils;
 import eu.tsystems.mms.tic.testframework.utils.StringUtils;
@@ -81,6 +82,8 @@ public class SelenoidCapabilityProvider {
         desiredCapabilities.setCapability("enableVideo", VIDEO_ACTIVE);
         desiredCapabilities.setCapability("videoFrameRate", 2);
         desiredCapabilities.setCapability("videoName", createVideoName(request.getSessionKey(), reportName, runConfigName));
+        String windowSizeProperty = PropertyManager.getProperty(TesterraProperties.WINDOW_SIZE, PropertyManager.getProperty(TesterraProperties.DISPLAY_RESOLUTION, "1920x1080"));
+        desiredCapabilities.setCapability("screenResolution", String.format("%sx24", windowSizeProperty.trim()));
 
         final Map<String, String> map = new HashMap<>();
         map.put("ReportName", reportName);
