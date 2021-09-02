@@ -166,7 +166,7 @@ The Selenoid connector adds some additional information to the new browser sessi
 
 This feature is mentioned here: [https://aerokube.com/selenoid/latest/#_container_labels_labels]().
 
-The Selenoid containers screen resolution is set via. Testerra property `tt.window.size`.
+The Selenoid container's screen resolution is set via. Testerra property `tt.window.size`.
 
 ### Troubleshooting
 
