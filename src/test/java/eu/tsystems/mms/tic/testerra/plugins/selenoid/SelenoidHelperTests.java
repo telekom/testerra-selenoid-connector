@@ -73,7 +73,7 @@ public class SelenoidHelperTests extends AbstractSelenoidTest {
         SessionContext currentSessionContext = ExecutionContextController.getCurrentSessionContext();
         SelenoidHelper.get().setClipboard(currentSessionContext, value);
         GuiElement iframe = new GuiElement(driver, By.id("mce_0_ifr"));
-        GuiElement textArea = new GuiElement(driver, By.xpath("//body/p"), iframe);
+        GuiElement textArea = iframe.getSubElement(By.xpath("//body/p"));
         textArea.sendKeys(Keys.CONTROL + "v");
 
         textArea.asserts().assertTextContains(value);

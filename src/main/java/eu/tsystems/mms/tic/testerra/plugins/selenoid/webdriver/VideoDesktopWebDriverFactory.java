@@ -21,17 +21,10 @@ package eu.tsystems.mms.tic.testerra.plugins.selenoid.webdriver;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.request.VideoRequest;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.request.VideoRequestStorage;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.SelenoidHelper;
-import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.SelenoidProperties;
-import eu.tsystems.mms.tic.testframework.common.PropertyManager;
 import eu.tsystems.mms.tic.testframework.logging.Loggable;
-import eu.tsystems.mms.tic.testframework.report.model.context.SessionContext;
 import eu.tsystems.mms.tic.testframework.testing.WebDriverManagerProvider;
-import eu.tsystems.mms.tic.testframework.webdrivermanager.DesktopWebDriverRequest;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverRequest;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import org.apache.commons.lang3.StringUtils;
-import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriver;
 
 /**
@@ -45,16 +38,9 @@ import org.openqa.selenium.WebDriver;
 public class VideoDesktopWebDriverFactory implements
         Loggable,
         Consumer<WebDriver>,
-        BiConsumer<WebDriverRequest, SessionContext>,
         WebDriverManagerProvider
 {
-
-    private static final boolean VNC_ACTIVE = PropertyManager.getBooleanProperty(SelenoidProperties.VNC_ENABLED, SelenoidProperties.Default.VNC_ENABLED);
-    private static final String VNC_ADDRESS = PropertyManager.getProperty(SelenoidProperties.VNC_ADDRESS, SelenoidProperties.Default.VNC_ADDRESS);
-
-    private final SelenoidCapabilityProvider selenoidCapabilityProvider = SelenoidCapabilityProvider.get();
     private final SelenoidHelper selenoidHelper = SelenoidHelper.get();
-
     private final VideoRequestStorage videoRequestStorage = VideoRequestStorage.get();
 
     // After startup
@@ -71,28 +57,10 @@ public class VideoDesktopWebDriverFactory implements
 
                             // store it.
                             videoRequestStorage.store(videoRequest);
-                            log().info("VNC Streaming URL: " + selenoidHelper.getRemoteVncUrl(videoRequest));
+                            log().info("VNC Streaming URL: " + selenoidHelper.getRemoteVncUrl(videoRequest, remoteSessionId));
                         }
                     });
             });
         });
-    }
-
-    @Override
-    public void accept(WebDriverRequest webDriverRequest, SessionContext sessionContext) {
-
-        // Only accept webdrivers for desktop
-        if (!(webDriverRequest instanceof DesktopWebDriverRequest)) {
-            return;
-        }
-
-        if (VNC_ACTIVE && StringUtils.isBlank(VNC_ADDRESS)) {
-            log().warn(String.format("%s is set to true, but vnc host property %s was not set.", SelenoidProperties.VNC_ENABLED, SelenoidProperties.VNC_ADDRESS));
-        }
-
-        DesktopWebDriverRequest desktopWebDriverRequest = (DesktopWebDriverRequest)webDriverRequest;
-        // determine everything for selenoid... incl. video name on remote.
-        final Capabilities videoCaps = selenoidCapabilityProvider.provide(desktopWebDriverRequest);
-        desktopWebDriverRequest.getDesiredCapabilities().merge(videoCaps);
     }
 }

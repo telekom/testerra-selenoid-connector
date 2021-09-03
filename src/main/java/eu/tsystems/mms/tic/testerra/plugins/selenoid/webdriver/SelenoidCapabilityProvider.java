@@ -21,10 +21,13 @@ package eu.tsystems.mms.tic.testerra.plugins.selenoid.webdriver;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.SelenoidProperties;
 import eu.tsystems.mms.tic.testframework.common.PropertyManager;
 import eu.tsystems.mms.tic.testframework.common.Testerra;
+import eu.tsystems.mms.tic.testframework.logging.Loggable;
 import eu.tsystems.mms.tic.testframework.report.utils.ExecutionContextController;
 import eu.tsystems.mms.tic.testframework.report.utils.ExecutionContextUtils;
 import eu.tsystems.mms.tic.testframework.utils.StringUtils;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.DesktopWebDriverRequest;
+import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverRequest;
+import java.util.function.Consumer;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -42,23 +45,31 @@ import java.util.Optional;
  *
  * @author Eric Kubenka
  */
-public class SelenoidCapabilityProvider {
+public class SelenoidCapabilityProvider implements Consumer<WebDriverRequest>, Loggable {
 
-    private static final boolean VIDEO_ACTIVE = Testerra.Properties.SCREENCASTER_ACTIVE.asBool();
-    private static final boolean VNC_ACTIVE = PropertyManager.getBooleanProperty(SelenoidProperties.VNC_ENABLED, SelenoidProperties.Default.VNC_ENABLED);
+    private final boolean VIDEO_ACTIVE = Testerra.Properties.SCREENCASTER_ACTIVE.asBool();
+    private final boolean VNC_ACTIVE = PropertyManager.getBooleanProperty(SelenoidProperties.VNC_ENABLED, SelenoidProperties.Default.VNC_ENABLED);
+    private final String VNC_ADDRESS = PropertyManager.getProperty(SelenoidProperties.VNC_ADDRESS, SelenoidProperties.Default.VNC_ADDRESS);
+
+    @Override
+    public void accept(WebDriverRequest webDriverRequest) {
+        // Only accept webdrivers for desktop
+        if (!(webDriverRequest instanceof DesktopWebDriverRequest)) {
+            return;
+        }
+
+        if (VNC_ACTIVE && org.apache.commons.lang3.StringUtils.isBlank(VNC_ADDRESS)) {
+            log().warn(String.format("%s is set to true, but vnc host property %s was not set.", SelenoidProperties.VNC_ENABLED, SelenoidProperties.VNC_ADDRESS));
+        }
+
+        DesktopWebDriverRequest desktopWebDriverRequest = (DesktopWebDriverRequest)webDriverRequest;
+        // determine everything for selenoid... incl. video name on remote.
+        final Capabilities videoCaps = provide(desktopWebDriverRequest);
+        desktopWebDriverRequest.getDesiredCapabilities().merge(videoCaps);
+    }
 
     public enum Caps {
         videoName
-    }
-
-    private static final SelenoidCapabilityProvider INSTANCE = new SelenoidCapabilityProvider();
-
-    private SelenoidCapabilityProvider() {
-
-    }
-
-    public static SelenoidCapabilityProvider get() {
-        return INSTANCE;
     }
 
     /**
@@ -67,7 +78,7 @@ public class SelenoidCapabilityProvider {
      * @param request {@link eu.tsystems.mms.tic.testerra.plugins.selenoid.request.VideoRequest}
      * @return Capabilities
      */
-    public Capabilities provide(DesktopWebDriverRequest request) {
+    private Capabilities provide(DesktopWebDriverRequest request) {
 
         final String reportName = ExecutionContextController.getCurrentExecutionContext().runConfig.getReportName();
         final String runConfigName = ExecutionContextController.getCurrentExecutionContext().runConfig.RUNCFG;

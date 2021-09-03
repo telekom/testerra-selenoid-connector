@@ -21,6 +21,7 @@ package eu.tsystems.mms.tic.testerra.plugins.selenoid.hooks;
 import com.google.inject.AbstractModule;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.collector.SelenoidEvidenceVideoCollector;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.SelenoidProperties;
+import eu.tsystems.mms.tic.testerra.plugins.selenoid.webdriver.SelenoidCapabilityProvider;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.webdriver.VideoDesktopWebDriverFactory;
 import eu.tsystems.mms.tic.testframework.common.PropertyManager;
 import eu.tsystems.mms.tic.testframework.common.Testerra;
@@ -47,9 +48,7 @@ public class SelenoidVideoHook extends AbstractModule implements
     @Override
     public void init() {
 
-        VideoDesktopWebDriverFactory videoDesktopWebDriverFactory = new VideoDesktopWebDriverFactory();
-
-        WEB_DRIVER_MANAGER.registerWebDriverRequestConfigurator(videoDesktopWebDriverFactory);
+        WEB_DRIVER_MANAGER.registerWebDriverRequestConfigurator(new SelenoidCapabilityProvider());
 
         // VIDEO and VNC disabled by properties. Not doing anything here.
         if (!VIDEO_ACTIVE && !VNC_ACTIVE) {
@@ -60,7 +59,7 @@ public class SelenoidVideoHook extends AbstractModule implements
         // Adding Video Handlers
         if (VIDEO_ACTIVE) {
 
-            WEB_DRIVER_MANAGER.registerWebDriverAfterStartupHandler(videoDesktopWebDriverFactory);
+            WEB_DRIVER_MANAGER.registerWebDriverAfterStartupHandler(new VideoDesktopWebDriverFactory());
 
             SelenoidEvidenceVideoCollector selenoidEvidenceVideoCollector = new SelenoidEvidenceVideoCollector();
 
