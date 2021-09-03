@@ -29,15 +29,20 @@ The module will register automatically by using `ModuleHook`.
 
 ### Requirements
 
-| Selenoid connector    | Testerra                  |
-| --------------------- | ------------------------- |
-| `1.0-RC-13`           | ` 1.0-RC-32 - 1.0-RC-33`  |
-| `1.0-RC-14`           | ` 1.0-RC-34`              |
-| `1.0.0`               | `>= 1.0.0`                |
-| `1.1`                | `>= 1.1`      |
+| Selenoid connector   | Testerra      |
+| -------------------- | --------------|
+| `1.0-RC-13`          | ` 1.0-RC-32`  |
+| `1.0-RC-14`          | ` 1.0-RC-34`  |
+| `1.0.0`              | ` 1.0.0`      |
+| `1.1 ... 1.3`        | `>= 1.1`      |
+| `>= 1.4`             | `>= 1.7`      |
 | `2.0-RC-1`           | `...2.0-RC-3`  |
-| `2.0-RC-2`           | `>= 2.0-RC-4`            |
-| `2.0-RC-3`           | `>= 2.0-RC-5`            |
+| `2.0-RC-2`           | `2.0-RC-4`  |
+| `2.0-RC-3`           | `...2.0-RC-5` |
+| `2.0-RC-4`           | `2.0-RC-12` |
+
+You need at least Selenoid 1.10.1 or above.
+
 
 ### Usage
 
@@ -46,7 +51,7 @@ Include the following dependency in your project.
 Gradle:
 
 ````groovy
-implementation 'io.testerra:selenoid-connector:2.0-RC-3'
+implementation 'io.testerra:selenoid-connector:2.0-RC-4'
 ````
 
 Maven:
@@ -56,7 +61,7 @@ Maven:
 <dependency>
     <groupId>io.testerra</groupId>
     <artifactId>selenoid-connector</artifactId>
-    <version>2.0-RC-3</version>
+    <version>2.0-RC-4</version>
 </dependency>
 ````
 
@@ -112,11 +117,37 @@ browser session was started successfully.
 Some IDEs mark the URL as clickable link.
 ![](doc/selenoid_connector_vnc_url.png)
 
-### Set browser language and locale
+### Use other Selenoid features
+
+#### Download files from browser
+
+Selenoid supports to download files your browser downloaded before from a site.
+
+````java
+SessionContext currentSessionContext = ExecutionContextController.getCurrentSessionContext();
+String path = SelenoidHelper.get().getRemoteDownloadPath(currentSessionContext, "filename.jpg");
+// Path contains something like http://my.selenoid.host:4444/download/<sessions-id>/filename.jpg
+````
+
+More details: https://aerokube.com/selenoid/latest/#_downloading_files_from_browser
+
+#### Accessing clipboard
+
+Selenoid can return the content of the clipboard of your browser session.
+
+````java
+SessionContext currentSessionContext = ExecutionContextController.getCurrentSessionContext();
+String clipboard = SelenoidHelper.get().getClipboard(currentSessionContext);
+````
+
+More details: https://aerokube.com/selenoid/latest/#_accessing_clipboard
+
+#### Set browser language and locale
 
 Sometimes you want to start your browser with a specific language / locale setting to test your websites in different language /
-locales. `Selenoid` can handle environment variables passed via the `DesiredCapabilities`. For more information please visit
-[aerokube.com](https://aerokube.com/selenoid/latest/#_per_session_environment_variables_env)
+locales. `Selenoid` can handle environment variables passed via the `DesiredCapabilities`. 
+
+More details: https://aerokube.com/selenoid/latest/#_per_session_environment_variables_env
 
 ### Properties
 
@@ -138,7 +169,9 @@ The Selenoid connector adds some additional information to the new browser sessi
 | RunConfig | Contains the Testerra run configuration |
 | Testmethod | Contains the current TestNG test method name |
 
-This feature is mentioned here: [https://aerokube.com/selenoid/latest/#_container_labels_labels](). 
+This feature is mentioned here: [https://aerokube.com/selenoid/latest/#_container_labels_labels]().
+
+The Selenoid container's screen resolution is set via. Testerra property `tt.window.size`.
 
 ### Troubleshooting
 

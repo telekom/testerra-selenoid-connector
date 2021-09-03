@@ -65,7 +65,7 @@ public class ReusedSessionsVideoTest extends AbstractSelenoidTest implements Web
                 /**
                  * TODO: Move that into a TestUnderTest
                  */
-                self.isVideoPresentInMethodContext("test_FailsWithoutClosingWebdriver", true);
+                self.assertVideoIsPresentInMethodContext("test_FailsWithoutClosingWebdriver", true);
             }
         });
     }

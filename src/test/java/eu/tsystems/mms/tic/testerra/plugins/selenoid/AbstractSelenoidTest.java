@@ -27,6 +27,7 @@ import eu.tsystems.mms.tic.testframework.report.model.context.MethodContext;
 import eu.tsystems.mms.tic.testframework.report.model.context.SessionContext;
 import eu.tsystems.mms.tic.testframework.report.model.context.SuiteContext;
 import eu.tsystems.mms.tic.testframework.report.model.context.TestContext;
+import eu.tsystems.mms.tic.testframework.report.model.context.Video;
 import eu.tsystems.mms.tic.testframework.report.utils.ExecutionContextController;
 import eu.tsystems.mms.tic.testframework.testing.TesterraTest;
 import eu.tsystems.mms.tic.testframework.useragents.ChromeConfig;
@@ -34,6 +35,7 @@ import eu.tsystems.mms.tic.testframework.useragents.FirefoxConfig;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverManager;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverProxyUtils;
 import java.util.Optional;
+import java.util.stream.Stream;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxOptions;
@@ -63,8 +65,9 @@ public abstract class AbstractSelenoidTest extends TesterraTest {
 
     }
 
-    protected boolean isVideoPresentInMethodContext(String methodName, boolean expectPresence) {
-        Optional<MethodContext> optionalMethodContext = ExecutionContextController.getCurrentExecutionContext().readSuiteContexts()
+
+    protected Stream<MethodContext> findMethodContext(String methodName) {
+        return ExecutionContextController.getCurrentExecutionContext().readSuiteContexts()
                 .flatMap(SuiteContext::readTestContexts)
                 .flatMap(TestContext::readClassContexts)
                 .filter(classContext -> classContext.getTestClass().equals(this.getClass()))
@@ -72,8 +75,11 @@ public abstract class AbstractSelenoidTest extends TesterraTest {
                 .filter(methodContext -> {
                     Optional<ITestResult> testNgResult = methodContext.getTestNgResult();
                     return (testNgResult.isPresent() && testNgResult.get().getMethod().getMethodName().equals(methodName));
-                })
-                .findFirst();
+                });
+    }
+
+    protected void assertVideoIsPresentInMethodContext(String methodName, boolean expectPresence) {
+        Optional<MethodContext> optionalMethodContext = findMethodContext(methodName).findFirst();
 
         Assert.assertTrue(optionalMethodContext.isPresent(), String.format("MethodContext \"%s\" found", methodName));
 
@@ -81,10 +87,11 @@ public abstract class AbstractSelenoidTest extends TesterraTest {
         Optional<SessionContext> optionalSessionContext = methodContext.readSessionContexts().findFirst();
 
         Assert.assertTrue(optionalSessionContext.isPresent(), String.format("MethodContext \"%s\" has session context", methodName));
+        assertVideoIsPresent(methodName, optionalSessionContext.get().getVideo(), expectPresence);
+    }
 
-        boolean videoPresent = optionalSessionContext.get().getVideo().isPresent();
+    protected void assertVideoIsPresent(String methodName, Optional<Video> video, boolean expectPresence) {
+        boolean videoPresent = video.isPresent();
         Assert.assertEquals(videoPresent, expectPresence, String.format("SessionContext for MethodContext \"%s\" has video", methodName));
-
-        return expectPresence == videoPresent;
     }
 }
