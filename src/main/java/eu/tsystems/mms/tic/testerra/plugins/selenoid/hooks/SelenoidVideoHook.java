@@ -48,23 +48,21 @@ public class SelenoidVideoHook extends AbstractModule implements
     @Override
     public void init() {
 
-        WEB_DRIVER_MANAGER.registerWebDriverRequestConfigurator(new SelenoidCapabilityProvider());
+
 
         // VIDEO and VNC disabled by properties. Not doing anything here.
         if (!VIDEO_ACTIVE && !VNC_ACTIVE) {
-            log().info(String.format("testerra-selenoid-connector not registered. Neither %s nor %s is set to true.", Testerra.Properties.SCREENCASTER_ACTIVE.toString(), SelenoidProperties.VNC_ENABLED));
+            log().warn(String.format("Selenoid features disabled. Neither %s nor %s is set to true.", Testerra.Properties.SCREENCASTER_ACTIVE, SelenoidProperties.VNC_ENABLED));
             return;
         }
 
+        WEB_DRIVER_MANAGER.registerWebDriverRequestConfigurator(new SelenoidCapabilityProvider());
+        WEB_DRIVER_MANAGER.registerWebDriverAfterStartupHandler(new VideoDesktopWebDriverFactory());
+
         // Adding Video Handlers
         if (VIDEO_ACTIVE) {
-
-            WEB_DRIVER_MANAGER.registerWebDriverAfterStartupHandler(new VideoDesktopWebDriverFactory());
-
-            SelenoidEvidenceVideoCollector selenoidEvidenceVideoCollector = new SelenoidEvidenceVideoCollector();
-
             // Register a shutdown handler to get informed about closing WebDriver sessions
-            WEB_DRIVER_MANAGER.registerWebDriverAfterShutdownHandler(selenoidEvidenceVideoCollector);
+            WEB_DRIVER_MANAGER.registerWebDriverAfterShutdownHandler(new SelenoidEvidenceVideoCollector());
         }
     }
 
