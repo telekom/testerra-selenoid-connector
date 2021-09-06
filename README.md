@@ -1,7 +1,7 @@
 # Selenoid Connector
 
 <p align="center">
-    <a href="https://mvnrepository.com/artifact/io.testerra/selenoid-connector" title="MavenCentral"><img src="https://img.shields.io/maven-central/v/io.testerra/selenoid-connector/1?label=Maven%20Central"></a>
+    <a href="https://mvnrepository.com/artifact/io.testerra/selenoid-connector" title="MavenCentral"><img src="https://img.shields.io/maven-central/v/io.testerra/selenoid-connector/2?label=Maven%20Central"></a>
     <a href="/../../commits/" title="Last Commit"><img src="https://img.shields.io/github/last-commit/telekom/testerra-selenoid-connector?style=flat"></a>
     <a href="/../../issues" title="Open Issues"><img src="https://img.shields.io/github/issues/telekom/testerra-selenoid-connector?style=flat"></a>
     <a href="./LICENSE" title="License"><img src="https://img.shields.io/badge/License-Apache%202.0-green.svg?style=flat"></a>
@@ -38,8 +38,8 @@ The module will register automatically by using `ModuleHook`.
 | `>= 1.4`             | `>= 1.7`      |
 | `2.0-RC-1`           | `...2.0-RC-3`  |
 | `2.0-RC-2`           | `2.0-RC-4`  |
-| `2.0-RC-3`           | `...2.0-RC-5` |
-| `2.0-RC-4`           | `2.0-RC-12` |
+| `2.0-RC-3...2.0-RC-4`           | `...2.0-RC-5` |
+| `2.0-RC-5`           | `2.0-RC-12` |
 
 You need at least Selenoid 1.10.1 or above.
 
@@ -51,7 +51,7 @@ Include the following dependency in your project.
 Gradle:
 
 ````groovy
-implementation 'io.testerra:selenoid-connector:2.0-RC-4'
+implementation 'io.testerra:selenoid-connector:2.0-RC-5'
 ````
 
 Maven:
@@ -61,7 +61,7 @@ Maven:
 <dependency>
     <groupId>io.testerra</groupId>
     <artifactId>selenoid-connector</artifactId>
-    <version>2.0-RC-4</version>
+    <version>2.0-RC-5</version>
 </dependency>
 ````
 
