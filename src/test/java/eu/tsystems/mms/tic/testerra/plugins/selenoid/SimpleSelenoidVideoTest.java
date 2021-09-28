@@ -28,6 +28,7 @@ import eu.tsystems.mms.tic.testframework.report.model.context.SessionContext;
 import eu.tsystems.mms.tic.testframework.report.model.context.Video;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverManager;
 import java.util.Optional;
+import java.util.stream.Stream;
 import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -60,7 +61,8 @@ public class SimpleSelenoidVideoTest extends AbstractSelenoidTest {
         Optional<Video> optionalVideo = this.findMethodContext(methodName)
                 .flatMap(MethodContext::readSessionContexts)
                 .map(SessionContext::getVideo)
-                .flatMap(Optional::stream)
+                .filter(Optional::isPresent)
+                .flatMap(video -> Stream.of(video.get()))
                 .findFirst();
 
         assertVideoIsPresent(methodName, optionalVideo, true);
