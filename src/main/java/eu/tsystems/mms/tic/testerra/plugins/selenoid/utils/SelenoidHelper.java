@@ -28,8 +28,8 @@ import eu.tsystems.mms.tic.testframework.model.NodeInfo;
 import eu.tsystems.mms.tic.testframework.report.model.context.SessionContext;
 import eu.tsystems.mms.tic.testframework.transfer.ThrowablePackedResponse;
 import eu.tsystems.mms.tic.testframework.utils.FileDownloader;
-import eu.tsystems.mms.tic.testframework.utils.StringUtils;
 import eu.tsystems.mms.tic.testframework.utils.Timer;
+import org.apache.commons.lang3.StringUtils;
 
 import java.net.URL;
 import java.util.Map;
@@ -71,7 +71,7 @@ public class SelenoidHelper implements Loggable {
             Optional<String> response = client.getHost(remoteSessionId);
 
             if (!response.isPresent()) {
-                throw new Exception("There was no response from Selenium server.");
+                throw new Exception("There was no response from " + url);
             }
 
             String nodeResponse = response.get();
@@ -127,7 +127,7 @@ public class SelenoidHelper implements Loggable {
                 log().warn("No Selenoid response from " + url.get());
             }
         } catch (JsonSyntaxException e) {
-            log().error("Error pinging selenoid", e);
+            log().warn("Error pinging selenoid", e);
         }
 
         return false;
@@ -154,12 +154,12 @@ public class SelenoidHelper implements Loggable {
     public void deleteRemoteVideoFile(VideoRequest videoRequest) {
         Optional<String> url = getSelenoidUrl(videoRequest.sessionContext.getNodeInfo());
         if (!url.isPresent()) {
-            log().error("Cannot delete Selenoid video because there is no host.");
+            log().warn("Cannot delete Selenoid video because there is no host.");
         } else {
             SelenoidRestClient client = new SelenoidRestClient(url.get());
             Optional<String> response = client.deleteVideofile(videoRequest.selenoidVideoName);
             if (!response.isPresent()) {
-                log().error("Deleting remote video was not successful.");
+                log().warn("Deleting remote video was not successful.");
             }
         }
     }
@@ -226,7 +226,7 @@ public class SelenoidHelper implements Loggable {
         String selenoidSessionId = getSelenoidSessionId(sessionContext.getRemoteSessionId());
         Optional<String> url = getSelenoidUrl(sessionContext.getNodeInfo());
         if (!url.isPresent()) {
-            log().error("Cannot read clipboard because there is no host.");
+            log().warn("Cannot read clipboard because there is no host.");
             return null;
         }
         SelenoidRestClient client = new SelenoidRestClient(url.get());
@@ -242,7 +242,7 @@ public class SelenoidHelper implements Loggable {
         String selenoidSessionId = getSelenoidSessionId(sessionContext.getRemoteSessionId());
         Optional<String> url = getSelenoidUrl(sessionContext.getNodeInfo());
         if (!url.isPresent()) {
-            log().error("Cannot set clipboard because there is no host.");
+            log().warn("Cannot set clipboard because there is no host.");
         } else {
             SelenoidRestClient client = new SelenoidRestClient(url.get());
             client.setClipbard(selenoidSessionId, value);

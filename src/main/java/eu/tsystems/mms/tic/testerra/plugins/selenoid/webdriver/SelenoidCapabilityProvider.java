@@ -20,10 +20,8 @@ package eu.tsystems.mms.tic.testerra.plugins.selenoid.webdriver;
 
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.SelenoidProperties;
 import eu.tsystems.mms.tic.testframework.common.PropertyManager;
-import eu.tsystems.mms.tic.testframework.constants.TesterraProperties;
 import eu.tsystems.mms.tic.testframework.report.utils.ExecutionContextController;
 import eu.tsystems.mms.tic.testframework.report.utils.ExecutionContextUtils;
-import eu.tsystems.mms.tic.testframework.utils.StringUtils;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.DesktopWebDriverRequest;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.Dimension;
@@ -111,9 +109,8 @@ public class SelenoidCapabilityProvider {
     }
 
     private String createVideoName(final String sessionKey, final String reportName, final String runConfigName) {
-
         String videoName = reportName + runConfigName + Thread.currentThread().getId() + sessionKey + System.currentTimeMillis();
-        videoName = StringUtils.removeIllegalCharacters(videoName, "[a-zA-Z0-9]", "");
+        videoName = videoName.replaceAll("[^a-zA-Z0-9]", "");
         return videoName + ".mp4";
     }
 
