@@ -25,6 +25,7 @@ import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.VideoLoader;
 import eu.tsystems.mms.tic.testframework.common.PropertyManager;
 import eu.tsystems.mms.tic.testframework.constants.TesterraProperties;
 import eu.tsystems.mms.tic.testframework.logging.Loggable;
+import eu.tsystems.mms.tic.testframework.report.Status;
 import eu.tsystems.mms.tic.testframework.report.TestStatusController;
 import eu.tsystems.mms.tic.testframework.report.model.context.ExecutionContext;
 import eu.tsystems.mms.tic.testframework.report.model.context.MethodContext;
@@ -77,7 +78,7 @@ public class SelenoidEvidenceVideoCollector implements
                             return true;
 
                         } else if (testResult.getStatus() == ITestResult.SKIP) {
-                            if (methodContext.getStatus() == TestStatusController.Status.FAILED_RETRIED) {
+                            if (methodContext.getStatus() == Status.RETRIED) {
                                 return true;
                             }
                         }
