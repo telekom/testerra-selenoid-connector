@@ -24,7 +24,6 @@ import eu.tsystems.mms.tic.testframework.common.Testerra;
 import eu.tsystems.mms.tic.testframework.logging.Loggable;
 import eu.tsystems.mms.tic.testframework.report.utils.ExecutionContextController;
 import eu.tsystems.mms.tic.testframework.report.utils.ExecutionContextUtils;
-import eu.tsystems.mms.tic.testframework.utils.StringUtils;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.DesktopWebDriverRequest;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverRequest;
 import java.util.function.Consumer;
@@ -122,9 +121,8 @@ public class SelenoidCapabilityProvider implements Consumer<WebDriverRequest>, L
     }
 
     private String createVideoName(final String sessionKey, final String reportName, final String runConfigName) {
-
         String videoName = reportName + runConfigName + Thread.currentThread().getId() + sessionKey + System.currentTimeMillis();
-        videoName = StringUtils.removeIllegalCharacters(videoName, "[a-zA-Z0-9]", "");
+        videoName = videoName.replaceAll("[^a-zA-Z0-9]", "");
         return videoName + ".mp4";
     }
 
