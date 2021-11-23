@@ -20,6 +20,8 @@ package eu.tsystems.mms.tic.testerra.plugins.selenoid.webdriver;
 
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.SelenoidProperties;
 import eu.tsystems.mms.tic.testframework.common.PropertyManager;
+import eu.tsystems.mms.tic.testframework.report.model.context.MethodContext;
+import eu.tsystems.mms.tic.testframework.report.model.context.RunConfig;
 import eu.tsystems.mms.tic.testframework.report.utils.ExecutionContextController;
 import eu.tsystems.mms.tic.testframework.report.utils.ExecutionContextUtils;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.DesktopWebDriverRequest;
@@ -67,13 +69,17 @@ public class SelenoidCapabilityProvider {
      */
     public Capabilities provide(DesktopWebDriverRequest request) {
 
-        final String reportName = ExecutionContextController.getCurrentExecutionContext().runConfig.getReportName();
-        final String runConfigName = ExecutionContextController.getCurrentExecutionContext().runConfig.RUNCFG;
+        RunConfig runConfig = ExecutionContextController.getCurrentExecutionContext().getRunConfig();
+        final String reportName = runConfig.getReportName();
+        final String runConfigName = runConfig.RUNCFG;
 
-        // Try to find out the current testmethod to add the name to the Selenoid caps
-        String methodName = "";
-        final Optional<Method> optional = ExecutionContextUtils.getInjectedMethod(ExecutionContextController.getCurrentTestResult());
-        methodName = optional.map(Method::getName).orElseGet(() -> ExecutionContextController.getCurrentMethodContext().getName());
+        String methodName = ExecutionContextController.getTestResultForThread()
+                .flatMap(ExecutionContextUtils::getInjectedMethod)
+                .map(Method::getName)
+                .orElse(ExecutionContextController.getMethodContextForThread()
+                        .map(MethodContext::getName)
+                        .orElse("")
+                );
 
         final DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
         desiredCapabilities.setCapability("enableVNC", VNC_ACTIVE);
