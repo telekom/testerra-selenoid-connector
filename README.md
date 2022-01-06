@@ -82,9 +82,9 @@ tt.screencaster.active.on.success=true
 
 After finishing the test run the connector collects the video files and adds them to the report.
 
-*You will find all video files in the method detail view in a separate tab.*
+*You will find all video files in the method detail view in the session tab.*
 
-![](doc/selenoid_connector_report_video_tab.png)
+![](doc/selenoid_connector_report_session_tab.png)
 
 > IMPORTANT: By default only video files of failed methods will be added.
 
@@ -96,7 +96,7 @@ using [noVNC](https://github.com/novnc/noVNC).
 *Setup a noVNC server*
 
 * Please not that your Grid must be available by your noVNC client.
-* We prefer to use one the many Docker images available at https://hub.docker.com/.
+* We prefer to use one of the many Docker images available at https://hub.docker.com/.
 
 *Configure your `test.properties` file*
 
@@ -146,6 +146,18 @@ locales. `Selenoid` can handle environment variables passed via the `DesiredCapa
 
 More details: https://aerokube.com/selenoid/latest/#_per_session_environment_variables_env
 
+#### Change video framerate
+
+Change the framerate of the video files by the following property: 
+
+````
+# test.properties
+# Default value is 2
+tt.selenoid.video.framerate=10
+````
+
+> Note: Higher framerates lead to larger video files.
+
 ### Properties
 
 |Property|Default|Description|
@@ -155,6 +167,7 @@ More details: https://aerokube.com/selenoid/latest/#_per_session_environment_var
 |tt.screencaster.active.on.failed|true|Generated video files will be attached the report for failed test methods|
 |tt.selenoid.vnc.enabled|true|VNC Stream will be activated and logged to the console.|
 |tt.selenoid.vnc.address|none|VNC Host address - Will be used to generate a unique url for accessing the VNC session. <br> For a hosted [noVNC server](https://github.com/novnc/noVNC) this should be `http://<host>:<port>/vnc.html`.|
+|tt.selenoid.video.framerate|2|Change the framerate of the video files.|
 
 ### Additional information
 
