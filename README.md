@@ -156,7 +156,7 @@ Change the framerate of the video files by the following property:
 tt.selenoid.video.framerate=10
 ````
 
-> Note: Higher framerates lead to larger video files.
+> Note: To prevent huge video files and high CPU loads the framerate is limited to 15 frames.
 
 ### Properties
 

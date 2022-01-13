@@ -47,6 +47,9 @@ public class SelenoidCapabilityProvider {
     private static final boolean VNC_ACTIVE = PropertyManager.getBooleanProperty(SelenoidProperties.VNC_ENABLED, SelenoidProperties.Default.VNC_ENABLED);
     private static final int VIDEO_FRAMERATE = PropertyManager.getIntProperty(SelenoidProperties.VIDEO_FRAMERATE, SelenoidProperties.Default.VIDEO_FRAMERATE);
 
+    // Maximum framerate to prevent huge files and CPU load
+    private static final int VIDEO_FRAMERATE_MAX = 15;
+
     private static final SelenoidCapabilityProvider INSTANCE = new SelenoidCapabilityProvider();
 
     private SelenoidCapabilityProvider() {
@@ -81,8 +84,9 @@ public class SelenoidCapabilityProvider {
         desiredCapabilities.setCapability(SelenoidCapabilities.ENABLE_VNC, VNC_ACTIVE);
 
         desiredCapabilities.setCapability(SelenoidCapabilities.ENABLE_VIDEO, VIDEO_ACTIVE);
-
-        desiredCapabilities.setCapability(SelenoidCapabilities.VIDEO_FRAME_RATE, VIDEO_FRAMERATE);
+        
+        final int framerate = Math.max(Math.min(VIDEO_FRAMERATE, VIDEO_FRAMERATE_MAX), 1);
+        desiredCapabilities.setCapability(SelenoidCapabilities.VIDEO_FRAME_RATE, framerate);
 
         desiredCapabilities.setCapability(SelenoidCapabilities.VIDEO_NAME, createVideoName(request.getSessionKey(), reportName, runConfigName));
         Dimension windowSize = request.getWindowSize();
