@@ -32,7 +32,6 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Provide the capabilities needed for Selenoid video integration
@@ -46,10 +45,10 @@ public class SelenoidCapabilityProvider {
 
     private static final boolean VIDEO_ACTIVE = PropertyManager.getBooleanProperty(SelenoidProperties.VIDEO_ENABLED, SelenoidProperties.Default.VIDEO_ENABLED);
     private static final boolean VNC_ACTIVE = PropertyManager.getBooleanProperty(SelenoidProperties.VNC_ENABLED, SelenoidProperties.Default.VNC_ENABLED);
+    private static final int VIDEO_FRAMERATE = PropertyManager.getIntProperty(SelenoidProperties.VIDEO_FRAMERATE, SelenoidProperties.Default.VIDEO_FRAMERATE);
 
-    public enum Caps {
-        videoName
-    }
+    // Maximum framerate to prevent huge files and CPU load
+    private static final int VIDEO_FRAMERATE_MAX = 15;
 
     private static final SelenoidCapabilityProvider INSTANCE = new SelenoidCapabilityProvider();
 
@@ -82,20 +81,23 @@ public class SelenoidCapabilityProvider {
                 );
 
         final DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
-        desiredCapabilities.setCapability("enableVNC", VNC_ACTIVE);
+        desiredCapabilities.setCapability(SelenoidCapabilities.ENABLE_VNC, VNC_ACTIVE);
 
-        desiredCapabilities.setCapability("enableVideo", VIDEO_ACTIVE);
-        desiredCapabilities.setCapability("videoFrameRate", 2);
-        desiredCapabilities.setCapability("videoName", createVideoName(request.getSessionKey(), reportName, runConfigName));
+        desiredCapabilities.setCapability(SelenoidCapabilities.ENABLE_VIDEO, VIDEO_ACTIVE);
+        
+        final int framerate = Math.max(Math.min(VIDEO_FRAMERATE, VIDEO_FRAMERATE_MAX), 1);
+        desiredCapabilities.setCapability(SelenoidCapabilities.VIDEO_FRAME_RATE, framerate);
+
+        desiredCapabilities.setCapability(SelenoidCapabilities.VIDEO_NAME, createVideoName(request.getSessionKey(), reportName, runConfigName));
         Dimension windowSize = request.getWindowSize();
-        desiredCapabilities.setCapability("screenResolution", String.format("%sx%sx24", windowSize.getWidth(), windowSize.getHeight()));
+        desiredCapabilities.setCapability(SelenoidCapabilities.SCREEN_RESOLUTION, String.format("%sx%sx24", windowSize.getWidth(), windowSize.getHeight()));
 
         final Map<String, String> map = new HashMap<>();
         map.put("ReportName", reportName);
         map.put("RunConfig", runConfigName);
         map.put("Testmethod", methodName);
 
-        desiredCapabilities.setCapability("labels", map);
+        desiredCapabilities.setCapability(SelenoidCapabilities.LABELS, map);
 
         /*
          * DEPRECATED: This part of code was removed, because it is not valid for all selenoid images.

@@ -77,7 +77,7 @@ public class VideoDesktopWebDriverFactory extends DesktopWebDriverFactory {
             if (selenoidHelper.updateNodeInfo(request.getSeleniumServerUrl(), sessionId, sessionContext)) {
 
                 // Create a VideoRequest with request and videoName
-                final VideoRequest videoRequest = new VideoRequest(sessionContext, videoCaps.asMap().get(SelenoidCapabilityProvider.Caps.videoName.toString()).toString());
+                final VideoRequest videoRequest = new VideoRequest(sessionContext, videoCaps.asMap().get(SelenoidCapabilities.VIDEO_NAME).toString());
 
                 // Store it.
                 videoRequestStorage.store(videoRequest);
