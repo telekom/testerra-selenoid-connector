@@ -29,15 +29,15 @@ The module will register automatically by using `ModuleHook`.
 
 ### Requirements
 
-| Selenoid connector   | Testerra       |
-| -------------------- | -------------- |
-| `1.0-RC-13`          | ` 1.0-RC-32`   |
-| `1.0-RC-14`          | ` 1.0-RC-34`   |
-| `1.0.0`              | ` 1.0.0`       |
-| `1.1 ... 1.3`        | `1.1..1.6`     |
-| `1.4`                | `1.7..1.8`     |
-| `1.5`                | `1.9`          |
-| `1.6`                | `>= 1.10`      |
+| Selenoid connector | Testerra       |
+| ------------------ | -------------- |
+| `1.0-RC-13`        | ` 1.0-RC-32`   |
+| `1.0-RC-14`        | ` 1.0-RC-34`   |
+| `1.0.0`            | ` 1.0.0`       |
+| `1.1..1.3`         | `1.1..1.6`     |
+| `1.4`              | `1.7..1.8`     |
+| `1.5`              | `1.9`          |
+| `>=1.6`            | `>= 1.10`      |
 
 You need at least Selenoid 1.10.1 or above.
 
@@ -48,7 +48,7 @@ Include the following dependency in your project.
 Gradle:
 
 ````groovy
-implementation 'io.testerra:selenoid-connector:1.4'
+implementation 'io.testerra:selenoid-connector:1.7'
 ````
 
 Maven:
@@ -58,7 +58,7 @@ Maven:
 <dependency>
     <groupId>io.testerra</groupId>
     <artifactId>selenoid-connector</artifactId>
-    <version>1.4</version>
+    <version>1.7</version>
 </dependency>
 ````
 
