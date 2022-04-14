@@ -26,6 +26,8 @@ import eu.tsystems.mms.tic.testframework.report.utils.ExecutionContextController
 import eu.tsystems.mms.tic.testframework.report.utils.ExecutionContextUtils;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.DesktopWebDriverRequest;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverRequest;
+
+import java.util.Optional;
 import java.util.function.Consumer;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.Dimension;
@@ -34,7 +36,6 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Provide the capabilities needed for Selenoid video integration
@@ -67,9 +68,8 @@ public class SelenoidCapabilityProvider implements Consumer<WebDriverRequest>, L
         desktopWebDriverRequest.getDesiredCapabilities().merge(videoCaps);
     }
 
-    public enum Caps {
-        videoName
-    }
+    // Maximum framerate to prevent huge files and CPU load
+    private static final int VIDEO_FRAMERATE_MAX = 15;
 
     /**
      * Provide all capabilities for Selenoid configuration.
