@@ -39,16 +39,13 @@ import eu.tsystems.mms.tic.testframework.testing.WebDriverManagerProvider;
 public class SelenoidVideoHook extends AbstractModule implements
         ModuleHook,
         Loggable,
-        WebDriverManagerProvider
-{
+        WebDriverManagerProvider {
 
     private static final boolean VIDEO_ACTIVE = Testerra.Properties.SCREENCASTER_ACTIVE.asBool();
     private static final boolean VNC_ACTIVE = PropertyManager.getBooleanProperty(SelenoidProperties.VNC_ENABLED, SelenoidProperties.Default.VNC_ENABLED);
 
     @Override
     public void init() {
-
-
 
         // VIDEO and VNC disabled by properties. Not doing anything here.
         if (!VIDEO_ACTIVE && !VNC_ACTIVE) {

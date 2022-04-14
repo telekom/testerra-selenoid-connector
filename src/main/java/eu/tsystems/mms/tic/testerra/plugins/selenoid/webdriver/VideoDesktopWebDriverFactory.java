@@ -24,8 +24,9 @@ import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.SelenoidHelper;
 import eu.tsystems.mms.tic.testframework.logging.Loggable;
 import eu.tsystems.mms.tic.testframework.testing.WebDriverManagerProvider;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverRequest;
-import java.util.function.Consumer;
 import org.openqa.selenium.WebDriver;
+
+import java.util.function.Consumer;
 
 /**
  * Extends DesktopWebDriverFactory by using selenoid video capabilities.
@@ -38,8 +39,7 @@ import org.openqa.selenium.WebDriver;
 public class VideoDesktopWebDriverFactory implements
         Loggable,
         Consumer<WebDriver>,
-        WebDriverManagerProvider
-{
+        WebDriverManagerProvider {
     private final SelenoidHelper selenoidHelper = SelenoidHelper.get();
     private final VideoRequestStorage videoRequestStorage = VideoRequestStorage.get();
 
@@ -50,16 +50,16 @@ public class VideoDesktopWebDriverFactory implements
             WebDriverRequest webDriverRequest = sessionContext.getWebDriverRequest();
 
             sessionContext.getRemoteSessionId().ifPresent(remoteSessionId -> {
-                    webDriverRequest.getServerUrl().ifPresent(url -> {
-                        if (selenoidHelper.updateNodeInfo(url, remoteSessionId, sessionContext)) {
-                            // create a VideoRequest with request and videoName
-                            final VideoRequest videoRequest = new VideoRequest(sessionContext, webDriverRequest.getCapabilities().get(SelenoidCapabilityProvider.Caps.videoName.toString()).toString());
+                webDriverRequest.getServerUrl().ifPresent(url -> {
+                    if (selenoidHelper.updateNodeInfo(url, remoteSessionId, sessionContext)) {
+                        // create a VideoRequest with request and videoName
+                        final VideoRequest videoRequest = new VideoRequest(sessionContext, webDriverRequest.getCapabilities().get(SelenoidCapabilities.VIDEO_NAME).toString());
 
-                            // store it.
-                            videoRequestStorage.store(videoRequest);
-                            log().info("VNC Streaming URL: " + selenoidHelper.getRemoteVncUrl(videoRequest, remoteSessionId));
-                        }
-                    });
+                        // store it.
+                        videoRequestStorage.store(videoRequest);
+                        log().info("VNC Streaming URL: " + selenoidHelper.getRemoteVncUrl(videoRequest, remoteSessionId));
+                    }
+                });
             });
         });
     }

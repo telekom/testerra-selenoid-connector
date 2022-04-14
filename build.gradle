@@ -12,6 +12,7 @@ targetCompatibility = JavaVersion.VERSION_1_8
 
 ext {
     // Minimum required Testerra version
+//    testerraCompileVersion = '2.0-RC-20'
     testerraCompileVersion = '2-SNAPSHOT'
 
     // Unit tests use the latest Testerra version

@@ -22,13 +22,11 @@ import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.SelenoidProperties;
 import eu.tsystems.mms.tic.testframework.common.PropertyManager;
 import eu.tsystems.mms.tic.testframework.common.Testerra;
 import eu.tsystems.mms.tic.testframework.logging.Loggable;
-import eu.tsystems.mms.tic.testframework.report.utils.ExecutionContextController;
+import eu.tsystems.mms.tic.testframework.report.utils.DefaultExecutionContextController;
 import eu.tsystems.mms.tic.testframework.report.utils.ExecutionContextUtils;
+import eu.tsystems.mms.tic.testframework.report.utils.IExecutionContextController;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.DesktopWebDriverRequest;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverRequest;
-
-import java.util.Optional;
-import java.util.function.Consumer;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -36,6 +34,8 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 /**
  * Provide the capabilities needed for Selenoid video integration
@@ -51,6 +51,11 @@ public class SelenoidCapabilityProvider implements Consumer<WebDriverRequest>, L
     private final boolean VNC_ACTIVE = PropertyManager.getBooleanProperty(SelenoidProperties.VNC_ENABLED, SelenoidProperties.Default.VNC_ENABLED);
     private final String VNC_ADDRESS = PropertyManager.getProperty(SelenoidProperties.VNC_ADDRESS, SelenoidProperties.Default.VNC_ADDRESS);
 
+    private static final int VIDEO_FRAMERATE = PropertyManager.getIntProperty(SelenoidProperties.VIDEO_FRAMERATE, SelenoidProperties.Default.VIDEO_FRAMERATE);
+
+    // Maximum framerate to prevent huge files and CPU load
+    private static final int VIDEO_FRAMERATE_MAX = 15;
+
     @Override
     public void accept(WebDriverRequest webDriverRequest) {
         // Only accept webdrivers for desktop
@@ -62,14 +67,11 @@ public class SelenoidCapabilityProvider implements Consumer<WebDriverRequest>, L
             log().warn(String.format("%s is set to true, but vnc host property %s was not set.", SelenoidProperties.VNC_ENABLED, SelenoidProperties.VNC_ADDRESS));
         }
 
-        DesktopWebDriverRequest desktopWebDriverRequest = (DesktopWebDriverRequest)webDriverRequest;
+        DesktopWebDriverRequest desktopWebDriverRequest = (DesktopWebDriverRequest) webDriverRequest;
         // determine everything for selenoid... incl. video name on remote.
         final Capabilities videoCaps = provide(desktopWebDriverRequest);
         desktopWebDriverRequest.getDesiredCapabilities().merge(videoCaps);
     }
-
-    // Maximum framerate to prevent huge files and CPU load
-    private static final int VIDEO_FRAMERATE_MAX = 15;
 
     /**
      * Provide all capabilities for Selenoid configuration.
@@ -79,29 +81,34 @@ public class SelenoidCapabilityProvider implements Consumer<WebDriverRequest>, L
      */
     private Capabilities provide(DesktopWebDriverRequest request) {
 
-        final String reportName = ExecutionContextController.getCurrentExecutionContext().runConfig.getReportName();
-        final String runConfigName = ExecutionContextController.getCurrentExecutionContext().runConfig.RUNCFG;
+        IExecutionContextController contextController = new DefaultExecutionContextController();
+
+        final String reportName = contextController.getExecutionContext().getRunConfig().getReportName();
+        final String runConfigName = contextController.getExecutionContext().getRunConfig().RUNCFG;
 
         // Try to find out the current testmethod to add the name to the Selenoid caps
         String methodName = "";
-        final Optional<Method> optional = ExecutionContextUtils.getInjectedMethod(ExecutionContextController.getCurrentTestResult());
-        methodName = optional.map(Method::getName).orElseGet(() -> ExecutionContextController.getCurrentMethodContext().getName());
+        final Optional<Method> optional = ExecutionContextUtils.getInjectedMethod(contextController.getCurrentTestResult().get());
+        methodName = optional.map(Method::getName).orElseGet(() -> contextController.getCurrentMethodContext().get().getName());
 
         final DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
-        desiredCapabilities.setCapability("enableVNC", VNC_ACTIVE);
+        desiredCapabilities.setCapability(SelenoidCapabilities.ENABLE_VNC, VNC_ACTIVE);
 
-        desiredCapabilities.setCapability("enableVideo", VIDEO_ACTIVE);
-        desiredCapabilities.setCapability("videoFrameRate", 2);
-        desiredCapabilities.setCapability("videoName", createVideoName(request.getSessionKey(), reportName, runConfigName));
+        desiredCapabilities.setCapability(SelenoidCapabilities.ENABLE_VIDEO, VIDEO_ACTIVE);
+
+        final int framerate = Math.max(Math.min(VIDEO_FRAMERATE, VIDEO_FRAMERATE_MAX), 1);
+        desiredCapabilities.setCapability(SelenoidCapabilities.VIDEO_FRAME_RATE, framerate);
+
+        desiredCapabilities.setCapability(SelenoidCapabilities.VIDEO_NAME, createVideoName(request.getSessionKey(), reportName, runConfigName));
         Dimension windowSize = request.getWindowSize();
-        desiredCapabilities.setCapability("screenResolution", String.format("%sx%sx24", windowSize.getWidth(), windowSize.getHeight()));
+        desiredCapabilities.setCapability(SelenoidCapabilities.SCREEN_RESOLUTION, String.format("%sx%sx24", windowSize.getWidth(), windowSize.getHeight()));
 
         final Map<String, String> map = new HashMap<>();
         map.put("ReportName", reportName);
         map.put("RunConfig", runConfigName);
         map.put("Testmethod", methodName);
 
-        desiredCapabilities.setCapability("labels", map);
+        desiredCapabilities.setCapability(SelenoidCapabilities.LABELS, map);
 
         /*
          * DEPRECATED: This part of code was removed, because it is not valid for all selenoid images.
