@@ -87,9 +87,7 @@ public class SelenoidCapabilityProvider implements Consumer<WebDriverRequest>, L
         final String runConfigName = contextController.getExecutionContext().getRunConfig().RUNCFG;
 
         // Try to find out the current testmethod to add the name to the Selenoid caps
-        String methodName = "";
-        final Optional<Method> optional = ExecutionContextUtils.getInjectedMethod(contextController.getCurrentTestResult().get());
-        methodName = optional.map(Method::getName).orElseGet(() -> contextController.getCurrentMethodContext().get().getName());
+        String methodName = contextController.getCurrentMethodContext().get().getName();
 
         final DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
         desiredCapabilities.setCapability(SelenoidCapabilities.ENABLE_VNC, VNC_ACTIVE);
