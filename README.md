@@ -40,7 +40,8 @@ The module will register automatically by using `ModuleHook`.
 | `2.0-RC-2`            | `2.0-RC-4`             |
 | `2.0-RC-3...2.0-RC-4` | `...2.0-RC-5`          |
 | `2.0-RC-5`            | `2.0-RC-12..2.0-RC-18` |
-| `2.0-RC-6`            | `2.0-RC-21`            |
+| `2.0-RC-6`            | `2.0-RC-20`            |
+| `2.0-RC-7`            | `2.0-RC-21`            |
 
 You need at least Selenoid 1.10.1 or above.
 
