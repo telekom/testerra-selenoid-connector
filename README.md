@@ -42,6 +42,7 @@ The module will register automatically by using `ModuleHook`.
 | `2.0-RC-5`            | `2.0-RC-12..2.0-RC-18` |
 | `2.0-RC-6`            | `2.0-RC-20`            |
 | `2.0-RC-7`            | `2.0-RC-21`            |
+| `2.0`                 | `2.0`                  |
 
 You need at least Selenoid 1.10.1 or above.
 
@@ -53,7 +54,7 @@ Include the following dependency in your project.
 Gradle:
 
 ````groovy
-implementation 'io.testerra:selenoid-connector:2.0-RC-6'
+implementation 'io.testerra:selenoid-connector:2.0'
 ````
 
 Maven:
@@ -63,7 +64,7 @@ Maven:
 <dependency>
     <groupId>io.testerra</groupId>
     <artifactId>selenoid-connector</artifactId>
-    <version>2.0-RC-6</version>
+    <version>2.0</version>
 </dependency>
 ````
 
