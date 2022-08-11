@@ -22,11 +22,9 @@
 
 package eu.tsystems.mms.tic.testerra.plugins.selenoid;
 
-import eu.tsystems.mms.tic.testframework.execution.testng.AssertCollector;
 import eu.tsystems.mms.tic.testframework.report.model.context.MethodContext;
 import eu.tsystems.mms.tic.testframework.report.model.context.SessionContext;
 import eu.tsystems.mms.tic.testframework.report.model.context.Video;
-import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.json.JsonException;
 import org.testng.Assert;
@@ -40,7 +38,7 @@ public class SimpleSelenoidVideoTest extends AbstractSelenoidTest {
 
     @Test()
     public void testT01_SuccessfulTestCaseWillNotCreateVideo() {
-        final WebDriver driver = WebDriverManager.getWebDriver();
+        WebDriver driver = WEB_DRIVER_MANAGER.getWebDriver();
         driver.get("https://the-internet.herokuapp.com");
     }
 
@@ -51,8 +49,7 @@ public class SimpleSelenoidVideoTest extends AbstractSelenoidTest {
 
     @Test
     public void testT03_FailedTestCaseWillCreateVideo() {
-        WebDriverManager.setGlobalExtraCapability("sessionTimeout", "5m");
-        final WebDriver driver = WebDriverManager.getWebDriver();
+        final WebDriver driver = WEB_DRIVER_MANAGER.getWebDriver();
         driver.get("https://the-internet.herokuapp.com");
         Assert.fail("must fail");
     }
@@ -62,14 +59,14 @@ public class SimpleSelenoidVideoTest extends AbstractSelenoidTest {
     @Test
     public void testT04_FailedTestWithRetryWillCreateVideo() {
         this.counter.incrementAndGet();
-        final WebDriver driver = WebDriverManager.getWebDriver();
+        final WebDriver driver = WEB_DRIVER_MANAGER.getWebDriver();
         driver.get("https://the-internet.herokuapp.com");
         if (counter.get() == 1) {
             throw new JsonException("Expected to read a START_MAP but instead have: END");
         }
     }
 
-    @Test(dependsOnMethods = "testT02_FailedTestCaseWillCreateVideo", alwaysRun = true)
+    @Test(dependsOnMethods = "testT02_VideoIsNotPresent_after_SuccessfulTestCaseWillNotCreateVideo", alwaysRun = true)
     public void testT05_VideoIsPresent_after_FailedTestCaseWillCreateVideo() {
         //this.isVideoPresentInMethodContext("testT02_FailedTestCaseWillCreateVideo", true);
         String methodName = "testT02_FailedTestCaseWillCreateVideo";
@@ -85,12 +82,15 @@ public class SimpleSelenoidVideoTest extends AbstractSelenoidTest {
 
     @Test
     public void testT06_FailedTestWithCollectedAssertions() {
-        final WebDriver driver = WebDriverManager.getWebDriver();
+        final WebDriver driver = WEB_DRIVER_MANAGER.getWebDriver();
         driver.get("https://the-internet.herokuapp.com");
-        AssertCollector.assertTrue(false);
+        CONTROL.collectAssertions(() -> {
+            ASSERT.assertTrue(false);
+        });
+
     }
 
-    @Test(dependsOnMethods = "testT03_FailedTestWithCollectedAssertions", alwaysRun = true)
+    @Test(dependsOnMethods = "testT03_FailedTestCaseWillCreateVideo", alwaysRun = true)
     public void testT07_VideoIsPresent_after_FailedTestWithCollectedAssertions() {
         this.assertVideoIsPresentInMethodContext("testT03_FailedTestWithCollectedAssertions", true);
     }

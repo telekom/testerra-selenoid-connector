@@ -21,6 +21,7 @@
 
 package eu.tsystems.mms.tic.testerra.plugins.selenoid;
 
+import eu.tsystems.mms.tic.testframework.common.Testerra;
 import eu.tsystems.mms.tic.testframework.constants.Browsers;
 import eu.tsystems.mms.tic.testframework.report.model.context.ClassContext;
 import eu.tsystems.mms.tic.testframework.report.model.context.MethodContext;
@@ -28,14 +29,13 @@ import eu.tsystems.mms.tic.testframework.report.model.context.SessionContext;
 import eu.tsystems.mms.tic.testframework.report.model.context.SuiteContext;
 import eu.tsystems.mms.tic.testframework.report.model.context.TestContext;
 import eu.tsystems.mms.tic.testframework.report.model.context.Video;
-import eu.tsystems.mms.tic.testframework.report.utils.ExecutionContextController;
+import eu.tsystems.mms.tic.testframework.report.utils.IExecutionContextController;
+import eu.tsystems.mms.tic.testframework.testing.AssertProvider;
 import eu.tsystems.mms.tic.testframework.testing.TesterraTest;
+import eu.tsystems.mms.tic.testframework.testing.WebDriverManagerProvider;
 import eu.tsystems.mms.tic.testframework.useragents.ChromeConfig;
 import eu.tsystems.mms.tic.testframework.useragents.FirefoxConfig;
-import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverManager;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverProxyUtils;
-import java.util.Optional;
-import java.util.stream.Stream;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxOptions;
@@ -43,20 +43,25 @@ import org.testng.Assert;
 import org.testng.ITestResult;
 import org.testng.annotations.BeforeSuite;
 
-public abstract class AbstractSelenoidTest extends TesterraTest {
+import java.util.Optional;
+import java.util.stream.Stream;
+
+public abstract class AbstractSelenoidTest extends TesterraTest implements WebDriverManagerProvider, AssertProvider {
+
+    IExecutionContextController contextController = Testerra.getInjector().getInstance(IExecutionContextController.class);
 
     @BeforeSuite
     public void configureChromeOptions() {
         Proxy proxy = new WebDriverProxyUtils().getDefaultHttpProxy();
 
-        WebDriverManager.setUserAgentConfig(Browsers.chrome, new ChromeConfig() {
+        WEB_DRIVER_MANAGER.setUserAgentConfig(Browsers.chrome, new ChromeConfig() {
             @Override
             public void configure(ChromeOptions options) {
                 options.setProxy(proxy);
             }
         });
 
-        WebDriverManager.setUserAgentConfig(Browsers.firefox, new FirefoxConfig() {
+        WEB_DRIVER_MANAGER.setUserAgentConfig(Browsers.firefox, new FirefoxConfig() {
             @Override
             public void configure(FirefoxOptions firefoxOptions) {
                 firefoxOptions.setProxy(proxy);
@@ -65,9 +70,8 @@ public abstract class AbstractSelenoidTest extends TesterraTest {
 
     }
 
-
     protected Stream<MethodContext> findMethodContext(String methodName) {
-        return ExecutionContextController.getCurrentExecutionContext().readSuiteContexts()
+        return contextController.getExecutionContext().readSuiteContexts()
                 .flatMap(SuiteContext::readTestContexts)
                 .flatMap(TestContext::readClassContexts)
                 .filter(classContext -> classContext.getTestClass().equals(this.getClass()))
