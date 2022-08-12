@@ -19,11 +19,11 @@
 package eu.tsystems.mms.tic.testerra.plugins.selenoid.webdriver;
 
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.SelenoidProperties;
-import eu.tsystems.mms.tic.testframework.common.PropertyManager;
+import eu.tsystems.mms.tic.testframework.common.PropertyManagerProvider;
 import eu.tsystems.mms.tic.testframework.common.Testerra;
 import eu.tsystems.mms.tic.testframework.logging.Loggable;
+import eu.tsystems.mms.tic.testframework.report.model.context.AbstractContext;
 import eu.tsystems.mms.tic.testframework.report.utils.DefaultExecutionContextController;
-import eu.tsystems.mms.tic.testframework.report.utils.ExecutionContextUtils;
 import eu.tsystems.mms.tic.testframework.report.utils.IExecutionContextController;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.DesktopWebDriverRequest;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverRequest;
@@ -31,10 +31,8 @@ import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
@@ -45,16 +43,16 @@ import java.util.function.Consumer;
  *
  * @author Eric Kubenka
  */
-public class SelenoidCapabilityProvider implements Consumer<WebDriverRequest>, Loggable {
+public class SelenoidCapabilityProvider implements Consumer<WebDriverRequest>, Loggable, PropertyManagerProvider {
 
     private final boolean VIDEO_ACTIVE = Testerra.Properties.SCREENCASTER_ACTIVE.asBool();
-    private final boolean VNC_ACTIVE = PropertyManager.getBooleanProperty(SelenoidProperties.VNC_ENABLED, SelenoidProperties.Default.VNC_ENABLED);
-    private final String VNC_ADDRESS = PropertyManager.getProperty(SelenoidProperties.VNC_ADDRESS, SelenoidProperties.Default.VNC_ADDRESS);
+    private final boolean VNC_ACTIVE = PROPERTY_MANAGER.getBooleanProperty(SelenoidProperties.VNC_ENABLED, SelenoidProperties.Default.VNC_ENABLED);
+    private final String VNC_ADDRESS = PROPERTY_MANAGER.getProperty(SelenoidProperties.VNC_ADDRESS, SelenoidProperties.Default.VNC_ADDRESS);
 
-    private static final int VIDEO_FRAMERATE = PropertyManager.getIntProperty(SelenoidProperties.VIDEO_FRAMERATE, SelenoidProperties.Default.VIDEO_FRAMERATE);
+    private static final long VIDEO_FRAMERATE = PROPERTY_MANAGER.getLongProperty(SelenoidProperties.VIDEO_FRAMERATE, SelenoidProperties.Default.VIDEO_FRAMERATE);
 
     // Maximum framerate to prevent huge files and CPU load
-    private static final int VIDEO_FRAMERATE_MAX = 15;
+    private static final long VIDEO_FRAMERATE_MAX = 15;
 
     @Override
     public void accept(WebDriverRequest webDriverRequest) {
@@ -87,14 +85,14 @@ public class SelenoidCapabilityProvider implements Consumer<WebDriverRequest>, L
         final String runConfigName = contextController.getExecutionContext().getRunConfig().RUNCFG;
 
         // Try to find out the current testmethod to add the name to the Selenoid caps
-        String methodName = contextController.getCurrentMethodContext().get().getName();
+        String methodName = contextController.getCurrentMethodContext().map(AbstractContext::getName).orElse("na.");
 
         final DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
         desiredCapabilities.setCapability(SelenoidCapabilities.ENABLE_VNC, VNC_ACTIVE);
 
         desiredCapabilities.setCapability(SelenoidCapabilities.ENABLE_VIDEO, VIDEO_ACTIVE);
 
-        final int framerate = Math.max(Math.min(VIDEO_FRAMERATE, VIDEO_FRAMERATE_MAX), 1);
+        final long framerate = Math.max(Math.min(VIDEO_FRAMERATE, VIDEO_FRAMERATE_MAX), 1);
         desiredCapabilities.setCapability(SelenoidCapabilities.VIDEO_FRAME_RATE, framerate);
 
         desiredCapabilities.setCapability(SelenoidCapabilities.VIDEO_NAME, createVideoName(request.getSessionKey(), reportName, runConfigName));

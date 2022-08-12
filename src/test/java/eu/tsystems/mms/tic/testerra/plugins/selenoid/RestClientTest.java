@@ -49,7 +49,7 @@ public class RestClientTest extends AbstractSelenoidTest {
         String url = request.getServerUrl().get().toString();
         this.selenoidUrl = url.replace("/wd/hub", "");
         request.setBaseUrl(new URL("https://the-internet.herokuapp.com/"));
-        WebDriverManager.getWebDriver(request);
+        WEB_DRIVER_MANAGER.getWebDriver(request);
     }
 
     /**
@@ -59,7 +59,7 @@ public class RestClientTest extends AbstractSelenoidTest {
      */
     @Test
     public void test_Selenoid_GetHost() {
-        String remoteSessionId = ExecutionContextController.getCurrentSessionContext().getRemoteSessionId().get();
+        String remoteSessionId = contextController.getCurrentSessionContext().get().getRemoteSessionId().get();
         SelenoidRestClient client = new SelenoidRestClient(selenoidUrl);
         Optional<String> response = client.getHost(remoteSessionId);
 

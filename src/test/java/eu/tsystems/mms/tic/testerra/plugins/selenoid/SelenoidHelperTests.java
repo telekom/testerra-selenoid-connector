@@ -23,10 +23,10 @@
 package eu.tsystems.mms.tic.testerra.plugins.selenoid;
 
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.SelenoidHelper;
-import eu.tsystems.mms.tic.testframework.pageobjects.GuiElement;
+import eu.tsystems.mms.tic.testframework.pageobjects.UiElement;
+import eu.tsystems.mms.tic.testframework.pageobjects.UiElementFinder;
 import eu.tsystems.mms.tic.testframework.report.model.context.SessionContext;
-import eu.tsystems.mms.tic.testframework.report.utils.ExecutionContextController;
-import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverManager;
+import eu.tsystems.mms.tic.testframework.testing.UiElementFinderFactoryProvider;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
@@ -38,26 +38,27 @@ import org.testng.annotations.Test;
  *
  * @author mgn
  */
-public class SelenoidHelperTests extends AbstractSelenoidTest {
+public class SelenoidHelperTests extends AbstractSelenoidTest implements UiElementFinderFactoryProvider {
 
     @Test
     public void test_SelenoidIsUsed() {
-        final WebDriver driver = WebDriverManager.getWebDriver();
+        final WebDriver driver = WEB_DRIVER_MANAGER.getWebDriver();
         driver.get("https://the-internet.herokuapp.com");
-        SessionContext currentSessionContext = ExecutionContextController.getCurrentSessionContext();
+        SessionContext currentSessionContext = contextController.getCurrentSessionContext().get();
         boolean selenoidUsed = SelenoidHelper.get().isSelenoidUsed(currentSessionContext);
         Assert.assertTrue(selenoidUsed);
     }
 
     @Test
     public void test_GetClipboard() {
-        final WebDriver driver = WebDriverManager.getWebDriver();
+        final WebDriver driver = WEB_DRIVER_MANAGER.getWebDriver();
+        UiElementFinder finder = UI_ELEMENT_FINDER_FACTORY.create(driver);
         driver.get("https://the-internet.herokuapp.com");
-        GuiElement element = new GuiElement(driver, By.xpath("//body"));
+        UiElement element = finder.find(By.xpath("//body"));
         element.sendKeys(Keys.CONTROL + "a");
         element.sendKeys(Keys.CONTROL + "c");
 
-        SessionContext currentSessionContext = ExecutionContextController.getCurrentSessionContext();
+        SessionContext currentSessionContext = contextController.getCurrentSessionContext().get();
         String clipboard = SelenoidHelper.get().getClipboard(currentSessionContext);
         Assert.assertNotNull(clipboard);
         Assert.assertTrue(clipboard.contains("Welcome to the-internet"));
@@ -65,18 +66,18 @@ public class SelenoidHelperTests extends AbstractSelenoidTest {
 
     @Test
     public void test_SetClipboard() {
-        WebDriverManager.setGlobalExtraCapability("sessionTimeout", "10m");
-        final WebDriver driver = WebDriverManager.getWebDriver();
+        final WebDriver driver = WEB_DRIVER_MANAGER.getWebDriver();
+        UiElementFinder finder = UI_ELEMENT_FINDER_FACTORY.create(driver);
         driver.get("http://the-internet.herokuapp.com/tinymce");
         final String value = "clipboard text";
 
-        SessionContext currentSessionContext = ExecutionContextController.getCurrentSessionContext();
+        SessionContext currentSessionContext = contextController.getCurrentSessionContext().get();
         SelenoidHelper.get().setClipboard(currentSessionContext, value);
-        GuiElement iframe = new GuiElement(driver, By.id("mce_0_ifr"));
-        GuiElement textArea = iframe.getSubElement(By.xpath("//body/p"));
+        UiElement iframe = finder.find(By.id("mce_0_ifr"));
+        UiElement textArea = iframe.find(By.xpath("//body/p"));
         textArea.sendKeys(Keys.CONTROL + "v");
 
-        textArea.asserts().assertTextContains(value);
+        textArea.assertThat().text().isContaining(value);
     }
 
 
