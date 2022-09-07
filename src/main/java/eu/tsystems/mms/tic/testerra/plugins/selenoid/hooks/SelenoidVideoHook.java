@@ -44,7 +44,8 @@ public class SelenoidVideoHook implements ModuleHook, Loggable {
             Browsers.chrome,
             Browsers.chromeHeadless,
             Browsers.firefox,
-            Browsers.edge
+            Browsers.edge,
+            Browsers.safari
     };
 
     @Override
