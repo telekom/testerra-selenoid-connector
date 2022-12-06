@@ -138,12 +138,15 @@ More details: https://aerokube.com/selenoid/latest/#_downloading_files_from_brow
 
 #### Accessing clipboard
 
-Selenoid can return the content of the clipboard of your browser session.
+Selenoid can read and update the the content of the clipboard of your browser session.
 
 ````java
 WebDriver driver = WEB_DRIVER_MANAGER.getWebDriver();
 SessionContext sessionContext = WEB_DRIVER_MANAGER.getSessionContext(driver).get();
 String clipboard = SelenoidHelper.get().getClipboard(sessionContext);
+...
+String value = "My new clipboard content.";
+SelenoidHelper.get().setClipboard(sessionContext, value);
 ````
 
 More details: https://aerokube.com/selenoid/latest/#_accessing_clipboard
