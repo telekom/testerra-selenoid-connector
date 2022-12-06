@@ -44,8 +44,8 @@ public class SelenoidHelperTests extends AbstractSelenoidTest implements UiEleme
     public void test_SelenoidIsUsed() {
         final WebDriver driver = WEB_DRIVER_MANAGER.getWebDriver();
         driver.get("https://the-internet.herokuapp.com");
-        SessionContext currentSessionContext = contextController.getCurrentSessionContext().get();
-        boolean selenoidUsed = SelenoidHelper.get().isSelenoidUsed(currentSessionContext);
+        SessionContext sessionContext = WEB_DRIVER_MANAGER.getSessionContext(driver).get();
+        boolean selenoidUsed = SelenoidHelper.get().isSelenoidUsed(sessionContext);
         Assert.assertTrue(selenoidUsed);
     }
 
@@ -58,8 +58,8 @@ public class SelenoidHelperTests extends AbstractSelenoidTest implements UiEleme
         element.sendKeys(Keys.CONTROL + "a");
         element.sendKeys(Keys.CONTROL + "c");
 
-        SessionContext currentSessionContext = contextController.getCurrentSessionContext().get();
-        String clipboard = SelenoidHelper.get().getClipboard(currentSessionContext);
+        SessionContext sessionContext = WEB_DRIVER_MANAGER.getSessionContext(driver).get();
+        String clipboard = SelenoidHelper.get().getClipboard(sessionContext);
         Assert.assertNotNull(clipboard);
         Assert.assertTrue(clipboard.contains("Welcome to the-internet"));
     }
@@ -71,8 +71,8 @@ public class SelenoidHelperTests extends AbstractSelenoidTest implements UiEleme
         driver.get("http://the-internet.herokuapp.com/tinymce");
         final String value = "clipboard text";
 
-        SessionContext currentSessionContext = contextController.getCurrentSessionContext().get();
-        SelenoidHelper.get().setClipboard(currentSessionContext, value);
+        SessionContext sessionContext = WEB_DRIVER_MANAGER.getSessionContext(driver).get();
+        SelenoidHelper.get().setClipboard(sessionContext, value);
         UiElement iframe = finder.find(By.id("mce_0_ifr"));
         UiElement textArea = iframe.find(By.xpath("//body/p"));
         textArea.sendKeys(Keys.CONTROL + "v");

@@ -128,8 +128,8 @@ Some IDEs mark the URL as clickable link.
 Selenoid supports to download files your browser downloaded before from a site.
 
 ````java
-SessionContext currentSessionContext = ExecutionContextController.getCurrentSessionContext();
-String path = SelenoidHelper.get().getRemoteDownloadPath(currentSessionContext, "filename.jpg");
+SessionContext sessionContext = WEB_DRIVER_MANAGER.getSessionContext(driver).get();
+String path = SelenoidHelper.get().getRemoteDownloadPath(sessionContext, "filename.jpg");
 // Path contains something like http://my.selenoid.host:4444/download/<sessions-id>/filename.jpg
 ````
 
@@ -140,8 +140,8 @@ More details: https://aerokube.com/selenoid/latest/#_downloading_files_from_brow
 Selenoid can return the content of the clipboard of your browser session.
 
 ````java
-SessionContext currentSessionContext = ExecutionContextController.getCurrentSessionContext();
-String clipboard = SelenoidHelper.get().getClipboard(currentSessionContext);
+SessionContext sessionContext = WEB_DRIVER_MANAGER.getSessionContext(driver).get();
+String clipboard = SelenoidHelper.get().getClipboard(sessionContext);
 ````
 
 More details: https://aerokube.com/selenoid/latest/#_accessing_clipboard
