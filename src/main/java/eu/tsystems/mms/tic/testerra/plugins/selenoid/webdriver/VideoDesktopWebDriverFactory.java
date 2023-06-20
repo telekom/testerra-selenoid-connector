@@ -26,6 +26,7 @@ import eu.tsystems.mms.tic.testframework.testing.WebDriverManagerProvider;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverRequest;
 import org.openqa.selenium.WebDriver;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -54,15 +55,17 @@ public class VideoDesktopWebDriverFactory implements
                 webDriverRequest.getServerUrl().ifPresent(url -> {
                     if (selenoidHelper.updateNodeInfo(url, remoteSessionId, sessionContext)) {
                         // create a VideoRequest with request and videoName
-                        Object videoNameCap = webDriverRequest.getCapabilities().get(SelenoidCapabilities.VIDEO_NAME);
-                        if (Objects.nonNull(videoNameCap)) {
-                            final VideoRequest videoRequest = new VideoRequest(sessionContext, videoNameCap.toString());
-                            videoRequestStorage.store(videoRequest);
-                            log().info("VNC Streaming URL: " + selenoidHelper.getRemoteVncUrl(videoRequest, remoteSessionId));
-                        } else {
-                            log().error("Cannot store video file, the capability {} is missing.", SelenoidCapabilities.VIDEO_NAME);
+                        Map<String, Object> selenoidOptions = (Map<String, Object>) webDriverRequest.getCapabilities().get(SelenoidCapabilities.SELENOID_OPTIONS);
+                        if (selenoidOptions != null) {
+                            Object videoNameCap =selenoidOptions.get(SelenoidCapabilities.VIDEO_NAME);
+                            if (Objects.nonNull(videoNameCap)) {
+                                final VideoRequest videoRequest = new VideoRequest(sessionContext, videoNameCap.toString());
+                                videoRequestStorage.store(videoRequest);
+                                log().info("VNC Streaming URL: " + selenoidHelper.getRemoteVncUrl(videoRequest, remoteSessionId));
+                            } else {
+                                log().error("Cannot store video file, the capability {} is missing.", SelenoidCapabilities.VIDEO_NAME);
+                            }
                         }
-
                     }
                 });
             });

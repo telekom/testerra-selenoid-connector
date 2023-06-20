@@ -29,7 +29,7 @@ import eu.tsystems.mms.tic.testframework.webdrivermanager.DesktopWebDriverReques
 import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverRequest;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.Dimension;
-import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.MutableCapabilities;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -89,24 +89,23 @@ public class SelenoidCapabilityProvider implements Consumer<WebDriverRequest>, L
         // Try to find out the current testmethod to add the name to the Selenoid caps
         String methodName = contextController.getCurrentMethodContext().map(AbstractContext::getName).orElse("na.");
 
-        final DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
-        desiredCapabilities.setCapability(SelenoidCapabilities.ENABLE_VNC, VNC_ACTIVE);
+        final Map<String, Object> selenoidOptions = new HashMap<>();
+        selenoidOptions.put(SelenoidCapabilities.ENABLE_VNC, VNC_ACTIVE);
 
-        desiredCapabilities.setCapability(SelenoidCapabilities.ENABLE_VIDEO, VIDEO_ACTIVE);
+        selenoidOptions.put(SelenoidCapabilities.ENABLE_VIDEO, VIDEO_ACTIVE);
 
         final long framerate = Math.max(Math.min(VIDEO_FRAMERATE, VIDEO_FRAMERATE_MAX), 1);
-        desiredCapabilities.setCapability(SelenoidCapabilities.VIDEO_FRAME_RATE, framerate);
+        selenoidOptions.put(SelenoidCapabilities.VIDEO_FRAME_RATE, framerate);
 
-        desiredCapabilities.setCapability(SelenoidCapabilities.VIDEO_NAME, createVideoName(request.getSessionKey(), reportName, runConfigName));
+        selenoidOptions.put(SelenoidCapabilities.VIDEO_NAME, createVideoName(request.getSessionKey(), reportName, runConfigName));
         Dimension windowSize = request.getWindowSize();
-        desiredCapabilities.setCapability(SelenoidCapabilities.SCREEN_RESOLUTION, String.format("%sx%sx24", windowSize.getWidth(), windowSize.getHeight()));
+        selenoidOptions.put(SelenoidCapabilities.SCREEN_RESOLUTION, String.format("%sx%sx24", windowSize.getWidth(), windowSize.getHeight()));
 
         final Map<String, String> map = new HashMap<>();
         map.put("ReportName", reportName);
         map.put("RunConfig", runConfigName);
         map.put("Testmethod", methodName);
-
-        desiredCapabilities.setCapability(SelenoidCapabilities.LABELS, map);
+        selenoidOptions.put(SelenoidCapabilities.LABELS, map);
 
         /*
          * DEPRECATED: This part of code was removed, because it is not valid for all selenoid images.
@@ -122,7 +121,10 @@ public class SelenoidCapabilityProvider implements Consumer<WebDriverRequest>, L
         //                "LC_ALL=" + browserLocale + ".UTF-8"};
         //        desiredCapabilities.setCapability("env", localeArray);
 
-        return desiredCapabilities;
+        MutableCapabilities mutableCapabilities = new MutableCapabilities();
+//        final DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
+        mutableCapabilities.setCapability(SelenoidCapabilities.SELENOID_OPTIONS, selenoidOptions);
+        return mutableCapabilities;
     }
 
     private String createVideoName(final String sessionKey, final String reportName, final String runConfigName) {
