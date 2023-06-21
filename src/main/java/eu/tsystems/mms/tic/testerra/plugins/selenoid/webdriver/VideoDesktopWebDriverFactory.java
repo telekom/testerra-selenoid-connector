@@ -57,7 +57,7 @@ public class VideoDesktopWebDriverFactory implements
                         // create a VideoRequest with request and videoName
                         Map<String, Object> selenoidOptions = (Map<String, Object>) webDriverRequest.getCapabilities().get(SelenoidCapabilities.SELENOID_OPTIONS);
                         if (selenoidOptions != null) {
-                            Object videoNameCap =selenoidOptions.get(SelenoidCapabilities.VIDEO_NAME);
+                            Object videoNameCap = selenoidOptions.get(SelenoidCapabilities.VIDEO_NAME);
                             if (Objects.nonNull(videoNameCap)) {
                                 final VideoRequest videoRequest = new VideoRequest(sessionContext, videoNameCap.toString());
                                 videoRequestStorage.store(videoRequest);
