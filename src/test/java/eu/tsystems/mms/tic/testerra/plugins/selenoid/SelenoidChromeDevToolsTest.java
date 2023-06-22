@@ -20,9 +20,8 @@
  */
 package eu.tsystems.mms.tic.testerra.plugins.selenoid;
 
-import eu.tsystems.mms.tic.testframework.constants.Browsers;
 import eu.tsystems.mms.tic.testframework.pageobjects.UiElementFinder;
-import eu.tsystems.mms.tic.testframework.testing.BrowserDevToolsProvider;
+import eu.tsystems.mms.tic.testframework.testing.ChromeDevToolsProvider;
 import eu.tsystems.mms.tic.testframework.testing.UiElementFinderFactoryProvider;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.DesktopWebDriverRequest;
 import org.openqa.selenium.By;
@@ -35,7 +34,7 @@ import org.testng.annotations.Test;
  *
  * @author mgn
  */
-public class SelenoidDevToolsTest extends AbstractSelenoidTest implements UiElementFinderFactoryProvider, BrowserDevToolsProvider {
+public class SelenoidChromeDevToolsTest extends AbstractSelenoidTest implements UiElementFinderFactoryProvider, ChromeDevToolsProvider {
 
     @Test
     public void testT01_GeoLocation() {
@@ -46,7 +45,7 @@ public class SelenoidDevToolsTest extends AbstractSelenoidTest implements UiElem
         WebDriver webDriver = WEB_DRIVER_MANAGER.getWebDriver(request);
         UiElementFinder uiElementFinder = UI_ELEMENT_FINDER_FACTORY.create(webDriver);
 
-        BROWSER_DEV_TOOLS.setGeoLocation(webDriver, latitude, longitude, 1);
+        CHROME_DEV_TOOLS.setGeoLocation(webDriver, latitude, longitude, 1);
 
         webDriver.get("https://my-location.org/");
         uiElementFinder.find(By.id("latitude")).assertThat().text().isContaining(String.valueOf(latitude));
@@ -60,7 +59,7 @@ public class SelenoidDevToolsTest extends AbstractSelenoidTest implements UiElem
         WebDriver webDriver = WEB_DRIVER_MANAGER.getWebDriver(request);
         UiElementFinder uiElementFinder = UI_ELEMENT_FINDER_FACTORY.create(webDriver);
 
-        BROWSER_DEV_TOOLS.setBasicAuthentication(webDriver, UsernameAndPassword.of("admin", "admin"));
+        CHROME_DEV_TOOLS.setBasicAuthentication(webDriver, UsernameAndPassword.of("admin", "admin"));
 
         webDriver.get("https://the-internet.herokuapp.com/basic_auth");
         uiElementFinder.find(By.tagName("p")).assertThat().text().isContaining("Congratulations");

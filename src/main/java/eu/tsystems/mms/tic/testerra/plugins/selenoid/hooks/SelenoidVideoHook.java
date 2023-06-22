@@ -20,8 +20,7 @@ package eu.tsystems.mms.tic.testerra.plugins.selenoid.hooks;
 
 import com.google.inject.AbstractModule;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.collector.SelenoidEvidenceVideoCollector;
-import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.SelenoidDevTools;
-import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.SelenoidHelper;
+import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.SelenoidChromeDevTools;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.utils.SelenoidProperties;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.webdriver.SelenoidCapabilityProvider;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.webdriver.VideoDesktopWebDriverFactory;
@@ -29,9 +28,8 @@ import eu.tsystems.mms.tic.testframework.common.PropertyManager;
 import eu.tsystems.mms.tic.testframework.common.Testerra;
 import eu.tsystems.mms.tic.testframework.hooks.ModuleHook;
 import eu.tsystems.mms.tic.testframework.logging.Loggable;
-import eu.tsystems.mms.tic.testframework.testing.SeleniumDevTools;
 import eu.tsystems.mms.tic.testframework.testing.WebDriverManagerProvider;
-import eu.tsystems.mms.tic.testframework.webdrivermanager.BrowserDevTools;
+import eu.tsystems.mms.tic.testframework.webdrivermanager.ChromeDevTools;
 
 /**
  * The simple Hook for Testerras {@link ModuleHook}
@@ -69,7 +67,7 @@ public class SelenoidVideoHook extends AbstractModule implements
 
     @Override
     protected void configure() {
-        bind(BrowserDevTools.class).to(SelenoidDevTools.class);
+        bind(ChromeDevTools.class).to(SelenoidChromeDevTools.class);
     }
 
     @Override

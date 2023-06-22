@@ -21,7 +21,7 @@
 package eu.tsystems.mms.tic.testerra.plugins.selenoid.utils;
 
 import eu.tsystems.mms.tic.testframework.report.model.context.SessionContext;
-import eu.tsystems.mms.tic.testframework.testing.SeleniumDevTools;
+import eu.tsystems.mms.tic.testframework.testing.SeleniumChromeDevTools;
 import org.openqa.selenium.Credentials;
 import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.WebDriver;
@@ -38,7 +38,7 @@ import java.util.function.Supplier;
  *
  * @author mgn
  */
-public class SelenoidDevTools extends SeleniumDevTools {
+public class SelenoidChromeDevTools extends SeleniumChromeDevTools {
     @Override
     public DevTools getRawDevTools(WebDriver webDriver) {
         if (!isSupported(webDriver)) {
@@ -48,7 +48,7 @@ public class SelenoidDevTools extends SeleniumDevTools {
         if (isRemoteDriver(webDriver)) {
             SessionContext sessionContext = WEB_DRIVER_MANAGER.getSessionContext(webDriver).get();
             if (SelenoidHelper.get().isSelenoidUsed(sessionContext)) {
-                this.injectDevToolsCaps(webDriver, sessionContext);
+                this.spoofDevToolsCaps(webDriver, sessionContext);
             } else {
                 log().info("Default implementation of BrowserDevTools is used.");
             }
@@ -65,7 +65,7 @@ public class SelenoidDevTools extends SeleniumDevTools {
         if (isRemoteDriver(webDriver)) {
             SessionContext sessionContext = WEB_DRIVER_MANAGER.getSessionContext(webDriver).get();
             if (SelenoidHelper.get().isSelenoidUsed(sessionContext)) {
-                this.injectDevToolsCaps(webDriver, sessionContext);
+                this.spoofDevToolsCaps(webDriver, sessionContext);
             } else {
                 log().info("Default implementation of BrowserDevTools is used.");
             }
@@ -73,7 +73,11 @@ public class SelenoidDevTools extends SeleniumDevTools {
         super.setBasicAuthentication(webDriver, credentials);
     }
 
-    private void injectDevToolsCaps(WebDriver webDriver, SessionContext sessionContext) {
+    /**
+     * Inject caps which are needed for DevTools in a Selenoid Grid
+     * Inspired by https://gist.github.com/matthewlowry/69cc0c96e452d667b66adab4abd91db3
+     */
+    private void spoofDevToolsCaps(WebDriver webDriver, SessionContext sessionContext) {
         Optional<URL> nodeUrl = sessionContext.getNodeUrl();
         if (!nodeUrl.isPresent()) {
             log().error("Cannot inject caps, no node information found.");
