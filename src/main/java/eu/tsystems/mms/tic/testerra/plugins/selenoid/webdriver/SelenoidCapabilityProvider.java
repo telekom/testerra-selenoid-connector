@@ -66,11 +66,11 @@ public class SelenoidCapabilityProvider implements Consumer<WebDriverRequest>, L
         }
 
         DesktopWebDriverRequest desktopWebDriverRequest = (DesktopWebDriverRequest) webDriverRequest;
-        Capabilities browserOptions = desktopWebDriverRequest.getBrowserOptions();
+        Capabilities capabilities = desktopWebDriverRequest.getCapabilities();
         // determine everything for selenoid... incl. video name on remote.
         final Capabilities videoCaps = provide(desktopWebDriverRequest);
-        Capabilities newOptions = browserOptions.merge(videoCaps);
-        desktopWebDriverRequest.setBrowserOptions(newOptions);
+        capabilities = capabilities.merge(videoCaps);
+        desktopWebDriverRequest.setCapabilities(capabilities);
     }
 
     /**
