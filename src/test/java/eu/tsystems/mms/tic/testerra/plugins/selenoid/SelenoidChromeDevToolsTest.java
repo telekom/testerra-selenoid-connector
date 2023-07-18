@@ -23,6 +23,7 @@ package eu.tsystems.mms.tic.testerra.plugins.selenoid;
 import eu.tsystems.mms.tic.testframework.pageobjects.UiElementFinder;
 import eu.tsystems.mms.tic.testframework.testing.ChromeDevToolsProvider;
 import eu.tsystems.mms.tic.testframework.testing.UiElementFinderFactoryProvider;
+import eu.tsystems.mms.tic.testframework.utils.UITestUtils;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.DesktopWebDriverRequest;
 import org.openqa.selenium.By;
 import org.openqa.selenium.UsernameAndPassword;
@@ -63,7 +64,7 @@ public class SelenoidChromeDevToolsTest extends AbstractSelenoidTest implements 
 
         webDriver.get("https://the-internet.herokuapp.com/basic_auth");
         uiElementFinder.find(By.tagName("p")).assertThat().text().isContaining("Congratulations");
-
+        UITestUtils.takeScreenshots();
     }
 
 }

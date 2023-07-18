@@ -93,7 +93,6 @@ public class SelenoidChromeDevTools extends SeleniumChromeDevTools {
 
             MutableCapabilities mutableCapabilities = (MutableCapabilities) capabilitiesField.get(remoteWebDriver);
             mutableCapabilities.setCapability("se:cdp", devtoolsUrl);
-            mutableCapabilities.setCapability("se:cdpVersion", mutableCapabilities.getBrowserVersion());
         } catch (Exception e) {
             log().error("Failed to inject RemoteWebDriver capabilities for Selenoid", e);
         }
