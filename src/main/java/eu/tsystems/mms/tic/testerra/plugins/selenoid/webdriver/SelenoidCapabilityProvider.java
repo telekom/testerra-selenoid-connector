@@ -23,7 +23,6 @@ import eu.tsystems.mms.tic.testframework.common.PropertyManagerProvider;
 import eu.tsystems.mms.tic.testframework.common.Testerra;
 import eu.tsystems.mms.tic.testframework.logging.Loggable;
 import eu.tsystems.mms.tic.testframework.report.model.context.AbstractContext;
-import eu.tsystems.mms.tic.testframework.report.utils.DefaultExecutionContextController;
 import eu.tsystems.mms.tic.testframework.report.utils.IExecutionContextController;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.DesktopWebDriverRequest;
 import eu.tsystems.mms.tic.testframework.webdrivermanager.WebDriverRequest;
@@ -67,21 +66,29 @@ public class SelenoidCapabilityProvider implements Consumer<WebDriverRequest>, L
 
         DesktopWebDriverRequest desktopWebDriverRequest = (DesktopWebDriverRequest) webDriverRequest;
         Capabilities capabilities = desktopWebDriverRequest.getCapabilities();
-        // determine everything for selenoid... incl. video name on remote.
-        final Capabilities videoCaps = provide(desktopWebDriverRequest);
-        capabilities = capabilities.merge(videoCaps);
+        // determine everything for Selenoid... incl. video name on remote.
+        final Map<String, Object> selenoidCaps = createSelenoidOptions(desktopWebDriverRequest);
+        capabilities = this.mergeSelenoidCaps(capabilities, selenoidCaps);
         desktopWebDriverRequest.setCapabilities(capabilities);
+    }
+
+    private Capabilities mergeSelenoidCaps(Capabilities requestCaps, Map<String, Object> selenoidOptions) {
+        Object existingOptions = requestCaps.getCapability(SelenoidCapabilities.SELENOID_OPTIONS);
+        if (existingOptions instanceof Map) {
+            Map<String, Object> additionalOptions = (Map<String, Object>) existingOptions;
+            selenoidOptions.putAll(additionalOptions);
+        }
+        MutableCapabilities mutableCapabilities = new MutableCapabilities();
+        mutableCapabilities.setCapability(SelenoidCapabilities.SELENOID_OPTIONS, selenoidOptions);
+        return requestCaps.merge(mutableCapabilities);
     }
 
     /**
      * Provide all capabilities for Selenoid configuration.
-     *
-     * @param request {@link eu.tsystems.mms.tic.testerra.plugins.selenoid.request.VideoRequest}
-     * @return Capabilities
      */
-    private Capabilities provide(DesktopWebDriverRequest request) {
+    private Map<String, Object> createSelenoidOptions(DesktopWebDriverRequest request) {
 
-        IExecutionContextController contextController = new DefaultExecutionContextController();
+        IExecutionContextController contextController = Testerra.getInjector().getInstance(IExecutionContextController.class);
 
         final String reportName = contextController.getExecutionContext().getRunConfig().getReportName();
         final String runConfigName = contextController.getExecutionContext().getRunConfig().RUNCFG;
@@ -121,10 +128,7 @@ public class SelenoidCapabilityProvider implements Consumer<WebDriverRequest>, L
         //                "LC_ALL=" + browserLocale + ".UTF-8"};
         //        desiredCapabilities.setCapability("env", localeArray);
 
-        MutableCapabilities mutableCapabilities = new MutableCapabilities();
-//        final DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
-        mutableCapabilities.setCapability(SelenoidCapabilities.SELENOID_OPTIONS, selenoidOptions);
-        return mutableCapabilities;
+        return selenoidOptions;
     }
 
     private String createVideoName(final String sessionKey, final String reportName, final String runConfigName) {
