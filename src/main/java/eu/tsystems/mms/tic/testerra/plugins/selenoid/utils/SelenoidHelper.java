@@ -258,7 +258,7 @@ public class SelenoidHelper implements Loggable {
         return Optional.empty();
     }
 
-    private String getSelenoidSessionId(Optional<String> optionalremoteSessionId) {
+    protected String getSelenoidSessionId(Optional<String> optionalremoteSessionId) {
         return optionalremoteSessionId.map(remoteSessionId -> {
             if (remoteSessionId.length() >= 64) {
                 // It's a GGR session id, so cut the first 32 chars

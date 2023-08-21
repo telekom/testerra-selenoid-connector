@@ -64,6 +64,11 @@ public class SelenoidVideoHook extends AbstractModule implements
     }
 
     @Override
+    protected void configure() {
+        // do nothing
+    }
+
+    @Override
     public void terminate() {
 
     }

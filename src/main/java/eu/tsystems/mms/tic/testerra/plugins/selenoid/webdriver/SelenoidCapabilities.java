@@ -12,6 +12,8 @@ public class SelenoidCapabilities {
      * https://aerokube.com/selenoid/latest/#_special_capabilities
      */
 
+    public static String SELENOID_OPTIONS = "selenoid:options";
+
     public static String ENABLE_VNC = "enableVNC";
 
     public static String ENABLE_VIDEO = "enableVideo";
