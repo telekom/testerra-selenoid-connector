@@ -41,9 +41,9 @@ The module will register automatically by using `ModuleHook`.
 
 Hints:
 
-* You need at least **Selenoid 1.10.1** or above.
+* You need at least **Selenoid 1.11.0** or above.
 * (*) From version 2.1 you need at least **JDK11**.
-* (**) Testerra 2.4 brings Selenium 4, you need at least Version 2.1 _and_ **Selenoid 1.11.0**
+* (**) Testerra 2.4 brings Selenium 4, you need at least Version 2.1
 
 ### Usage
 

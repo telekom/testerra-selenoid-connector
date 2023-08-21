@@ -12,11 +12,10 @@ targetCompatibility = JavaVersion.VERSION_11
 
 ext {
     // Minimum required Testerra version
-    testerraCompileVersion = '2.4s-SNAPSHOT'
+    testerraCompileVersion = '2.1'
 
     // Unit tests use the latest Testerra version
     testerraTestVersion = '[2,3-SNAPSHOT)'
-//    testerraTestVersion = '2.4s-SNAPSHOT'
     moduleVersion = '2-SNAPSHOT'
     if (System.properties.containsKey('moduleVersion')) {
         moduleVersion = System.getProperty('moduleVersion')
