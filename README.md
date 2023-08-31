@@ -169,23 +169,24 @@ tt.selenoid.video.framerate=10
 
 ### Properties
 
-|Property|Default|Description|
-|---|---|---|
-|tt.screencaster.active|true|All videos will be collected in failure case of test method and for exclusive sessions.|
-|tt.screencaster.active.on.success|false|When true, generated video files will be attached the report for successful test methods|
-|tt.screencaster.active.on.failed|true|Generated video files will be attached the report for failed test methods|
-|tt.selenoid.vnc.enabled|true|VNC Stream will be activated and logged to the console.|
-|tt.selenoid.vnc.address|none|VNC Host address - Will be used to generate a unique url for accessing the VNC session. <br> For a hosted [noVNC server](https://github.com/novnc/noVNC) this should be `http://<host>:<port>/vnc.html`.|
-|tt.selenoid.video.framerate|2|Change the framerate of the video files.|
+| Property                           | Default | Description                                                                                                                                                                                              |
+|------------------------------------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| tt.screencaster.active             | true    | All videos will be collected in failure case of test method and for exclusive sessions.                                                                                                                  |
+| tt.screencaster.active.on.success  | false   | When true, generated video files will be attached the report for successful test methods                                                                                                                 |
+| tt.screencaster.active.on.failed   | true    | Generated video files will be attached the report for failed test methods                                                                                                                                |
+| tt.selenoid.vnc.enabled            | true    | VNC Stream will be activated and logged to the console.                                                                                                                                                  |
+| tt.selenoid.vnc.address            | none    | VNC Host address - Will be used to generate a unique url for accessing the VNC session. <br> For a hosted [noVNC server](https://github.com/novnc/noVNC) this should be `http://<host>:<port>/vnc.html`. |
+| tt.selenoid.video.framerate        | 2       | Change the framerate of the video files.                                                                                                                                                                 |
+| tt.selenoid.video.download.timeout | 20000   | Set download timeout for Selenoid videos in ms.                                                                                                                                                          |
 
 ### Additional information
 
 The Selenoid connector adds some additional information to the new browser session. It uses the ``label`` capability to mark the session with the following information if available:
 
-|Label|Description|
-|---|---|
-| ReportName | Contains the Testerra report name |
-| RunConfig | Contains the Testerra run configuration |
+| Label      | Description                                  |
+|------------|----------------------------------------------|
+| ReportName | Contains the Testerra report name            |
+| RunConfig  | Contains the Testerra run configuration      |
 | Testmethod | Contains the current TestNG test method name |
 
 This feature is mentioned here: [https://aerokube.com/selenoid/latest/#_container_labels_labels]().

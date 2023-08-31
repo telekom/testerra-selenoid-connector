@@ -16,6 +16,7 @@ public class SelenoidProperties {
     public static final String VNC_ENABLED = "tt.selenoid.vnc.enabled";
     public static final String VNC_ADDRESS = "tt.selenoid.vnc.address";
     public static final String VIDEO_FRAMERATE = "tt.selenoid.video.framerate";
+    public static final String VIDEO_DOWNLOAD_TIMEOUT = "tt.selenoid.video.download.timeout";
 
     public static class Default {
 
