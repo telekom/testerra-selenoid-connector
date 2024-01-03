@@ -14,6 +14,8 @@ public class SelenoidCapabilities {
 
     public static String SELENOID_OPTIONS = "selenoid:options";
 
+    public static String GGR_OPTIONS = "ggr:options";
+
     public static String ENABLE_VNC = "enableVNC";
 
     public static String ENABLE_VIDEO = "enableVideo";

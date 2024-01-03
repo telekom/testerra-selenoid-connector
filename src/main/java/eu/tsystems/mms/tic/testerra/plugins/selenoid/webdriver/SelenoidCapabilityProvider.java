@@ -80,6 +80,8 @@ public class SelenoidCapabilityProvider implements Consumer<WebDriverRequest>, L
         }
         MutableCapabilities mutableCapabilities = new MutableCapabilities();
         mutableCapabilities.setCapability(SelenoidCapabilities.SELENOID_OPTIONS, selenoidOptions);
+        // Since GGR 1.7.2: Using an additional GGR label caps have to be added to 'ggr:options' (https://aerokube.com/ggr/latest/#_custom_labels_in_log_file)
+        mutableCapabilities.setCapability(SelenoidCapabilities.GGR_OPTIONS, selenoidOptions.get(SelenoidCapabilities.LABELS));
         return requestCaps.merge(mutableCapabilities);
     }
 
