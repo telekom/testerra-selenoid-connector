@@ -43,7 +43,9 @@ Hints:
 
 * You need at least **Selenoid 1.11.0** or above.
 * (*) From version 2.1 you need at least **JDK11**.
-* (**) Testerra 2.4 brings Selenium 4, you need at least Version 2.1
+* (**) Testerra 2.4 brings Selenium 4: 
+  * Using CDP support of Selenium 4, **Selenoid 1.11.0** (or later) is required
+  * Using Selenium 4 _and_ custom labels _and_ a GGR in your grid, **GGR 1.7.2** (or later) is required 
 
 ### Usage
 
