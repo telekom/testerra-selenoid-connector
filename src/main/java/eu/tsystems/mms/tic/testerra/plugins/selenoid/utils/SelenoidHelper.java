@@ -23,6 +23,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import eu.tsystems.mms.tic.testerra.plugins.selenoid.request.VideoRequest;
 import eu.tsystems.mms.tic.testframework.common.PropertyManager;
+import eu.tsystems.mms.tic.testframework.common.PropertyManagerProvider;
 import eu.tsystems.mms.tic.testframework.logging.Loggable;
 import eu.tsystems.mms.tic.testframework.model.NodeInfo;
 import eu.tsystems.mms.tic.testframework.report.model.context.SessionContext;
@@ -43,9 +44,11 @@ import java.util.Optional;
  *
  * @author Eric Kubenka
  */
-public class SelenoidHelper implements Loggable {
+public class SelenoidHelper implements PropertyManagerProvider, Loggable {
 
-    private static final String VNC_ADDRESS = PropertyManager.getProperty(SelenoidProperties.VNC_ADDRESS, SelenoidProperties.Default.VNC_ADDRESS);
+    private static final String VNC_ADDRESS = PROPERTY_MANAGER.getProperty(SelenoidProperties.VNC_ADDRESS, SelenoidProperties.Default.VNC_ADDRESS);
+
+    private static final long VIDEO_DOWNLOAD_TIMEOUT = PROPERTY_MANAGER.getLongProperty(SelenoidProperties.VIDEO_DOWNLOAD_TIMEOUT, 20000);
 
     private static final SelenoidHelper INSTANCE = new SelenoidHelper();
 
@@ -193,7 +196,7 @@ public class SelenoidHelper implements Loggable {
         final String videoName = "video_" + videoRequest.selenoidVideoName;
         final FileDownloader downloader = new FileDownloader();
 
-        final Timer timer = new Timer(5000, 20_000);
+        final Timer timer = new Timer(5000, VIDEO_DOWNLOAD_TIMEOUT);
         final ThrowablePackedResponse<String> response = timer.executeSequence(new Timer.Sequence<String>() {
             @Override
             public void run() throws Throwable {
