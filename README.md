@@ -25,6 +25,30 @@ streams. When activated, video files are automatically added to the Testerra rep
 
 The module will register automatically by using `ModuleHook`.
 
+<!-- TOC -->
+* [Setup](#setup)
+    * [Requirements](#requirements)
+    * [Usage](#usage)
+* [Documentation](#documentation)
+    * [Video support](#video-support)
+    * [VNC support](#vnc-support)
+    * [Use other Selenoid features](#use-other-selenoid-features)
+    * [Properties](#properties)
+    * [Additional information](#additional-information)
+    * [Troubleshooting](#troubleshooting)
+* [Publication](#publication)
+    * [Publish snapshots](#publish-snapshots)
+    * [Publish release](#publish-release)
+* [Code of Conduct](#code-of-conduct)
+* [Working Language](#working-language)
+* [Support and Feedback](#support-and-feedback)
+* [How to Contribute](#how-to-contribute)
+* [Contributors](#contributors)
+* [Licensing](#licensing)
+<!-- TOC -->
+
+---
+
 ## Setup
 
 ### Requirements
@@ -218,21 +242,32 @@ you to all of them.
 
 This module is deployed and published to Maven Central. All JAR files are signed via Gradle signing plugin.
 
-The following properties have to be set via command line or ``~/.gradle/gradle.properties``
+For the ``signing`` plugin the following properties have to be set via command line or ``~/.gradle/gradle.properties``
 
-| Property                      | Description                                         |
-| ----------------------------- | --------------------------------------------------- |
-| `moduleVersion`               | Version of deployed module, default is `1-SNAPSHOT` |
-| `deployUrl`                   | Maven repository URL                                |
-| `deployUsername`              | Maven repository username                           |
-| `deployPassword`              | Maven repository password                           |
-| `signing.keyId`               | GPG private key ID (short form)                     |
-| `signing.password`            | GPG private key password                            |
-| `signing.secretKeyRingFile`   | Path to GPG private key                             |
+| Property                    | Description                     |
+|-----------------------------|---------------------------------|
+| `signing.keyId`             | GPG private key ID (short form) |
+| `signing.password`          | GPG private key password        |
+| `signing.secretKeyRingFile` | Path to GPG private key         |
 
-If all properties are set, call the following to build, deploy and release this module:
+### Publish snapshots
+
+Publishing snapshots the default ``maven-publish`` plugin is used:
+
 ````shell
-gradle publish closeAndReleaseRepository
+export MAVEN_CENTRAL_PORTAL_USERNAME=<username>
+export MAVEN_CENTRAL_PORTAL_PASSWORD=<token>
+gradle publish
+````
+
+### Publish release
+
+Publishing releases the ``org.danilopianini.publish-on-central`` plugin is used:
+
+````shell
+export MAVEN_CENTRAL_PORTAL_USERNAME=<username>
+export MAVEN_CENTRAL_PORTAL_PASSWORD=<token>
+gradle publishMavenJavaPublicationToProjectLocalRepository zipMavenCentralPortalPublication releaseMavenCentralPortalPublication -DmoduleVersion=2.1 
 ````
 
 ## Code of Conduct

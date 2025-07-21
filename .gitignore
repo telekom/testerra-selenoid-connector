@@ -1,8 +1,5 @@
 #gradle files
-gradlew
-gradlew.bat
 .gradle/
-gradle/
 
 #intellij
 .idea/
