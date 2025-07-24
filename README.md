@@ -242,21 +242,21 @@ you to all of them.
 
 This module is deployed and published to Maven Central. All JAR files are signed via Gradle signing plugin.
 
-For the ``signing`` plugin the following properties have to be set via command line or ``~/.gradle/gradle.properties``
+For the signing and publishing the following environment variables have to be set:
 
-| Property                    | Description                     |
-|-----------------------------|---------------------------------|
-| `signing.keyId`             | GPG private key ID (short form) |
-| `signing.password`          | GPG private key password        |
-| `signing.secretKeyRingFile` | Path to GPG private key         |
+| Property                             | Description                             |
+|--------------------------------------|-----------------------------------------|
+| `ORG_GRADLE_PROJECT_signingKeyId`    | GPG private key ID (short form)         |
+| `ORG_GRADLE_PROJECT_signingPassword` | GPG private key password                |
+| `ORG_GRADLE_PROJECT_signingKey`      | GPG private key in ASCII-armored format |
+| `MAVEN_CENTRAL_PORTAL_USERNAME`      | Maven Central publishing user           | 
+| `MAVEN_CENTRAL_PORTAL_PASSWORD`      | Maven Central publishing token          | 
 
 ### Publish snapshots
 
 Publishing snapshots the default ``maven-publish`` plugin is used:
 
 ````shell
-export MAVEN_CENTRAL_PORTAL_USERNAME=<username>
-export MAVEN_CENTRAL_PORTAL_PASSWORD=<token>
 gradle publish
 ````
 
@@ -265,8 +265,6 @@ gradle publish
 Publishing releases the ``org.danilopianini.publish-on-central`` plugin is used:
 
 ````shell
-export MAVEN_CENTRAL_PORTAL_USERNAME=<username>
-export MAVEN_CENTRAL_PORTAL_PASSWORD=<token>
 gradle publishMavenJavaPublicationToProjectLocalRepository zipMavenCentralPortalPublication releaseMavenCentralPortalPublication -DmoduleVersion=2.1 
 ````
 
