@@ -8,8 +8,8 @@ ext {
     libraryDescription = "Testerra test automation framework - ${project.getName()} module"
 
     siteUrl = 'https://testerra.io'
-    gitUrl = 'scm:git:git://github.com/telekom/testerra-teamcity-connector.git'
-    gitHttpsUrl = 'https://github.com/telekom/testerra-teamcity-connector/'
+    gitUrl = 'scm:git://github.com/telekom/testerra-teamcity-connector.git'
+    gitHttpsUrl = 'https://github.com/telekom/testerra-teamcity-connector'
 
     developerId = 'MMS'
     developerName = 'Testerra Team MMS'
